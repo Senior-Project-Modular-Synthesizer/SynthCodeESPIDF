@@ -1,0 +1,496 @@
+#pragma once
+
+// n bit wide mask shifted by x bits
+#define BIT_MASK(n, x) ((1UL << (n)) - 1) << (x)
+
+// *--------------------------------------------------------
+// *
+// * Power Management Register
+// *
+// *--------------------------------------------------------
+#define REG_00_INIT 0x00
+
+// ---- PMADx Constants ----
+// Power management of ADCx
+
+#define PMADx_POWER_DOWN 0b0 // Default
+#define PMADx_POWER_UP   0b1
+
+#define PMAD2_REG 0x00
+#define PMAD2_MASK BIT_MASK(1, 5)
+
+#define PMAD1_REG 0x00
+#define PMAD1_MASK BIT_MASK(1, 4)
+
+// ---- PMDAx Constants ----
+// Power Management for DACx
+
+#define PMDAX_POWER_DOWN 0b0 // Default
+#define PMDAX_POWER_UP   0b1
+
+#define PMDA2_REG 0x00
+#define PMDA2_MASK BIT_MASK(1, 2)
+
+#define PMDA1_REG 0x00
+#define PMDA1_MASK BIT_MASK(1, 1)
+
+// ---- RSTN Constants ----
+// Internal timing reset
+
+#define RSTN_RESET 0b0 // Default
+#define RSTN_NORMAL 0b1
+
+#define RSTN_REG 0x00
+#define RSTN_MASK BIT_MASK(1, 0)
+
+// *--------------------------------------------------------
+// *
+// * AUDIO I/F Format
+// *
+// *--------------------------------------------------------
+#define REG_01_INIT 0x0C
+
+// ---- TDM Constants ----
+// TDM Mode Control
+
+#define TDM_MODE_OFF 0b0 // Default
+#define TDM_MODE_ON  0b1
+
+#define TDM_REG 0x01
+#define TDM_MASK BIT_MASK(1, 7)
+
+// ---- DCF Constants ----
+
+#define DCF_STEREO_MODE_I2S 0b000 // Default
+#define DCF_STEREO_MODE_MSB 0b101
+#define DCF_STEREO_MODE_PCM_SHORT 0b110
+#define DCF_STEREO_MODE_PCM_LONG 0b111
+#define DCF_TDM_128_I2S 0b010
+#define DCF_TDM_128_MSB 0b111
+#define DCF_TDM_256_I2S 0b010
+#define DCF_TDM_256_MSB 0b111
+
+#define DCF_REG 0x01
+#define DCF_MASK BIT_MASK(3, 4)
+
+// ---- DSL Constants ----
+// Slot Length setting
+
+#define DSL_24_BIT 0b00
+#define DSL_20_BIT 0b01
+#define DSL_16_BIT 0b10
+#define DSL_32_BIT 0b11 // Default
+
+#define DSL_REG 0x01
+#define DSL_MASK BIT_MASK(2, 2)
+
+
+// ---- BCKP Constants ----
+// BICK Edge Setting
+
+#define BCKP_FALLING_EDGE 0b0 // Default
+#define BCKP_RISING_EDGE 0b1
+
+#define BCKP_REG 0x01
+#define BCKP_MASK BIT_MASK(1, 1)
+
+// ---- SDOPH Constants ----
+// Fast Mode Setting of SDOUT1/2 Output
+
+#define SDOPH_SLOW_MODE 0b0 // Default
+#define SDOPH_FAST_MODE 0b1
+
+#define SDOPH_REG 0x01
+#define SDOPH_MASK BIT_MASK(1, 0)
+
+// *--------------------------------------------------------
+// *
+// * Reset Control
+// *
+// *--------------------------------------------------------
+#define REG_02_INIT 0x0C
+
+// ---- SLOT Constants ----
+// Start Position Setting for next Slot
+
+#define SLOT_LRCK_EDGE_BASIS 0b0 // Default
+#define SLOT_SLOT_LENGTH_BASIS 0b1
+
+#define SLOT_REG 0x02
+#define SLOT_MASK BIT_MASK(1, 4)
+
+// ---- DIDL Constants ----
+// SDIN1/2 Word Length Setting
+
+#define DIDL_24_BIT 0b00
+#define DIDL_20_BIT 0b01
+#define DIDL_16_BIT 0b10
+#define DIDL_32_BIT 0b11 // Default
+
+#define DIDL_REG 0x02
+#define DIDL_MASK BIT_MASK(2, 2)
+
+// ---- DODL Constants ----
+// SDOUT1/2 Word Length Setting
+
+#define DODL_24_BIT 0b00 // Default
+#define DODL_20_BIT 0b01
+#define DODL_16_BIT 0b10
+// 0b11 not used 
+
+#define DODL_REG 0x02
+#define DODL_MASK BIT_MASK(2, 0)
+
+// *--------------------------------------------------------
+// *
+// * System Clock Setting
+// *
+// *--------------------------------------------------------
+#define REG_03_INIT 0x00
+
+// ---- FS Constants ----
+// MCLK/BICK and Sampling Frequency Range Setting
+
+// There's two 256 modes, meaning two different constants:
+//     - 8 kHz ≦ fs ≦ 48 kHz
+//     - fs = 96 kHz
+#define FS_256_MCLK_48KHZ 0b000 // Default
+#define FS_256_MCLK_96KHZ 0b001
+#define FS_384_MCLK 0b010
+#define FS_512_MCLK 0b011
+#define FS_128_MCLK 0b100
+
+#define FS_REG 0x03
+#define FS_MASK BIT_MASK(3, 0)
+
+// *--------------------------------------------------------
+// *
+// * MIC AMP Gain
+// *
+// *--------------------------------------------------------
+#define REG_04_INIT 0x22
+#define REG_05_INIT 0x22
+
+// ---- MGNxx Constants ----
+// MIC Gain AMP Setting
+
+#define MGN_MINUS_6_DB 0b0000
+#define MGN_MINUS_3_DB 0b0001
+#define MGN_0_DB 0b0010 // Default
+#define MGN_3_DB 0b0011
+#define MGN_6_DB 0b0100
+#define MGN_9_DB 0b0101
+#define MGN_12_DB 0b0110
+#define MGN_15_DB 0b0111
+#define MGN_18_DB 0b1000
+#define MGN_21_DB 0b1001
+#define MGN_24_DB 0b1010
+#define MGN_27_DB 0b1011
+// 0b11xx not used
+
+#define MGN1L_REG 0x04
+#define MGN1L_MASK BIT_MASK(4, 4)
+
+#define MGN1R_REG 0x04
+#define MGN1R_MASK BIT_MASK(4, 0)
+
+#define MGN2L_REG 0x05
+#define MGN2L_MASK BIT_MASK(4, 4)
+
+#define MGN2R_REG 0x05
+#define MGN2R_MASK BIT_MASK(4, 0)
+
+// *--------------------------------------------------------
+// *
+// * ADCx xch Digital Volume
+// *
+// *--------------------------------------------------------
+#define REG_06_INIT 0x30
+#define REG_07_INIT 0x30
+#define REG_08_INIT 0x30
+#define REG_09_INIT 0x30
+
+// ---- VOLADxx Constants ----
+// ADC Digital Volume Setting
+
+// 00h is +24 db, FEh is -103 db, FFh is -∞ db
+// Step size is 0.5 dB
+
+// This takes in a float and returns a register value
+// Clamps input to valid range and handles 0.5 dB steps properly
+#define VOLADXX_VOLUME(x) ((x) <= -103.0f ? 0xFEU : \
+                          (x) >= 24.0f ? 0x00U : \
+                          (0xFEU - (unsigned int)(((x) + 103.0f) * 2.0f + 0.5f)))
+
+#define VOLADXX_VOLUME_MINUS_INFINITY 0xFF // -∞ dB
+
+#define VOLADXX_VOLUME_MAX 24.0f // +24 dB
+#define VOLADXX_VOLUME_MIN -103.0f // -103 dB
+#define VOLADXX_VOLUME_STEP 0.5f // dB
+
+#define VOLADXX_VOLUME_MIN_REG 0xFE // -103 dB
+#define VOLADXX_VOLUME_MAX_REG 0x00 // +24 dB
+#define VOLADXX_VOLUME_DEFAULT 0x30 // 0 dB
+
+#define VOLAD1L_REG 0x06
+#define VOLAD1L_MASK BIT_MASK(8, 0)
+
+#define VOLAD1R_REG 0x07
+#define VOLAD1R_MASK BIT_MASK(8, 0)
+
+#define VOLAD2L_REG 0x08
+#define VOLAD2L_MASK BIT_MASK(8, 0)
+
+#define VOLAD2R_REG 0x09
+#define VOLAD2R_MASK BIT_MASK(8, 0)
+
+// *--------------------------------------------------------
+// *
+// * ADC Digital Filter Setting
+// *
+// *--------------------------------------------------------
+#define REG_0A_INIT 0x00
+
+// ---- ADxVO Constants ----
+// ADCx Voice Filter Control
+
+#define ADXVO_VOICE_FILTER_OFF 0b0 // Default
+#define ADXVO_VOICE_FILTER_ON  0b1
+
+#define AD2VO_REG 0x0A
+#define AD2VO_MASK BIT_MASK(1, 6)
+
+#define AD1VO_REG 0x0A
+#define AD1VO_MASK BIT_MASK(1, 2)
+
+// ---- ADxSD Constants ----
+// ADCx Digital Filter Selection (Short Delay on vs off)
+
+#define ADXSD_SHORT_DELAY_OFF 0b0 // Default
+#define ADXSD_SHORT_DELAY_ON  0b1
+
+#define AD2SD_REG 0x0A
+#define AD2SD_MASK BIT_MASK(1, 5)
+
+#define AD1SD_REG 0x0A
+#define AD1SD_MASK BIT_MASK(1, 1)
+
+// ---- ADxSL Constants ----
+// ADCx Digital Filter Selection (Sharp Roll-off vs Slow Roll-off)
+
+#define ADXSL_SHARP_ROLL_OFF 0b0 // Default
+#define ADXSL_SLOW_ROLL_OFF  0b1
+
+#define AD2SL_REG 0x0A
+#define AD2SL_MASK BIT_MASK(1, 4)
+
+#define AD1SL_REG 0x0A
+#define AD1SL_MASK BIT_MASK(1, 0)
+
+// *--------------------------------------------------------
+// *
+// * ADC Analog Input Setting
+// *
+// *--------------------------------------------------------
+#define REG_0B_INIT 0x00
+
+// ---- ADxxSEL Constants ----
+
+#define ADXXSEL_DIFFERENTIAL 0b00 // Default
+#define ADXXSEL_SINGLE_ENDED1 0b01
+#define ADXXSEL_SINGLE_ENDED2 0b10
+#define ADXXSEL_PSEUDO_DIFFERENTIAL 0b11
+
+#define AD1LSEL_REG 0x0B
+#define AD1LSEL_MASK BIT_MASK(2, 6)
+
+#define AD1RSEL_REG 0x0B
+#define AD1RSEL_MASK BIT_MASK(2, 4)
+
+#define AD2LSEL_REG 0x0B
+#define AD2LSEL_MASK BIT_MASK(2, 2)
+
+#define AD2RSEL_REG 0x0B
+#define AD2RSEL_MASK BIT_MASK(2, 0)
+
+// *--------------------------------------------------------
+// *
+// * Reserved Register
+// *
+// *--------------------------------------------------------
+#define REG_0C_INIT 0x00 // Reserved register, no fields defined
+
+// *--------------------------------------------------------
+// *
+// * ADC Mute & HPF Control
+// *
+// *--------------------------------------------------------
+#define REG_0D_INIT 0x00
+
+// ---- ATSPAD Constants ----
+//  ADC Volume Level Transition Time
+
+#define ATSPAD_ATT_4 0b0 // Default
+#define ATSPAD_ATT_16 0b1
+
+#define ATSPAD_REG 0x0D
+#define ATSPAD_MASK BIT_MASK(1, 7)
+
+// ---- ADxMUTE Constants ----
+// ADCx Soft Mute Enable
+
+#define ADXMUTE_DISABLE 0b0 // Default
+#define ADXMUTE_ENABLE  0b1
+
+#define AD2MUTE_REG 0x0D
+#define AD2MUTE_MASK BIT_MASK(1, 6)
+
+#define AD1MUTE_REG 0x0D
+#define AD1MUTE_MASK BIT_MASK(1, 5)
+
+// ---- ADxHPFN Constants ----
+// ADCx DC Offset Cancel HPF Enable
+
+#define ADXHPF_ENABLE 0b0 // Default
+#define ADXHPF_DISABLE 0b1
+
+#define AD2HPFN_REG 0x0D
+#define AD2HPFN_MASK BIT_MASK(1, 2)
+
+#define AD1HPFN_REG 0x0D
+#define AD1HPFN_MASK BIT_MASK(1, 1)
+
+// *--------------------------------------------------------
+// *
+// * DACx xch Digital Volume
+// *
+// *--------------------------------------------------------
+#define REG_0E_INIT 0x18
+#define REG_0F_INIT 0x18
+#define REG_10_INIT 0x18
+#define REG_11_INIT 0x18
+
+// ---- VOLDAxx Constants ----
+// DAC Digital Volume Setting
+
+// 00h is +12 db, FEh is -115 db, FFh is -∞ db
+// Step size is 0.5 dB
+
+#define VOLDAXX_VOLUME(x) ((x) <= -115.0f ? 0xFEU : \
+                          (x) >= 12.0f ? 0x00U : \
+                          (0xFEU - (unsigned int)(((x) + 115.0f) * 2.0f + 0.5f)))
+
+#define VOLDAXX_VOLUME_MINUS_INFINITY 0xFF // -∞ dB
+
+#define VOLDAXX_VOLUME_MAX 12.0f // +12 dB
+#define VOLDAXX_VOLUME_MIN -115.0f // -115 dB
+#define VOLDAXX_VOLUME_STEP 0.5f // dB
+
+#define VOLDAXX_VOLUME_MIN_REG 0xFE // -115 dB
+#define VOLDAXX_VOLUME_MAX_REG 0x00 // +12 dB
+#define VOLDAXX_VOLUME_DEFAULT 0x18 // 0 dB
+
+#define VOLDA1L_REG 0x0E
+#define VOLDA1L_MASK BIT_MASK(8, 0)
+
+#define VOLDA1R_REG 0x0F
+#define VOLDA1R_MASK BIT_MASK(8, 0)
+
+#define VOLDA2L_REG 0x10
+#define VOLDA2L_MASK BIT_MASK(8, 0)
+
+#define VOLDA2R_REG 0x11
+#define VOLDA2R_MASK BIT_MASK(8, 0)
+
+// *--------------------------------------------------------
+// *
+// * DAC Input Select Setting
+// *
+// *--------------------------------------------------------
+#define REG_12_INIT 0x04
+
+// ---- DACxSEL Constants ----
+// DACx source multiplexer setting
+
+#define DACXSEL_SDIN1 0b00 // Default for DAC1
+#define DACXSEL_SDIN2 0b01 // Default for DAC2
+#define DACXSEL_SDOUT1 0b10
+#define DACXSEL_SDOUT2 0b11
+
+#define DAC2SEL_REG 0x12
+#define DAC2SEL_MASK BIT_MASK(2, 2)
+
+#define DAC1SEL_REG 0x12
+#define DAC1SEL_MASK BIT_MASK(2, 0)
+
+// *--------------------------------------------------------
+// *
+// * DAC De-Emphasis Setting
+// *
+// *--------------------------------------------------------
+#define REG_13_INIT 0x05
+
+// ---- DEMx Constants ----
+// De-emphasis Filter Control
+
+#define DEMX_44_1KHZ 0b00
+#define DEMX_OFF 0b01 // Default
+#define DEMX_48KHZ 0b10
+#define DEMX_32KHZ 0b11
+
+#define DEM2_REG 0x13
+#define DEM2_MASK BIT_MASK(2, 2)
+
+#define DEM1_REG 0x13
+#define DEM1_MASK BIT_MASK(2, 0)
+
+// *--------------------------------------------------------
+// *
+// * DAC Mute & Filter Setting
+// *
+// *--------------------------------------------------------
+#define REG_14_INIT 0x00
+
+// ---- ATSPDA Constants ----
+
+#define ATSPDA_ATT_4 0b0 // Default
+#define ATSPDA_ATT_16 0b1
+
+#define ATSPDA_REG 0x14
+#define ATSPDA_MASK BIT_MASK(1, 7)
+
+// ---- DAxMUTE Constants ----
+// DACx Soft Mute Enable
+
+#define DAXMUTE_DISABLE 0b0 // Default
+#define DAXMUTE_ENABLE  0b1
+
+#define DA2MUTE_REG 0x0E
+#define DA2MUTE_MASK BIT_MASK(1, 5)
+
+#define DA1MUTE_REG 0x0E
+#define DA1MUTE_MASK BIT_MASK(1, 4)
+
+// ---- DAxSD Constants ----
+// DACX Digital Filter Selection (Short Delay on vs off)
+
+#define DAXSD_SHORT_DELAY_OFF 0b0
+#define DAXSD_SHORT_DELAY_ON  0b1  // Default
+
+#define DA2SD_REG 0x14
+#define DA2SD_MASK BIT_MASK(1, 3)
+
+#define DA1SD_REG 0x14
+#define DA1SD_MASK BIT_MASK(1, 1)
+
+// ---- DAxSL Constants ----
+// DACX Digital Filter Selection (Sharp Roll-off vs Slow Roll-off)
+
+#define DAXSL_SHARP_ROLL_OFF 0b0  // Default
+#define DAXSL_SLOW_ROLL_OFF 0b1
+
+#define DA2SL_REG 0x14
+#define DA2SL_MASK BIT_MASK(1, 2)
+
+#define DA1SL_REG 0x14
+#define DA1SL_MASK BIT_MASK(1, 0)
