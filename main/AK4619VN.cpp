@@ -97,13 +97,14 @@ AK4619VN::~AK4619VN() {
 uint8_t AK4619VN::readRegister(uint8_t reg) {
     DEBUG_LOG("Reading register 0x%02X", reg);
     
-    // For AK4619VN, we need to send command + address, then receive data
-    // Format: [CMD][ADDR] -> [DATA]
-    uint8_t tx_data[2] = {READ_COMMAND_CODE, reg};
-    uint8_t rx_data[2] = {0};
+    // AK4619VN SPI read format: [CMD][ADDR_HIGH][ADDR_LOW] -> [DATA]
+    // CMD=0x43, ADDR_HIGH=0x00, ADDR_LOW=register_address
+    // Need 4-byte transaction due to SPI shift register behavior
+    uint8_t tx_data[4] = {READ_COMMAND_CODE, 0x00, reg, 0x00};
+    uint8_t rx_data[4] = {0};
     
     spi_transaction_t trans = {
-        .length = 16,        // 2 bytes total transaction
+        .length = 32,        // 4 bytes total transaction
         .tx_buffer = tx_data,
         .rx_buffer = rx_data
     };
@@ -114,9 +115,15 @@ uint8_t AK4619VN::readRegister(uint8_t reg) {
         return 0xFF; // Return error value
     }
     
-    // The received data is in the second byte
-    uint8_t data = rx_data[1];
-    DEBUG_LOG("Register 0x%02X = 0x%02X", reg, data);
+    // Log the full response to understand the protocol
+    DEBUG_LOG("TX: [0x%02X][0x%02X][0x%02X][0x%02X]", 
+              tx_data[0], tx_data[1], tx_data[2], tx_data[3]);
+    DEBUG_LOG("RX: [0x%02X][0x%02X][0x%02X][0x%02X]", 
+              rx_data[0], rx_data[1], rx_data[2], rx_data[3]);
+    
+    // The register data should be in the last byte due to SPI timing
+    uint8_t data = rx_data[3];
+    DEBUG_LOG("Register 0x%02X = 0x%02X (from byte 3)", reg, data);
     return data;
 }
 
