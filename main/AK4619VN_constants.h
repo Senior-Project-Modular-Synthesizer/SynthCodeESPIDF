@@ -73,7 +73,7 @@
 
 // ---- DCF Constants ----
 
-#define DCF_STEREO_MODE_I2S 0b000 // Default
+#define DCF_STEREO_MODE_I2S 0b000 // Default-
 #define DCF_STEREO_MODE_MSB 0b101
 #define DCF_STEREO_MODE_PCM_SHORT 0b110
 #define DCF_STEREO_MODE_PCM_LONG 0b111

@@ -31,11 +31,7 @@ extern "C" void app_main(void)
         ESP_LOGI(TAG, "✓ AK4619VN codec initialized successfully!");
         ESP_LOGI(TAG, "✓ SPI communication appears to be working");
         
-        // Keep the application running
-        while (1) {
-            ESP_LOGI(TAG, "Codec test running... (every 10 seconds)");
-            vTaskDelay(pdMS_TO_TICKS(10000));
-        }
+        codec->simple_loop();
         
         // Cleanup codec (though we never reach here in this infinite loop)
         delete codec;

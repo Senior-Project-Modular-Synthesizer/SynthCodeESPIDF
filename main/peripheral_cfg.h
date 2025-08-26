@@ -22,7 +22,7 @@
 #define PIN_NUM_CODEC_RX_DUMMY GPIO_NUM_20 // Need to provide two pins for I2S RX, one for data and one is unused
 #define PIN_NUM_CODEC_TX_DUMMY GPIO_NUM_21 // Need to provide two pins for I2S TX, one for data and one is unused
 
-#define FREQ_96KHZ 1 // Select between 48kHz and 96kHz
+#define FREQ_96KHZ 0 // Select between 48kHz and 96kHz
 
 #if FREQ_96KHZ
 #define I2S_SAMPLE_RATE 96000
