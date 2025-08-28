@@ -8,7 +8,9 @@
     "ranges": "cpp",
     "span": "cpp",
     "cstdint": "cpp",
-    "compare": "cpp"
+    "compare": "cpp",
+    "algorithm": "cpp",
+    "format": "cpp"
   },
   "idf.customExtraVars": {
     "IDF_TARGET": "esp32s3"

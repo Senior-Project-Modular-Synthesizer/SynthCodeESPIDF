@@ -17,7 +17,6 @@ static const char* TAG = "AK4619VN";
 
 // Debug macros - set to 1 to enable debug output
 #define DEBUG_AK4619VN 1
-
 #if DEBUG_AK4619VN
 #define DEBUG_LOG(format, ...) ESP_LOGI(TAG, "[DEBUG] " format, ##__VA_ARGS__)
 #define DEBUG_CHECKPOINT(msg) ESP_LOGI(TAG, "[CHECKPOINT] %s", msg)
@@ -228,15 +227,15 @@ void init_i2s(i2s_chan_handle_t* tx_chan, i2s_chan_handle_t* rx_chan) {
             .bclk_div = 8
         },
         .slot_cfg = {
-            .data_bit_width = I2S_DATA_BIT_WIDTH_32BIT,
+            .data_bit_width = I2S_DATA_BIT_WIDTH_24BIT,
             .slot_bit_width = I2S_SLOT_BIT_WIDTH_32BIT,
-            .slot_mode = I2S_SLOT_MODE_STEREO,
+            .slot_mode = I2S_SLOT_MODE_MONO,
             .slot_mask = (i2s_tdm_slot_mask_t)(I2S_TDM_SLOT0 | I2S_TDM_SLOT1 | I2S_TDM_SLOT2 | I2S_TDM_SLOT3),
-            .ws_width = 32,
+            .ws_width = 64,
             .ws_pol = false,
             .bit_shift = false,
             .left_align = true,
-            .big_endian = false,
+            .big_endian = true,
             .bit_order_lsb = false,
             .skip_mask = false,
             .total_slot = 4
@@ -296,7 +295,7 @@ void init_i2s(i2s_chan_handle_t* tx_chan, i2s_chan_handle_t* rx_chan) {
 
 void AK4619VN::simple_loop() {
     esp_err_t ret;  
-    #define EXAMPLE_BUFF_SIZE 2048
+    #define EXAMPLE_BUFF_SIZE (512 * 8 * 3)
     uint8_t *r_buf = (uint8_t *)calloc(1, EXAMPLE_BUFF_SIZE);
     assert(r_buf); // Check if r_buf allocation success
     size_t r_bytes = 0;
@@ -318,8 +317,6 @@ void AK4619VN::simple_loop() {
     vTaskDelay(pdMS_TO_TICKS(100));
     while (1) {
         if (i2s_channel_read(rx_chan, r_buf, EXAMPLE_BUFF_SIZE, &r_bytes, 1000) == ESP_OK) {
-            //printf("Read Task: i2s read %d bytes\n", r_bytes);
-            // Check for nonzero
             int num_nonzero = 0;
             for (int i = 0; i < r_bytes; i++) {
                 if (r_buf[i] != 0) {
@@ -327,17 +324,36 @@ void AK4619VN::simple_loop() {
                 }
             }
             if (num_nonzero > 0) {
-                printf("Read Task: i2s read %d bytes (%d nonzero)\n", r_bytes, num_nonzero);
-                // Print out first 4 ints (32 bits/4 bytes)
-                for (int i = 0; i < 16 && i < r_bytes; i += 4) {
-                    int new_sample = (r_buf[i] << 24) | (r_buf[i + 1] << 16) | (r_buf[i + 2] << 8) | r_buf[i + 3];
-                    printf("Sample %d: %d\n", i / 4, new_sample >> 8);
+                // Average up channel 1 assuming width is 3 bytes
+                int64_t sum = 0;
+                for (int i = 0; i < r_bytes; i += 3 * 4) {
+                    int32_t sample = (r_buf[i] << 16) | (r_buf[i + 1] << 8) | r_buf[i + 2];
+                    // Sign extend if negative
+                    if (sample & 0x400000) {
+                        sample |= 0xFF800000;
+                    }
+
+                    // Convert sample to 64 bit
+                    int64_t sample_64 = (int64_t)sample;
+                    sum += sample_64;
                 }
+                int64_t avg = sum / (r_bytes / 12);
+                printf("Average (Ch1, 24b): 0x%06llX (%lld)\n", avg, avg);
+                // Average up channel 1 assuming width is 4 bytes
+                // sum = 0;
+                // for (int i = 0; i < r_bytes; i += 4 * 4) {
+                //     uint32_t sample =  (r_buf[i + 1] << 16) | (r_buf[i + 2] << 8) | r_buf[i + 3];
+                //     sum += sample;
+                // }
+                // avg = sum / (r_bytes / 4);
+                //printf("Average (Ch1, 32b): 0x%06llX (%lld)\n", avg & 0xFFFFFF, avg);
+
             }
+
         } else {
             printf("Read Task: i2s read failed\n");
         }
-        vTaskDelay(pdMS_TO_TICKS(200));
+        //vTaskDelay(pdMS_TO_TICKS(200));
     }
 }
 
@@ -353,13 +369,19 @@ void AK4619VN::configure_codec() {
     write_setting(DSL_REG, DSL_32_BIT, DSL_WIDTH, DSL_POS);
 
     // BICK Edge Setting (POTENTIAL ERROR)
-    write_setting(BCKP_REG, BCKP_RISING_EDGE, BCKP_WIDTH, BCKP_POS);
+    write_setting(BCKP_REG, BCKP_FALLING_EDGE, BCKP_WIDTH, BCKP_POS);
 
     // Set Slow Mode
     write_setting(SDOPH_REG, SDOPH_SLOW_MODE, SDOPH_WIDTH, SDOPH_POS);
 
     // Slot length (POTENTIAL ERROR)
-    write_setting(SLOT_REG, SLOT_SLOT_LENGTH_BASIS, SLOT_WIDTH, SLOT_POS);
+    write_setting(SLOT_REG,  SLOT_SLOT_LENGTH_BASIS, SLOT_WIDTH, SLOT_POS);
+    
+    // Volume
+    write_setting(VOLAD1L_REG, 0x30, VOLAD1L_WIDTH, VOLAD1L_POS);
+    write_setting(VOLAD1R_REG, 0x30, VOLAD1R_WIDTH, VOLAD1R_POS);
+    write_setting(VOLAD2L_REG, 0x30, VOLAD2L_WIDTH, VOLAD2L_POS);
+    write_setting(VOLAD2R_REG, 0x30, VOLAD2R_WIDTH, VOLAD2R_POS);
 
     // Word Lengths
     // (Remember every "packet" is 32 bits but the actual data may not cover it all)
@@ -393,8 +415,8 @@ void AK4619VN::configure_codec() {
     write_setting(AD1MUTE_REG, ADXMUTE_DISABLE, AD1MUTE_WIDTH, AD1MUTE_POS);
 
     // High Pass Filter
-    write_setting(AD2HPFN_REG, ADXHPF_ENABLE, AD2HPFN_WIDTH, AD2HPFN_POS);
-    write_setting(AD1HPFN_REG, ADXHPF_ENABLE, AD1HPFN_WIDTH, AD1HPFN_POS);
+    write_setting(AD2HPFN_REG, ADXHPF_DISABLE, AD2HPFN_WIDTH, AD2HPFN_POS);
+    write_setting(AD1HPFN_REG, ADXHPF_DISABLE, AD1HPFN_WIDTH, AD1HPFN_POS);
 
     // DACXSEL (POTENTIAL ERROR) (Idk what to do cuz tdm)
 
