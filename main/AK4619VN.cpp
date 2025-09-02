@@ -9,6 +9,7 @@
 #include "peripheral_cfg.h"
 #include "AK4619VN_constants.h"
 #include "esp_log.h"
+#include "math.h"
 
 #define READ_COMMAND_CODE 0b01000011
 #define WRITE_COMMAND_CODE 0b11000011
@@ -327,18 +328,23 @@ void AK4619VN::simple_loop() {
     //         printf("Read Task: i2s read failed\n");
     //     }
     //     //vTaskDelay(pdMS_TO_TICKS(200));
-    }
+    // }
 
     // Output a sine wave
     while (1) {
-        // Generate sin wave
+        // Generate signed sin wave
         for (int i = 0; i < SAMPLE_COUNT; i++) {
             float phase = (float)i / SAMPLE_COUNT;
-            int32_t sample = (int32_t)(sin(phase * 2 * M_PI) * 0x7FFFFF); // 24-bit max amplitude
+            int64_t sample = (int64_t)(sin(phase * 2 * M_PI) * 0x3FFFFF); // 24-bit max amplitude
             r_buf[i * 3]     = (sample >> 16) & 0xFF; // MSB
             r_buf[i * 3 + 1] = (sample >> 8) & 0xFF;
             r_buf[i * 3 + 2] = sample & 0xFF;        // LSB
         }
+        // Send buffer to I2S
+        size_t bytes_written;
+        ret = i2s_channel_write(tx_chan, r_buf, BUFF_SIZE, &bytes_written, 1000);
+        ESP_ERROR_CHECK(ret);
+        ESP_LOGI(TAG, "Wrote %d bytes to I2S", bytes_written);
     }
 }
 
@@ -360,7 +366,7 @@ void AK4619VN::configure_codec() {
     write_setting(SDOPH_REG, SDOPH_SLOW_MODE, SDOPH_WIDTH, SDOPH_POS);
 
     // Slot length (POTENTIAL ERROR)
-    write_setting(SLOT_REG,  SLOT_SLOT_LENGTH_BASIS, SLOT_WIDTH, SLOT_POS);
+    write_setting(SLOT_REG,  SLOT_LRCK_EDGE_BASIS, SLOT_WIDTH, SLOT_POS);
     
     // Volume
     write_setting(VOLAD1L_REG, 0x30, VOLAD1L_WIDTH, VOLAD1L_POS);
@@ -370,7 +376,7 @@ void AK4619VN::configure_codec() {
 
     // Word Lengths
     // (Remember every "packet" is 32 bits but the actual data may not cover it all)
-    write_setting(DIDL_REG, DIDL_32_BIT, DIDL_WIDTH, DIDL_POS);
+    write_setting(DIDL_REG, DIDL_24_BIT, DIDL_WIDTH, DIDL_POS);
     write_setting(DODL_REG, DODL_24_BIT, DODL_WIDTH, DODL_POS);
 
     // Master Frequency
@@ -422,61 +428,5 @@ void AK4619VN::configure_codec() {
 
     write_setting(DA2SL_REG, DAXSL_SHARP_ROLL_OFF, DA2SL_WIDTH, DA2SL_POS);
     write_setting(DA1SL_REG, DAXSL_SHARP_ROLL_OFF, DA1SL_WIDTH, DA1SL_POS);
-
-
-
-}
-
-/*
-* Returns the number of samples the block can buffer.
-*
-* - The returned value is always a power of 2.
-* - This represents the number of leeway (each containing 4 samples, one per channel).
-*/
-int AK4619VN::size() {
-
-}
-
-/*
-* Pushes a sample to the buffer.
-* 
-* - Samples are in floating-point format in the range [-1.0, 1.0]
-* - This function does not perform bounds checking.
-* - This function may block if the buffer is full.
-*/
-QuadSample AK4619VN::nextSample() {
-
-}
-
-/*
-* Pushes an int sample to the buffer.
-* 
-* Sample format is unspecified because it is up to the actual chip
-* As such, this format has no garunteed bit width beacuse it is up to the actual chip
-*/
-QuadIntSample AK4619VN::nextIntSample() {
-
-}
-
-/*
-* Starts the buffer.
-* This is a non-blocking operation which allows the UI to continue running while the buffer fills itself.
-* It will be called once so it is the responsibility of the implementation to ensure that the buffer is continued to be filled.
-*/
-void AK4619VN::start() {
-
-}
-
-/*
-* Stops the buffer and whatever tasks it's running.
-*/
-void AK4619VN::stop() {
-
-}
-
-/*
-* Returns true if the buffer ran into an unrecoverable error and must be restarted.
-*/
-bool AK4619VN::errored() {
 
 }
