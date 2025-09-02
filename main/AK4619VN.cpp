@@ -15,6 +15,8 @@
 
 static const char* TAG = "AK4619VN";
 
+#define BUFF_SIZE 1024
+
 // Debug macros - set to 1 to enable debug output
 #define DEBUG_AK4619VN 1
 #if DEBUG_AK4619VN
@@ -58,7 +60,7 @@ AK4619VN::AK4619VN() {
     DEBUG_CHECKPOINT("Power-up sequence completed");
 
     DEBUG_LOG("Initializing SPI interface");
-    init_spi(&this->spi);
+    init_spi();
 
     // Loop through first 16 registers and read from them
     DEBUG_LOG("Reading initial register values");
@@ -74,7 +76,7 @@ AK4619VN::AK4619VN() {
     DEBUG_CHECKPOINT("SPI initialization completed");
     
     DEBUG_LOG("Initializing I2S interface");
-    init_i2s(&this->tx_chan, &this->rx_chan);
+    init_i2s();
     DEBUG_CHECKPOINT("I2S initialization completed");
     
     DEBUG_CHECKPOINT("AK4619VN initialization completed successfully");
@@ -174,7 +176,7 @@ uint16_t AK4619VN::write_setting(uint8_t reg, uint8_t value, uint8_t width, uint
 
 // (while it is kept “L”). The data is in MSB first format.
 // https://www.akm.com/content/dam/documents/products/audio/audio-codec/ak4619vn/ak4619vn-en-datasheet.pdf#%5B%7B%22num%22%3A523%2C%22gen%22%3A0%7D%2C%7B%22name%22%3A%22XYZ%22%7D%2C54%2C769%2C0%5D
-void init_spi(spi_device_handle_t* spi) {
+void AK4619VN::init_spi() {
     DEBUG_CHECKPOINT("Starting SPI initialization");
     
     esp_err_t ret;
@@ -186,7 +188,7 @@ void init_spi(spi_device_handle_t* spi) {
     };
 
     DEBUG_LOG("Adding SPI device to bus");
-    ret = spi_bus_add_device(SPI_HOST, &devcfg, spi);
+    ret = spi_bus_add_device(SPI_HOST, &devcfg, &spi);
     ESP_ERROR_CHECK(ret);
 
     DEBUG_LOG("Sending SPI dummy command sequence");
@@ -199,26 +201,26 @@ void init_spi(spi_device_handle_t* spi) {
         .rx_buffer = NULL
     };
     
-    ret = spi_device_transmit(*spi, &dummy_trans);
+    ret = spi_device_transmit(spi, &dummy_trans);
     ESP_ERROR_CHECK(ret);
     
     DEBUG_CHECKPOINT("SPI initialization completed successfully");
 }
 
-void init_i2s(i2s_chan_handle_t* tx_chan, i2s_chan_handle_t* rx_chan) {
+void AK4619VN::init_i2s() {
     DEBUG_CHECKPOINT("Starting I2S initialization");
     
     esp_err_t ret;
     DEBUG_LOG("Creating I2S channels");
-    // i2s_chan_config_t tx_chan_cfg = I2S_CHANNEL_DEFAULT_CONFIG(I2S_NUM_AUTO, I2S_ROLE_MASTER);
-    // ESP_ERROR_CHECK(i2s_new_channel(&tx_chan_cfg, tx_chan, NULL));
     i2s_chan_config_t rx_chan_cfg = I2S_CHANNEL_DEFAULT_CONFIG(I2S_NUM_AUTO, I2S_ROLE_MASTER);
-    ESP_ERROR_CHECK(i2s_new_channel(&rx_chan_cfg, NULL, rx_chan));
+    ESP_ERROR_CHECK(i2s_new_channel(&rx_chan_cfg, NULL, &rx_chan));
+    i2s_chan_config_t tx_chan_cfg = I2S_CHANNEL_DEFAULT_CONFIG(I2S_NUM_AUTO, I2S_ROLE_MASTER);
+    ESP_ERROR_CHECK(i2s_new_channel(&tx_chan_cfg, &tx_chan, NULL));
 
     DEBUG_LOG("Sample rate: %d", I2S_SAMPLE_RATE);
 
     DEBUG_LOG("Configuring I2S TDM mode");
-    i2s_tdm_config_t rx_cfg = {
+    i2s_tdm_config_t i2s_config = {
         .clk_cfg = {
             .sample_rate_hz = I2S_SAMPLE_RATE,
             .clk_src = I2S_CLK_SRC_DEFAULT,
@@ -244,7 +246,7 @@ void init_i2s(i2s_chan_handle_t* tx_chan, i2s_chan_handle_t* rx_chan) {
             .mclk = PIN_NUM_CODEC_MCLK,
             .bclk = PIN_NUM_CODEC_BCLK,
             .ws = PIN_NUM_CODEC_WS,
-            .dout = PIN_NUM_CODEC_RX_DUMMY,
+            .dout = PIN_NUM_CODEC_TX,
             .din = PIN_NUM_CODEC_RX,
             .invert_flags = {
                 .mclk_inv = false,
@@ -254,43 +256,45 @@ void init_i2s(i2s_chan_handle_t* tx_chan, i2s_chan_handle_t* rx_chan) {
         }
     };
 
-    // i2s_tdm_config_t tx_cfg = {
-    //     .clk_cfg = I2S_TDM_CLK_DEFAULT_CONFIG(I2S_SAMPLE_RATE),
-    //     .slot_cfg = {
-    //         .data_bit_width = I2S_DATA_BIT_WIDTH_32BIT,
-    //         .slot_bit_width = I2S_SLOT_BIT_WIDTH_32BIT,
-    //         .slot_mode = I2S_SLOT_MODE_STEREO,
-    //         .slot_mask = (i2s_tdm_slot_mask_t)(I2S_TDM_SLOT0 | I2S_TDM_SLOT1 | I2S_TDM_SLOT2 | I2S_TDM_SLOT3),
-    //         .ws_width = I2S_TDM_AUTO_WS_WIDTH,
-    //         .ws_pol = false,
-    //         .bit_shift = false,
-    //         .left_align = true,
-    //         .big_endian = false,
-    //         .bit_order_lsb = false,
-    //         .skip_mask = false,
-    //         .total_slot = I2S_TDM_AUTO_SLOT_NUM
-    //     },
-    //     .gpio_cfg = {
-    //         .mclk = GPIO_NUM_47,
-    //         .bclk = GPIO_NUM_36,
-    //         .ws = GPIO_NUM_35,
-    //         .dout = PIN_NUM_CODEC_TX,
-    //         .din = PIN_NUM_CODEC_TX_DUMMY,
-    //         .invert_flags = {
-    //             .mclk_inv = false,
-    //             .bclk_inv = false,
-    //             .ws_inv   = false,
-    //         },
-    //     }
-    // };
-
-    ret = i2s_channel_init_tdm_mode(*rx_chan, &rx_cfg);
+    ret = i2s_channel_init_tdm_mode(i2s_chan, &i2s_config);
     ESP_ERROR_CHECK(ret);
-    //ret = i2s_channel_init_tdm_mode(*tx_chan, &tx_cfg);
-    //ESP_ERROR_CHECK(ret);
-    
     DEBUG_LOG("Enabling I2S channels");    
+
+    ret = i2s_channel_enable(i2s_chan);
+    ESP_ERROR_CHECK(ret);
+
+    //wait 100 ms
+    vTaskDelay(pdMS_TO_TICKS(100));
+        // Power up adcs and dacs
+    write_setting(PMAD2_REG, PMADx_POWER_UP, PMAD2_WIDTH, PMAD2_POS);
+    write_setting(PMAD1_REG, PMADx_POWER_UP, PMAD1_WIDTH, PMAD1_POS);
+    write_setting(PMDA2_REG, PMDAX_POWER_UP, PMDA2_WIDTH, PMDA2_POS);
+    write_setting(PMDA1_REG, PMDAX_POWER_UP, PMDA1_WIDTH, PMDA1_POS);
+    write_setting(RSTN_REG, RSTN_NORMAL, RSTN_WIDTH, RSTN_POS);
+    vTaskDelay(pdMS_TO_TICKS(100));
+
     DEBUG_CHECKPOINT("I2S initialization completed successfully");
+}
+
+
+void calculate_average(uint8_t* buf, uint64_t buff_size) {
+    int64_t sum = 0;
+    int count = 0;
+
+    for (uint64_t i = 0; i < buff_size; i += 3) {
+        int32_t sample = (buf[i] << 16) | (buf[i + 1] << 8) | buf[i + 2];
+        // Sign extend if negative
+        if (sample & 0x400000) {
+            sample |= 0xFF800000;
+        }
+        sum += sample;
+        count++;
+    }
+
+    if (count > 0) {
+        int64_t avg = sum / count;
+        printf("Average (Ch1, 24b): 0x%06llX (%lld)\n", avg, avg);
+    }
 }
 
 void AK4619VN::simple_loop() {
@@ -303,58 +307,25 @@ void AK4619VN::simple_loop() {
     // Enable i2s
     DEBUG_LOG("Enabling I2S channels");
  
-    ret = i2s_channel_enable(rx_chan);
-    ESP_ERROR_CHECK(ret);
+ 
+    // while (1) {
+    //     if (i2s_channel_read(rx_chan, r_buf, EXAMPLE_BUFF_SIZE, &r_bytes, 1000) == ESP_OK) {
+    //         int num_nonzero = 0;
+    //         for (int i = 0; i < r_bytes; i++) {
+    //             if (r_buf[i] != 0) {
+    //                 num_nonzero++;
+    //             }
+    //         }
+    //         if (num_nonzero > 0) {
+    //             // Average up channel 1 assuming width is 3 bytes
+    //             calculate_average(r_buf, r_bytes);
+    //         }
 
-    //wait 100 ms
-    vTaskDelay(pdMS_TO_TICKS(100));
-        // Power up adcs and dacs
-    write_setting(PMAD2_REG, PMADx_POWER_UP, PMAD2_WIDTH, PMAD2_POS);
-    write_setting(PMAD1_REG, PMADx_POWER_UP, PMAD1_WIDTH, PMAD1_POS);
-    write_setting(PMDA2_REG, PMDAX_POWER_UP, PMDA2_WIDTH, PMDA2_POS);
-    write_setting(PMDA1_REG, PMDAX_POWER_UP, PMDA1_WIDTH, PMDA1_POS);
-    write_setting(RSTN_REG, RSTN_NORMAL, RSTN_WIDTH, RSTN_POS);
-    vTaskDelay(pdMS_TO_TICKS(100));
-    while (1) {
-        if (i2s_channel_read(rx_chan, r_buf, EXAMPLE_BUFF_SIZE, &r_bytes, 1000) == ESP_OK) {
-            int num_nonzero = 0;
-            for (int i = 0; i < r_bytes; i++) {
-                if (r_buf[i] != 0) {
-                    num_nonzero++;
-                }
-            }
-            if (num_nonzero > 0) {
-                // Average up channel 1 assuming width is 3 bytes
-                int64_t sum = 0;
-                for (int i = 0; i < r_bytes; i += 3 * 4) {
-                    int32_t sample = (r_buf[i] << 16) | (r_buf[i + 1] << 8) | r_buf[i + 2];
-                    // Sign extend if negative
-                    if (sample & 0x400000) {
-                        sample |= 0xFF800000;
-                    }
-
-                    // Convert sample to 64 bit
-                    int64_t sample_64 = (int64_t)sample;
-                    sum += sample_64;
-                }
-                int64_t avg = sum / (r_bytes / 12);
-                printf("Average (Ch1, 24b): 0x%06llX (%lld)\n", avg, avg);
-                // Average up channel 1 assuming width is 4 bytes
-                // sum = 0;
-                // for (int i = 0; i < r_bytes; i += 4 * 4) {
-                //     uint32_t sample =  (r_buf[i + 1] << 16) | (r_buf[i + 2] << 8) | r_buf[i + 3];
-                //     sum += sample;
-                // }
-                // avg = sum / (r_bytes / 4);
-                //printf("Average (Ch1, 32b): 0x%06llX (%lld)\n", avg & 0xFFFFFF, avg);
-
-            }
-
-        } else {
-            printf("Read Task: i2s read failed\n");
-        }
-        //vTaskDelay(pdMS_TO_TICKS(200));
-    }
+    //     } else {
+    //         printf("Read Task: i2s read failed\n");
+    //     }
+    //     //vTaskDelay(pdMS_TO_TICKS(200));
+    // }
 }
 
 void AK4619VN::configure_codec() {

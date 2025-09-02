@@ -31,8 +31,17 @@ extern "C" void app_main(void)
         ESP_LOGI(TAG, "✓ AK4619VN codec initialized successfully!");
         ESP_LOGI(TAG, "✓ SPI communication appears to be working");
         
-        codec->simple_loop();
-        
+        // codec->simple_loop();
+        // Create input task
+        xTaskCreate([](void* arg) {
+            AK4619VN* codec = static_cast<AK4619VN*>(arg);
+            codec->input_task();
+        }, "input_task", 4096, codec, 5, nullptr);
+        xTaskCreate([](void* arg) {
+            AK4619VN* codec = static_cast<AK4619VN*>(arg);
+            codec->output_task();
+        }, "output_task", 4096, codec, 5, nullptr);
+        while(1){}
         // Cleanup codec (though we never reach here in this infinite loop)
         delete codec;
     } else {
