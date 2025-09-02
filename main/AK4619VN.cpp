@@ -15,7 +15,7 @@
 
 static const char* TAG = "AK4619VN";
 
-#define BUFF_SIZE 1024
+#define SAMPLE_COUNT 1024
 
 // Debug macros - set to 1 to enable debug output
 #define DEBUG_AK4619VN 1
@@ -212,10 +212,8 @@ void AK4619VN::init_i2s() {
     
     esp_err_t ret;
     DEBUG_LOG("Creating I2S channels");
-    i2s_chan_config_t rx_chan_cfg = I2S_CHANNEL_DEFAULT_CONFIG(I2S_NUM_AUTO, I2S_ROLE_MASTER);
-    ESP_ERROR_CHECK(i2s_new_channel(&rx_chan_cfg, NULL, &rx_chan));
-    i2s_chan_config_t tx_chan_cfg = I2S_CHANNEL_DEFAULT_CONFIG(I2S_NUM_AUTO, I2S_ROLE_MASTER);
-    ESP_ERROR_CHECK(i2s_new_channel(&tx_chan_cfg, &tx_chan, NULL));
+    i2s_chan_config_t chan_cfg = I2S_CHANNEL_DEFAULT_CONFIG(I2S_NUM_AUTO, I2S_ROLE_MASTER);
+    ESP_ERROR_CHECK(i2s_new_channel(&chan_cfg, &tx_chan, &rx_chan));
 
     DEBUG_LOG("Sample rate: %d", I2S_SAMPLE_RATE);
 
@@ -256,11 +254,15 @@ void AK4619VN::init_i2s() {
         }
     };
 
-    ret = i2s_channel_init_tdm_mode(i2s_chan, &i2s_config);
+    ret = i2s_channel_init_tdm_mode(tx_chan, &i2s_config);
     ESP_ERROR_CHECK(ret);
-    DEBUG_LOG("Enabling I2S channels");    
+    ret = i2s_channel_init_tdm_mode(rx_chan, &i2s_config);
+    ESP_ERROR_CHECK(ret);
+    DEBUG_LOG("Enabling I2S channels");
 
-    ret = i2s_channel_enable(i2s_chan);
+    ret = i2s_channel_enable(tx_chan);
+    ESP_ERROR_CHECK(ret);
+    ret = i2s_channel_enable(rx_chan);
     ESP_ERROR_CHECK(ret);
 
     //wait 100 ms
@@ -284,8 +286,8 @@ void calculate_average(uint8_t* buf, uint64_t buff_size) {
     for (uint64_t i = 0; i < buff_size; i += 3) {
         int32_t sample = (buf[i] << 16) | (buf[i + 1] << 8) | buf[i + 2];
         // Sign extend if negative
-        if (sample & 0x400000) {
-            sample |= 0xFF800000;
+        if (sample & 0x800000) {
+            sample |= 0xFF000000;
         }
         sum += sample;
         count++;
@@ -299,17 +301,17 @@ void calculate_average(uint8_t* buf, uint64_t buff_size) {
 
 void AK4619VN::simple_loop() {
     esp_err_t ret;  
-    #define EXAMPLE_BUFF_SIZE (512 * 8 * 3)
-    uint8_t *r_buf = (uint8_t *)calloc(1, EXAMPLE_BUFF_SIZE);
+    #define BUFF_SIZE (SAMPLE_COUNT * 3)
+    uint8_t *r_buf = (uint8_t *)calloc(1, BUFF_SIZE);
     assert(r_buf); // Check if r_buf allocation success
     size_t r_bytes = 0;
 
     // Enable i2s
     DEBUG_LOG("Enabling I2S channels");
  
- 
+    // Input and print out
     // while (1) {
-    //     if (i2s_channel_read(rx_chan, r_buf, EXAMPLE_BUFF_SIZE, &r_bytes, 1000) == ESP_OK) {
+    //     if (i2s_channel_read(rx_chan, r_buf, BUFF_SIZE, &r_bytes, 1000) == ESP_OK) {
     //         int num_nonzero = 0;
     //         for (int i = 0; i < r_bytes; i++) {
     //             if (r_buf[i] != 0) {
@@ -325,7 +327,19 @@ void AK4619VN::simple_loop() {
     //         printf("Read Task: i2s read failed\n");
     //     }
     //     //vTaskDelay(pdMS_TO_TICKS(200));
-    // }
+    }
+
+    // Output a sine wave
+    while (1) {
+        // Generate sin wave
+        for (int i = 0; i < SAMPLE_COUNT; i++) {
+            float phase = (float)i / SAMPLE_COUNT;
+            int32_t sample = (int32_t)(sin(phase * 2 * M_PI) * 0x7FFFFF); // 24-bit max amplitude
+            r_buf[i * 3]     = (sample >> 16) & 0xFF; // MSB
+            r_buf[i * 3 + 1] = (sample >> 8) & 0xFF;
+            r_buf[i * 3 + 2] = sample & 0xFF;        // LSB
+        }
+    }
 }
 
 void AK4619VN::configure_codec() {
@@ -340,7 +354,7 @@ void AK4619VN::configure_codec() {
     write_setting(DSL_REG, DSL_32_BIT, DSL_WIDTH, DSL_POS);
 
     // BICK Edge Setting (POTENTIAL ERROR)
-    write_setting(BCKP_REG, BCKP_FALLING_EDGE, BCKP_WIDTH, BCKP_POS);
+    write_setting(BCKP_REG, BCKP_RISING_EDGE, BCKP_WIDTH, BCKP_POS);
 
     // Set Slow Mode
     write_setting(SDOPH_REG, SDOPH_SLOW_MODE, SDOPH_WIDTH, SDOPH_POS);

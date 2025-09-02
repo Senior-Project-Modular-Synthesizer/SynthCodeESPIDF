@@ -29,12 +29,11 @@ class AK4619VN {
         ~AK4619VN();
         // Below this line is only for development/debugging
         void simple_loop();
-        void input_task();
-        void output_task();
     private:
         // Esp Idf SPI
         spi_device_handle_t spi;
-        i2s_chan_handle_t i2s_chan;
+        i2s_chan_handle_t rx_chan;
+        i2s_chan_handle_t tx_chan;
 
         uint16_t writeRegister(uint8_t reg, uint8_t data);
         uint16_t readRegister(uint8_t reg);
