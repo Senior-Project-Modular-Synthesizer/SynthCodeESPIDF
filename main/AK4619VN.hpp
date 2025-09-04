@@ -6,6 +6,7 @@
 #include "driver/i2s_tdm.h"
 
 #include "peripheral_cfg.h"
+#include "Processor.hpp"
 
 
 enum class ADCDigitalFilterType {
