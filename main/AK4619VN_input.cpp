@@ -9,7 +9,7 @@
 * - This represents the number of leeway (each containing 4 samples, one per channel).
 */
 int AK4619VN::size() {
-    return SAMPLE_COUNT - tail;
+    return SAMPLE_COUNT;
 }
 
 /*
@@ -20,11 +20,23 @@ int AK4619VN::size() {
 * - This function may block if the buffer is full.
 */
 QuadSample AK4619VN::nextSample(const QuadSample& next) {
-    buffer[tail] = next;
-    tail = (tail + 1) % capacity;
-    isFull = false;
-
-    return next;
+    /*
+    task () {
+        while(1) {
+            start read buf1;
+            wait buf1 interrupt;
+            mark buf1 ready;
+            repeat for buf2;
+        }
+    }
+    Next sample:
+    if reading buf1 {
+        wait buf1 ready;
+        return buf1[next sample]
+    } else {
+        repeat for buf2;
+    }
+    */
 }
 
 /*
@@ -43,19 +55,21 @@ QuadIntSample AK4619VN::nextIntSample() {
 * It will be called once so it is the responsibility of the implementation to ensure that the buffer is continued to be filled.
 */
 void AK4619VN::start() {
-
+    // Free RTOS start protocol
 }
 
 /*
 * Stops the buffer and whatever tasks it's running.
 */
 void AK4619VN::stop() {
-
+    // Free RTOS stop protocol
 }
 
 /*
 * Returns true if the buffer ran into an unrecoverable error and must be restarted.
 */
 bool AK4619VN::errored() {
-
+    // try-catch (?)
+    // Catching race conditions (?)
+    return false;
 }

@@ -80,11 +80,6 @@ struct QuadIntSample {
  */
 class QuadInputBuffer {
 private:
-    QuadSample buffer[SAMPLE_COUNT];
-    size_t capacity;
-    QuadSample* head = nullptr;
-    QuadSample* tail = nullptr;
-    bool isFull = false;
 
 public:
     virtual ~QuadInputBuffer() = default;

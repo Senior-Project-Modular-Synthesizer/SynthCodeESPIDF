@@ -26,7 +26,10 @@ enum class DACDigitalFilterType {
 
 class AK4619VN : public QuadInputBuffer {
     private:
-        QuadSample buffer[SAMPLE_COUNT];
+        uint8_t buf1[3 * SAMPLE_COUNT * 4]; // * 4 - quad channel 
+                                            // * 3 - 24 bit integers
+        uint8_t buf2[3 * SAMPLE_COUNT * 4]
+
         size_t capacity = 1024;
         size_t head = 0;
         size_t = 0;
