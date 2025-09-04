@@ -24,6 +24,12 @@ enum class DACDigitalFilterType {
 };
 
 class AK4619VN : public QuadInputBuffer {
+    private:
+        QuadSample buffer[SAMPLE_COUNT];
+        size_t capacity = 1024;
+        size_t head = 0;
+        size_t = 0;
+
     public:
         AK4619VN();
         ~AK4619VN();
@@ -50,7 +56,7 @@ class AK4619VN : public QuadInputBuffer {
         * - This function does not perform bounds checking.
         * - This function may block if the buffer is full.
         */
-        QuadSample nextSample();
+        QuadSample nextSample(const QuadSample& next);
 
         /*
         * Pushes an int sample to the buffer.

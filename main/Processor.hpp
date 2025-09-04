@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#define SAMPLE_COUNT 1024
 
 /*
  * This file defines the core interfaces for a quadraphonic audio processor system.
@@ -78,6 +79,13 @@ struct QuadIntSample {
  * When we call `start()`, it will begin running asynchronously and will continously fill the buffer with samples.
  */
 class QuadInputBuffer {
+private:
+    QuadSample buffer[SAMPLE_COUNT];
+    size_t capacity;
+    QuadSample* head = nullptr;
+    QuadSample* tail = nullptr;
+    bool isFull = false;
+
 public:
     virtual ~QuadInputBuffer() = default;
 
