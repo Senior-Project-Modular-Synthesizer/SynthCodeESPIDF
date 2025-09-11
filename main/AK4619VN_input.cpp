@@ -1,7 +1,10 @@
 #include "AK4619VN.hpp"
 
-#define SAMPLE_COUNT 1024
 
+#define SAMPLE_COUNT 1024
+//StaticTask_t xTaskBuffer;
+
+// Core 0 for all buffering
 /*
 * Returns the number of samples the block can buffer.
 *
@@ -56,6 +59,7 @@ QuadIntSample AK4619VN::nextIntSample() {
 */
 void AK4619VN::start() {
     // Free RTOS start protocol
+
 }
 
 /*
