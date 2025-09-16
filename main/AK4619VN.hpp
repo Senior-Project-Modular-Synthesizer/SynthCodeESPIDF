@@ -28,11 +28,11 @@ class AK4619VN : public QuadInputBuffer {
     private:
         uint8_t buf1[3 * SAMPLE_COUNT * 4]; // * 4 - quad channel 
                                             // * 3 - 24 bit integers
-        uint8_t buf2[3 * SAMPLE_COUNT * 4]
+        uint8_t buf2[3 * SAMPLE_COUNT * 4];
 
         size_t capacity = 1024;
         size_t head = 0;
-        size_t = 0;
+        size_t tail = 0;
 
     public:
         AK4619VN();
@@ -51,7 +51,7 @@ class AK4619VN : public QuadInputBuffer {
         * - The returned value is always a power of 2.
         * - This represents the number of leeway (each containing 4 samples, one per channel).
         */
-        int size();
+        int size() const;
 
         /*
         * Pushes a sample to the buffer.
