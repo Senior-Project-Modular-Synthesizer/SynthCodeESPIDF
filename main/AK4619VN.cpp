@@ -300,7 +300,7 @@ void calculate_average(uint8_t* buf, uint64_t buff_size) {
     }
 }
 
-void AK4619VN::simple_loop() {
+void AK4619VN::simple_loop( void* pvParameters ) {
     esp_err_t ret;  
     #define BUFF_SIZE (SAMPLE_COUNT * 3)
     uint8_t *r_buf = (uint8_t *)calloc(1, BUFF_SIZE);

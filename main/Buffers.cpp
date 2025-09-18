@@ -12,6 +12,14 @@
 #include "Processor.hpp"
 
 #include "Buffers.hpp"
+#include "AK4619VN.hpp"
+
+// TODO: DECIDE MAX TIMEOUT/BLOCK TIME WHEN READING/WRITING
+//       IN START METHODS
+
+void SampleInputBuffer::simple_loop( void* pvParameters ) {
+
+}
 
 /*
 * Returns the number of samples in the current block.
@@ -50,7 +58,25 @@ QuadIntSample SampleInputBuffer::nextIntSample() {
 * It will be called once so it is the responsibility of the implementation to ensure that the buffer is continued to be filled.
 */
 void SampleInputBuffer::start() {
+    // esp_err_t ret;  
+    // #define BUF_SIZE (SAMPLE_COUNT * 3)
+    // *buf1 = (uint8_t *)calloc(1, BUF_SIZE);
+    // assert(buf1); // Check for buf1 allocation
+    // size_t buf1_bytes = 0;
+    
+ 
+    xTaskCreatePinnedToCore( simple_loop_wrapper,
+        "ReadIntoBuf",
+        configMINIMAL_STACK_SIZE,
+        NULL,
+        tskIDLE_PRIORITY + 2,
+        NULL,
+        0);
+}
 
+static void simple_loop_wrapper(void* pvParameters) {
+    SampleInputBuffer* buf = static_cast<SampleInputBuffer*>(pvParameters);
+    buf->simple_loop(pvParameters);
 }
 
 /*
@@ -66,8 +92,6 @@ void SampleInputBuffer::stop() {
 bool SampleInputBuffer::errored() const {
     return false;
 }
-
-
 
 
 /*

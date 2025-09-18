@@ -30,7 +30,7 @@ class AK4619VN {
         ~AK4619VN();
         
         // Below this line is only for development/debugging
-        void simple_loop();
+        void simple_loop( void* pvParameters );
         //void input_task();
         //void output_task();
 

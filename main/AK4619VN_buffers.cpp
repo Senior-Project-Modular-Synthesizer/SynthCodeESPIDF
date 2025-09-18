@@ -34,7 +34,7 @@ static void interruptTriggerTask( void * pvParameters )
 
 
 /*
-* Function that handles 
+* Function that handles buffer writing within a semaphore.
 */
 static void bufFunction( void * pvParameters ) 
 {
@@ -58,9 +58,7 @@ static void bufFunction( void * pvParameters )
 }
 
 /*
-* Starts the buffer.
-* This is a non-blocking operation which allows the UI to continue running while the buffer fills itself.
-* It will be called once so it is the responsibility of the implementation to ensure that the buffer is continued to be filled.
+* FreeRTOS start protocol -- starts the buffers, controls them with Task assignment and semaphores.
 */
 void start() {
     // Create semaphores to sync DMA completion
@@ -90,9 +88,9 @@ void start() {
 }
 
 /*
-* Stops the buffer and whatever tasks it's running.
+* FreeRTOS stop protocol -- stops the buffers and tasks used to control them.
 */
 void stop() {
-    // Free RTOS stop protocol
+    
 
 }

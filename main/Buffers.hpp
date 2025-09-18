@@ -12,13 +12,20 @@
 
 #include "peripheral_cfg.h"
 #include "Processor.hpp"
+#include "AK4619VN.hpp"
 
 class SampleInputBuffer : public QuadInputBuffer {
     private:
+        
 
 
     public:
-        uint8_t buf1[3 * 4 * SAMPLE_COUNT]; // * 4 - quad channel 
+        static void simple_loop_wrapper( void* pvParameters);
+
+        void simple_loop ( void* pvParameters);
+
+
+        uint8_t* buf1[3 * 4 * SAMPLE_COUNT]; // * 4 - quad channel 
                                             // * 3 - 24 bit integers
 
         /*
