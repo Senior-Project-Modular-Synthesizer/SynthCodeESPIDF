@@ -4,21 +4,26 @@
 #include "freertos/stream_buffer.h"
 #include "freertos/semphr.h"
 #include "esp_check.h"
+#include "esp_log.h"
 
 #include <array>
 #include "driver/i2s_tdm.h"
+#include "driver/i2s.h"
 
 #include "peripheral_cfg.h"
 #include "Processor.hpp"
 
 #include "Buffers.hpp"
 #include "AK4619VN.hpp"
+#include "math.h"
 
-// TODO: DECIDE MAX TIMEOUT/BLOCK TIME WHEN READING/WRITING
-//       IN START METHODS
+#define BUFF_SIZE (3 * 4 * SAMPLE_COUNT)
+#define BUFF_ALLOC (SAMPLE_COUNT * 3)
 
-void SampleInputBuffer::simple_loop( void* pvParameters ) {
 
+SampleInputBuffer::SampleInputBuffer(i2s_chan_handle_t rx_chan, i2s_tdm_config_t i2s_tdm_config) {
+    this->rx_chan = rx_chan;
+    this->i2s_tdm_config = i2s_tdm_config;
 }
 
 /*
@@ -39,7 +44,30 @@ int SampleInputBuffer::size() const {
 * - Samples are in floating-point format in the range [-1.0, 1.0]
 */
 QuadSample SampleInputBuffer::nextSample(const QuadSample& next) {
-    return QuadSample();
+    QuadSample next_sample = QuadSample();
+    
+    if (this->read_ptr < BUFF_SIZE) {
+        // while not this.buf1_ready {
+        //      continue;
+        // }
+        //next_sample.channels[read_ptr % 4] = this->buf1[this->read_ptr];
+        this->read_ptr += 1;
+        
+        if (this->read_ptr >= BUFF_SIZE) {
+            // this.buf1_ready = False
+        }
+    } else {
+        // while not buf2_ready
+        //      continue;
+        //next_sample.channels[read_ptr % 4] = this->buf2[this->read_ptr - BUFF_SIZE];
+        this->read_ptr += 1;
+        if (this->read_ptr >= (2 * BUFF_SIZE)) {
+            //self.buf2_ready = False
+            this->read_ptr = 0;
+        }
+    }
+    
+    return next_sample;
 }
 
 /*
@@ -49,7 +77,67 @@ QuadSample SampleInputBuffer::nextSample(const QuadSample& next) {
 * As such, this format has no garunteed bit width beacuse it is up to the actual chip
 */
 QuadIntSample SampleInputBuffer::nextIntSample() {
-    return QuadIntSample();
+    QuadIntSample next_sample = QuadIntSample();
+
+    if (this->read_ptr < BUFF_SIZE) {
+        // while not this.buf1_ready {
+        //      continue;
+        // }
+        // TODO: Parse this out
+        //next_sample.channels[read_ptr % 4] = (uint_sample_t) buf1[this->read_ptr];
+        this->read_ptr += 1;
+        
+        if (this->read_ptr >= BUFF_SIZE) {
+            // this.buf1_ready = False
+        }
+    } else {
+        // while not buf2_ready
+        //      continue;
+        // TODO: Parse this out
+        //next_sample.channels[read_ptr % 4] = (uint_sample_t) this->buf2[this->read_ptr - BUFF_SIZE];
+        this->read_ptr += 1;
+        if (this->read_ptr >= (2 * BUFF_SIZE)) {
+            //this.buf2_ready = False
+            this->read_ptr = 0;
+        }
+    }
+    return next_sample;
+}
+
+void SampleInputBuffer::read( void* pvParameters ) {
+    esp_err_t ret;  
+    *buf1 = (uint8_t *)calloc(1, BUFF_ALLOC);
+    assert(buf1); // Check if r_buf allocation success
+    size_t buf1_bytes = 0;
+
+    // Enable i2s
+    //DEBUG_LOG("Enabling I2S channels");
+ 
+    // Input and print out
+    for ( ;; ) {
+        // TODO: Should this be BUFF_SIZE?
+        if (i2s_channel_read(rx_chan, buf1, BUFF_ALLOC, &buf1_bytes, 1000) == ESP_OK) {
+            int num_nonzero = 0;
+            for (int i = 0; i < buf1_bytes; i++) {
+                if (buf1[i] != 0) {
+                    num_nonzero++;
+                }
+            }
+            if (num_nonzero > 0) {
+                // Average up channel 1 assuming width is 3 bytes
+                //calculate_average(buf1, buf1_bytes);
+            }
+
+        } else {
+            printf("Read Task: i2s read failed\n");
+        }
+        //vTaskDelay(pdMS_TO_TICKS(200));
+    }
+}
+
+static void read_wrapper(void* pvParameters) {
+    SampleInputBuffer* buf = static_cast<SampleInputBuffer*>(pvParameters);
+    buf->read(pvParameters);
 }
 
 /*
@@ -65,7 +153,7 @@ void SampleInputBuffer::start() {
     // size_t buf1_bytes = 0;
     
  
-    xTaskCreatePinnedToCore( simple_loop_wrapper,
+    xTaskCreatePinnedToCore( read_wrapper,
         "ReadIntoBuf",
         configMINIMAL_STACK_SIZE,
         NULL,
@@ -74,10 +162,6 @@ void SampleInputBuffer::start() {
         0);
 }
 
-static void simple_loop_wrapper(void* pvParameters) {
-    SampleInputBuffer* buf = static_cast<SampleInputBuffer*>(pvParameters);
-    buf->simple_loop(pvParameters);
-}
 
 /*
 * Stops the buffer and whatever tasks it's running.
@@ -91,6 +175,46 @@ void SampleInputBuffer::stop() {
 */
 bool SampleInputBuffer::errored() const {
     return false;
+}
+
+
+SampleOutputBuffer::SampleOutputBuffer(i2s_chan_handle_t tx_chan, i2s_tdm_config_t i2s_config) {
+    this->tx_chan = tx_chan;
+    this->i2s_tdm_config = i2s_config;
+}
+
+
+
+void SampleOutputBuffer::write ( void* pvParameters) {
+    esp_err_t ret;
+    *buf2 = (uint8_t *)calloc(1, BUFF_ALLOC);
+    assert(buf2); // Check if r_buf allocation success
+    size_t buf2_bytes = 0;
+    
+    // Output a sine wave
+    while (1) {
+        // Generate signed sin wave
+        for (int i = 0; i < SAMPLE_COUNT; i++) {
+            float phase = (float)i / SAMPLE_COUNT;
+            int64_t sample = (int64_t)(sin(phase * 2 * M_PI) * 0x3FFFFF); // 24-bit max amplitude
+            //TODO: Figure out conversion here
+            //buf2[i * 3]     = (sample >> 16) & 0xFF; // MSB
+            //buf2[i * 3 + 1] = (sample >> 8) & 0xFF;
+            //buf2[i * 3 + 2] = sample & 0xFF;        // LSB
+        }
+        // Send buffer to I2S
+        size_t bytes_written;
+        // TODO: Should BUFF_ALLOC be BUFF_SIZE?
+        ret = i2s_channel_write(tx_chan, buf2, BUFF_ALLOC, &bytes_written, 1000);
+        ESP_ERROR_CHECK(ret);
+        //ESP_LOGI(TAG, "Wrote %d bytes to I2S", bytes_written);
+    }
+}
+
+        
+static void write_wrapper ( void* pvParameters) {
+    SampleOutputBuffer* buf = static_cast<SampleOutputBuffer*>(pvParameters);
+    //buf->write(pvParameters);
 }
 
 
@@ -112,17 +236,42 @@ int SampleOutputBuffer::size() const {
 * - This function may block if the buffer is full.
 */
 void SampleOutputBuffer::pushSample(QuadSample sample) {
-    
+    if (this->read_ptr < BUFF_SIZE) {
+        while (this->buf1_ready)
+            continue;
+        //this->buf1[this->read_ptr] = (uint8_t) (sample.channels[0] * 0x7FFFFF);
+    } else {
+        while (this->buf2_ready)
+            continue;
+        //this->buf2[this->read_ptr] = (uint8_t) (sample.channels[0] * 0x7FFFFF);
+    }
 }
 
 /*
 * Pushes an int sample to the buffer.
 * 
 * Sample format is unspecified because it is up to the actual chip
-* As such, this format has no garunteed bit width beacuse it is up to the actual chip
+* As such, this format has no guaranteed bit width beacuse it is up to the actual chip
 */
 void SampleOutputBuffer::pushIntSample(QuadIntSample sample) {
-    
+    uint32_t uint_sample = sample.channels[read_ptr % 4] * 0x7FFFFF;
+
+    if (this->read_ptr < BUFF_SIZE) {
+        while (this->buf1_ready)
+            continue;
+
+        this->buf1[this->read_ptr * 3 + 0] = (uint8_t*) ((uint_sample)      & 0xFF);
+        this->buf1[this->read_ptr * 3 + 1] = (uint8_t*) ((uint_sample >> 1) & 0xFF);
+        this->buf1[this->read_ptr * 3 + 2] = (uint8_t*) ((uint_sample >> 2) & 0xFF);
+
+    } else {
+        while (this->buf2_ready)
+            continue;
+
+        this->buf2[this->read_ptr * 3 + 0] = (uint8_t*) ((uint_sample)      & 0xFF);
+        this->buf2[this->read_ptr * 3 + 1] = (uint8_t*) ((uint_sample >> 1) & 0xFF);
+        this->buf2[this->read_ptr * 3 + 2] = (uint8_t*) ((uint_sample >> 2) & 0xFF);
+    }
 }
 
 /*
@@ -131,7 +280,13 @@ void SampleOutputBuffer::pushIntSample(QuadIntSample sample) {
 * It will be called once so it is the responsibility of the implementation to ensure that the buffer is continued to be filled.
 */
 void SampleOutputBuffer::start() {
-    
+    xTaskCreatePinnedToCore( write_wrapper,
+        "ReadIntoBuf",
+        configMINIMAL_STACK_SIZE,
+        NULL,
+        tskIDLE_PRIORITY + 2,
+        NULL,
+        0);
 }
 
 /*

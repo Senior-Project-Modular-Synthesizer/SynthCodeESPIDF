@@ -16,17 +16,26 @@
 
 class SampleInputBuffer : public QuadInputBuffer {
     private:
-        
-
+        i2s_chan_handle_t rx_chan;
+        int read_ptr = 0;
+        i2s_tdm_config_t i2s_tdm_config;
 
     public:
-        static void simple_loop_wrapper( void* pvParameters);
+        SampleInputBuffer(i2s_chan_handle_t rx_chan, i2s_tdm_config_t i2s_tdm_config);
+        ~SampleInputBuffer();
 
-        void simple_loop ( void* pvParameters);
+        static void read_wrapper ( void* pvParameters);
+        void read ( void* pvParameters);
+
+        bool buf1_ready;
+        bool buf2_ready;
 
 
-        uint8_t* buf1[3 * 4 * SAMPLE_COUNT]; // * 4 - quad channel 
+        uint8_t* buf1[3 * 4 * 1]; // * 4 - quad channel 
                                             // * 3 - 24 bit integers
+        uint8_t* buf2[3 * 4 * SAMPLE_COUNT];
+
+        void default_i2s_stream_init();
 
         /*
         * Returns the number of samples in the current block.
@@ -74,11 +83,25 @@ class SampleInputBuffer : public QuadInputBuffer {
 
 class SampleOutputBuffer : public QuadOutputBuffer {
     private:
-
+        i2s_chan_handle_t tx_chan;
+        int read_ptr = 0;
+        i2s_tdm_config_t i2s_tdm_config;
 
     public:
-        uint8_t buf2[3 * 4 * SAMPLE_COUNT]; // * 4 - quad channel 
-                                            // * 3 - 24 bit integers
+        SampleOutputBuffer(i2s_chan_handle_t tx_chan, i2s_tdm_config_t i2s_config);
+        ~SampleOutputBuffer();
+
+        static void write_wrapper ( void* pvParameters);
+
+        void write ( void* pvParameters);
+
+        bool buf1_ready;
+        bool buf2_ready;
+
+
+        uint8_t* buf1[3 * 4 * SAMPLE_COUNT]; // * 4 - quad channel 
+                                             // * 3 - 24 bit integers
+        uint8_t* buf2[3 * 4 * SAMPLE_COUNT];
 
         /*
         * Returns the number of samples the block can buffer.
