@@ -85,6 +85,8 @@ QuadIntSample SampleInputBuffer::nextIntSample() {
         // }
         // TODO: Parse this out
         //next_sample.channels[read_ptr % 4] = (uint_sample_t) buf1[this->read_ptr];
+        
+
         this->read_ptr += 1;
         
         if (this->read_ptr >= BUFF_SIZE) {
@@ -268,9 +270,9 @@ void SampleOutputBuffer::pushIntSample(QuadIntSample sample) {
         while (this->buf2_ready)
             continue;
 
-        this->buf2[this->read_ptr * 3 + 0] = (uint8_t*) ((uint_sample)      & 0xFF);
-        this->buf2[this->read_ptr * 3 + 1] = (uint8_t*) ((uint_sample >> 1) & 0xFF);
-        this->buf2[this->read_ptr * 3 + 2] = (uint8_t*) ((uint_sample >> 2) & 0xFF);
+        this->buf2[(this->read_ptr - BUFF_SIZE) * 3 + 0] = (uint8_t*) ((uint_sample)      & 0xFF);
+        this->buf2[(this->read_ptr - BUFF_SIZE) * 3 + 1] = (uint8_t*) ((uint_sample >> 1) & 0xFF);
+        this->buf2[(this->read_ptr - BUFF_SIZE) * 3 + 2] = (uint8_t*) ((uint_sample >> 2) & 0xFF);
     }
 }
 
