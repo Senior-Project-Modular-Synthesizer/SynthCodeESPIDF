@@ -1,2 +1,2 @@
-idf_component_register(SRCS "AK4619VN_input.cpp" "main.cpp" "AK4619VN.cpp"
+idf_component_register(SRCS "ili9488.cpp" "main.cpp"
                     INCLUDE_DIRS ".")

@@ -33,7 +33,7 @@
 // Wires for Screen
 #define PIN_NUM_SCREEN_CS GPIO_NUM_16
 #define PIN_NUM_SCREEN_DC GPIO_NUM_7  // Data/Command
-#define PIN_NUM_SCREEN_RESET GPIO_NUM_15 // Reset
+#define PIN_NUM_SCREEN_RST GPIO_NUM_15 // Reset
 
 // Screen defs
 #define SCREEN_WIDTH 320
