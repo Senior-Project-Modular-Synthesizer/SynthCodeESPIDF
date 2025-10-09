@@ -190,13 +190,6 @@ static void read_wrapper(void* pvParameters) {
 * It will be called once so it is the responsibility of the implementation to ensure that the buffer is continued to be filled.
 */
 void SampleInputBuffer::start() {
-    // esp_err_t ret;  
-    // #define BUF_SIZE (SAMPLE_COUNT * 3)
-    // *buf1 = (uint8_t *)calloc(1, BUF_SIZE);
-    // assert(buf1); // Check for buf1 allocation
-    // size_t buf1_bytes = 0;
-    
- 
     xTaskCreatePinnedToCore( read_wrapper,
         "ReadIntoBuf",
         configMINIMAL_STACK_SIZE,
