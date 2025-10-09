@@ -318,7 +318,7 @@ void SampleOutputBuffer::pushSample(QuadSample sample) {
 * As such, this format has no guaranteed bit width beacuse it is up to the actual chip
 */
 void SampleOutputBuffer::pushIntSample(QuadIntSample sample) {
-
+    // Commit guaranteeing comment
     if (this->read_ptr < BUFF_SIZE) {
         while (this->buf1_ready)
             continue;
