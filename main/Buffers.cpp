@@ -20,9 +20,8 @@
 #define BUFF_ALLOC (SAMPLE_COUNT * 3)
 
 
-SampleInputBuffer::SampleInputBuffer(i2s_chan_handle_t rx_chan, i2s_tdm_config_t i2s_tdm_config) {
+SampleInputBuffer::SampleInputBuffer(i2s_chan_handle_t rx_chan) {
     this->rx_chan = rx_chan;
-    this->i2s_tdm_config = i2s_tdm_config;
 }
 
 /*
@@ -223,9 +222,8 @@ bool SampleInputBuffer::errored() const {
 }
 
 
-SampleOutputBuffer::SampleOutputBuffer(i2s_chan_handle_t tx_chan, i2s_tdm_config_t i2s_config) {
+SampleOutputBuffer::SampleOutputBuffer(i2s_chan_handle_t tx_chan) {
     this->tx_chan = tx_chan;
-    this->i2s_tdm_config = i2s_config;
 }
 
 

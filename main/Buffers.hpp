@@ -21,7 +21,7 @@ class SampleInputBuffer : public QuadInputBuffer {
         i2s_tdm_config_t i2s_tdm_config;
 
     public:
-        SampleInputBuffer(i2s_chan_handle_t rx_chan, i2s_tdm_config_t i2s_tdm_config);
+        SampleInputBuffer(i2s_chan_handle_t rx_chan);
         ~SampleInputBuffer();
 
         static void read_wrapper ( void* pvParameters);
@@ -88,7 +88,7 @@ class SampleOutputBuffer : public QuadOutputBuffer {
         i2s_tdm_config_t i2s_tdm_config;
 
     public:
-        SampleOutputBuffer(i2s_chan_handle_t tx_chan, i2s_tdm_config_t i2s_config);
+        SampleOutputBuffer(i2s_chan_handle_t tx_chan);
         ~SampleOutputBuffer();
 
         static void write_wrapper ( void* pvParameters);
