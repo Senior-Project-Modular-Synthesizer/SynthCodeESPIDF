@@ -47,22 +47,37 @@ QuadSample SampleInputBuffer::nextSample(const QuadSample& next) {
     QuadSample next_sample = QuadSample();
     
     if (this->read_ptr < BUFF_SIZE) {
-        // while not this.buf1_ready {
-        //      continue;
-        // }
-        //next_sample.channels[read_ptr % 4] = this->buf1[this->read_ptr];
+        while (!this->buf1_ready)
+            continue;
+
+        //TODO: Figure out conversion here
+        /*
+        next_sample.channels[this->read_ptr % 4] = 
+            ((*buf2[this->read_ptr + 0]) << 16) +
+            ((*buf2[this->read_ptr + 1]) << 8)  +
+            (*buf2[this->read_ptr + 2]);
+        */
+
         this->read_ptr += 1;
         
         if (this->read_ptr >= BUFF_SIZE) {
-            // this.buf1_ready = False
+            this->buf1_ready = false;
         }
     } else {
-        // while not buf2_ready
-        //      continue;
-        //next_sample.channels[read_ptr % 4] = this->buf2[this->read_ptr - BUFF_SIZE];
+        while (!this->buf2_ready)
+            continue;
+
+        /*
+        next_sample.channels[this->read_ptr % 4] = 
+            ((*buf2[this->read_ptr + 0]) << 16) +
+            ((*buf2[this->read_ptr + 1]) << 8)  +
+            (*buf2[this->read_ptr + 2]);
+        */
+
         this->read_ptr += 1;
+        
         if (this->read_ptr >= (2 * BUFF_SIZE)) {
-            //self.buf2_ready = False
+            this->buf2_ready = false;
             this->read_ptr = 0;
         }
     }
@@ -80,26 +95,33 @@ QuadIntSample SampleInputBuffer::nextIntSample() {
     QuadIntSample next_sample = QuadIntSample();
 
     if (this->read_ptr < BUFF_SIZE) {
-        // while not this.buf1_ready {
-        //      continue;
-        // }
-        // TODO: Parse this out
-        //next_sample.channels[read_ptr % 4] = (uint_sample_t) buf1[this->read_ptr];
-        
+        while (!this->buf1_ready)
+            continue;
+
+        next_sample.channels[this->read_ptr % 4] = 
+            ((*buf1[this->read_ptr + 0]) << 16) +
+            ((*buf1[this->read_ptr + 1]) << 8)  +
+            (*buf1[this->read_ptr + 2]);
 
         this->read_ptr += 1;
         
         if (this->read_ptr >= BUFF_SIZE) {
-            // this.buf1_ready = False
+            this->buf1_ready = false;
         }
     } else {
-        // while not buf2_ready
-        //      continue;
-        // TODO: Parse this out
-        //next_sample.channels[read_ptr % 4] = (uint_sample_t) this->buf2[this->read_ptr - BUFF_SIZE];
+        while (!this->buf2_ready)
+            continue;
+
+        next_sample.channels[this->read_ptr % 4] = 
+            ((*buf2[this->read_ptr + 0]) << 16) +
+            ((*buf2[this->read_ptr + 1]) << 8)  +
+            (*buf2[this->read_ptr + 2]);
+
         this->read_ptr += 1;
+
         if (this->read_ptr >= (2 * BUFF_SIZE)) {
-            //this.buf2_ready = False
+            // TODO: Semaphores?
+            this->buf2_ready = false;
             this->read_ptr = 0;
         }
     }
@@ -241,11 +263,36 @@ void SampleOutputBuffer::pushSample(QuadSample sample) {
     if (this->read_ptr < BUFF_SIZE) {
         while (this->buf1_ready)
             continue;
-        //this->buf1[this->read_ptr] = (uint8_t) (sample.channels[0] * 0x7FFFFF);
+
+        //TODO: Figure out conversion here
+        /*
+        this->buf1[this->read_ptr * 3 + 0] = (uint8_t*) ((uint_sample >> 16)      & 0xFF);
+        this->buf1[this->read_ptr * 3 + 1] = (uint8_t*) ((uint_sample >> 8) & 0xFF);
+        this->buf1[this->read_ptr * 3 + 2] = (uint8_t*) ((uint_sample) & 0xFF);
+        */
+        
+        this->read_ptr += 1;
+
+        if (this->read_ptr >= BUFF_SIZE) {
+            this->buf1_ready = false;
+        }
+
     } else {
         while (this->buf2_ready)
             continue;
-        //this->buf2[this->read_ptr] = (uint8_t) (sample.channels[0] * 0x7FFFFF);
+        
+        /*
+        this->buf2[(this->read_ptr - BUFF_SIZE) * 3 + 0] = (uint8_t*) ((uint_sample >> 16)      & 0xFF);
+        this->buf2[(this->read_ptr - BUFF_SIZE) * 3 + 1] = (uint8_t*) ((uint_sample >> 8) & 0xFF);
+        this->buf2[(this->read_ptr - BUFF_SIZE) * 3 + 2] = (uint8_t*) ((uint_sample) & 0xFF);
+        */
+
+        this->read_ptr += 1;
+
+        if (this->read_ptr >= (2 * BUFF_SIZE)) {
+            this->read_ptr = 0;
+            this->buf2_ready = false;
+        } 
     }
 }
 
@@ -262,17 +309,30 @@ void SampleOutputBuffer::pushIntSample(QuadIntSample sample) {
         while (this->buf1_ready)
             continue;
 
-        this->buf1[this->read_ptr * 3 + 0] = (uint8_t*) ((uint_sample)      & 0xFF);
-        this->buf1[this->read_ptr * 3 + 1] = (uint8_t*) ((uint_sample >> 1) & 0xFF);
-        this->buf1[this->read_ptr * 3 + 2] = (uint8_t*) ((uint_sample >> 2) & 0xFF);
+        this->buf1[this->read_ptr * 3 + 0] = (uint8_t*) ((uint_sample >> 16)      & 0xFF);
+        this->buf1[this->read_ptr * 3 + 1] = (uint8_t*) ((uint_sample >> 8) & 0xFF);
+        this->buf1[this->read_ptr * 3 + 2] = (uint8_t*) ((uint_sample) & 0xFF);
+
+        this->read_ptr += 1;
+
+        if (this->read_ptr >= BUFF_SIZE) {
+            this->buf1_ready = false;
+        }
 
     } else {
         while (this->buf2_ready)
             continue;
 
-        this->buf2[(this->read_ptr - BUFF_SIZE) * 3 + 0] = (uint8_t*) ((uint_sample)      & 0xFF);
-        this->buf2[(this->read_ptr - BUFF_SIZE) * 3 + 1] = (uint8_t*) ((uint_sample >> 1) & 0xFF);
-        this->buf2[(this->read_ptr - BUFF_SIZE) * 3 + 2] = (uint8_t*) ((uint_sample >> 2) & 0xFF);
+        this->buf2[(this->read_ptr - BUFF_SIZE) * 3 + 0] = (uint8_t*) ((uint_sample >> 16)      & 0xFF);
+        this->buf2[(this->read_ptr - BUFF_SIZE) * 3 + 1] = (uint8_t*) ((uint_sample >> 8) & 0xFF);
+        this->buf2[(this->read_ptr - BUFF_SIZE) * 3 + 2] = (uint8_t*) ((uint_sample) & 0xFF);
+
+        this->read_ptr += 1;
+
+        if (this->read_ptr >= (2 * BUFF_SIZE)) {
+            this->read_ptr = 0;
+            this->buf2_ready = false;
+        } 
     }
 }
 
