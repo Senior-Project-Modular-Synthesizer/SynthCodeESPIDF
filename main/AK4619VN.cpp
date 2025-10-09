@@ -16,7 +16,7 @@
 
 static const char* TAG = "AK4619VN";
 
-#define SAMPLE_COUNT 1024
+#define SAMPLE_COUNT 1024 
 
 // Debug macros - set to 1 to enable debug output
 #define DEBUG_AK4619VN 1
@@ -290,6 +290,7 @@ void calculate_average(uint8_t* buf, uint64_t buff_size) {
         if (sample & 0x800000) {
             sample |= 0xFF000000;
         }
+        float float_sample = (float)sample/(float)0x7FFFFF;
         sum += sample;
         count++;
     }
@@ -300,9 +301,27 @@ void calculate_average(uint8_t* buf, uint64_t buff_size) {
     }
 }
 
+<<<<<<< HEAD
+float triangle_wave(float phase) {
+    phase = fmod(phase, 1.0f);
+    if (phase < 0.5) {
+        return phase * 4.0f - 1.0f;  // Rising edge
+    } else {
+        return 3.0f - phase * 4.0f;  // Falling edge
+    }
+}
+
+float sawtooth_wave(float phase) {
+    phase = fmod(phase, 1.0f);
+    return (phase * 2.0f) - 1.0f; // Ranges from -1 to +1
+}
+
+void AK4619VN::simple_loop() {
+=======
 void AK4619VN::simple_loop( void* pvParameters ) {
+>>>>>>> f92acb4aac64e55354ddd54cacfc0a4c2ffd77e6
     esp_err_t ret;  
-    #define BUFF_SIZE (SAMPLE_COUNT * 3)
+    #define BUFF_SIZE (SAMPLE_COUNT * 4 * 3)
     uint8_t *r_buf = (uint8_t *)calloc(1, BUFF_SIZE);
     assert(r_buf); // Check if r_buf allocation success
     size_t r_bytes = 0;
@@ -331,11 +350,22 @@ void AK4619VN::simple_loop( void* pvParameters ) {
     // }
 
     // Output a sine wave
+    float phase = 0;
     while (1) {
         // Generate signed sin wave
-        for (int i = 0; i < SAMPLE_COUNT; i++) {
-            float phase = (float)i / SAMPLE_COUNT;
-            int64_t sample = (int64_t)(sin(phase * 2 * M_PI) * 0x3FFFFF); // 24-bit max amplitude
+        for (int i = 0; i < SAMPLE_COUNT * 4; i+=4) {
+            phase += 1.0f / (1024 * 4);
+            //int64_t sample = (int64_t)(sin(phase * 2 * M_PI) * 0x3FFFFF); // 24-bit max amplitude
+            //float float_sample = sin(phase * 2 * M_PI);
+            float float_sample = 0;
+            const int CHANNELS = 7;
+            const float OFFSET = 0.016180339887;
+            for (int i = 0; i < CHANNELS; i++) {
+                float_sample += sawtooth_wave(phase * (128 + i * i * OFFSET) + i * 0.2642);
+            }
+            float_sample /= CHANNELS;
+            //float_sample = float_sample/fabs(float_sample);
+            int64_t sample = (int64_t)(float_sample * 0x3FFFFF); // 24-bit max amplitude
             r_buf[i * 3]     = (sample >> 16) & 0xFF; // MSB
             r_buf[i * 3 + 1] = (sample >> 8) & 0xFF;
             r_buf[i * 3 + 2] = sample & 0xFF;        // LSB
