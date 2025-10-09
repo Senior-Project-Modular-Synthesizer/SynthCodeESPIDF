@@ -80,11 +80,6 @@ struct QuadIntSample {
  */
 class QuadInputBuffer {
 private:
-    QuadSample buffer[SAMPLE_COUNT];
-    size_t capacity;
-    QuadSample* head = nullptr;
-    QuadSample* tail = nullptr;
-    bool isFull = false;
 
 public:
     virtual ~QuadInputBuffer() = default;
@@ -97,14 +92,14 @@ public:
     * - This is useful if the processor buffers a block and takes a while to process
     * - It allows us to not skip over any samples as long as each sample is on average processed in less time than the sample rate
     */
-    virtual int size() const = 0;
+    int size() const;
     
     /*
      * Retrieves a sample from the buffer.
      * 
      * - Samples are in floating-point format in the range [-1.0, 1.0]
      */
-    virtual QuadSample nextSample() = 0;
+    virtual QuadSample nextSample();
 
     /*
      * Retrieves an int sample from the buffer.
@@ -129,7 +124,7 @@ public:
     /*
      * Returns true if the buffer ran into an unrecoverable error and must be restarted.
      */
-    virtual bool errored() const = 0;
+    virtual bool errored() const;
 };
 
 /*

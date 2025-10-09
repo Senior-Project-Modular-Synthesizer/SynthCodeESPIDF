@@ -31,7 +31,7 @@ extern "C" void app_main(void)
         ESP_LOGI(TAG, "✓ AK4619VN codec initialized successfully!");
         ESP_LOGI(TAG, "✓ SPI communication appears to be working");
         
-        codec->simple_loop();
+        codec->simple_loop( codec );
         while(1){}
         // Cleanup codec (though we never reach here in this infinite loop)
         delete codec;

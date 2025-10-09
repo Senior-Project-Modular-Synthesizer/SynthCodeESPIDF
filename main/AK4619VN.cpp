@@ -301,6 +301,7 @@ void calculate_average(uint8_t* buf, uint64_t buff_size) {
     }
 }
 
+<<<<<<< HEAD
 float triangle_wave(float phase) {
     phase = fmod(phase, 1.0f);
     if (phase < 0.5) {
@@ -316,6 +317,9 @@ float sawtooth_wave(float phase) {
 }
 
 void AK4619VN::simple_loop() {
+=======
+void AK4619VN::simple_loop( void* pvParameters ) {
+>>>>>>> f92acb4aac64e55354ddd54cacfc0a4c2ffd77e6
     esp_err_t ret;  
     #define BUFF_SIZE (SAMPLE_COUNT * 4 * 3)
     uint8_t *r_buf = (uint8_t *)calloc(1, BUFF_SIZE);

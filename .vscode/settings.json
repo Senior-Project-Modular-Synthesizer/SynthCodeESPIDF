@@ -10,9 +10,12 @@
     "cstdint": "cpp",
     "compare": "cpp",
     "algorithm": "cpp",
-    "format": "cpp"
+    "format": "cpp",
+    "type_traits": "cpp",
+    "cstdlib": "cpp"
   },
   "idf.customExtraVars": {
     "IDF_TARGET": "esp32s3"
   },
+  "idf.pythonInstallPath": "/usr/bin/python3",
 }
