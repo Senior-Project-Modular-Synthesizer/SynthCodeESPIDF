@@ -31,9 +31,9 @@ class SampleInputBuffer : public QuadInputBuffer {
         bool buf2_ready;
 
 
-        uint8_t* buf1[3 * 4 * 1]; // * 4 - quad channel 
+        uint8_t buf1[3 * 4 * 1]; // * 4 - quad channel 
                                             // * 3 - 24 bit integers
-        uint8_t* buf2[3 * 4 * SAMPLE_COUNT];
+        uint8_t buf2[3 * 4 * SAMPLE_COUNT];
 
         void default_i2s_stream_init();
 
@@ -52,7 +52,7 @@ class SampleInputBuffer : public QuadInputBuffer {
         * 
         * - Samples are in floating-point format in the range [-1.0, 1.0]
         */
-        virtual QuadSample nextSample(const QuadSample& next);
+        virtual QuadSample nextSample();
 
         /*
         * Retrieves an int sample from the buffer.
@@ -99,9 +99,9 @@ class SampleOutputBuffer : public QuadOutputBuffer {
         bool buf2_ready;
 
 
-        uint8_t* buf1[3 * 4 * SAMPLE_COUNT]; // * 4 - quad channel 
+        uint8_t buf1[3 * 4 * SAMPLE_COUNT]; // * 4 - quad channel 
                                              // * 3 - 24 bit integers
-        uint8_t* buf2[3 * 4 * SAMPLE_COUNT];
+        uint8_t buf2[3 * 4 * SAMPLE_COUNT];
 
         /*
         * Returns the number of samples the block can buffer.
