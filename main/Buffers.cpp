@@ -8,7 +8,6 @@
 
 #include <array>
 #include "driver/i2s_tdm.h"
-#include "driver/i2s.h"
 
 #include "peripheral_cfg.h"
 #include "Processor.hpp"
@@ -141,30 +140,44 @@ QuadIntSample SampleInputBuffer::nextIntSample() {
 
 void SampleInputBuffer::read( void* pvParameters ) {
     esp_err_t ret;  
-    size_t buf1_bytes = 0;
-
-    // Enable i2s
-    //DEBUG_LOG("Enabling I2S channels");
+    size_t buf1_bytes_read = 0;
+    size_t buf2_bytes_read = 0;
  
     // Input and print out
     for ( ;; ) {
-        if (i2s_channel_read(rx_chan, buf1, BUFF_SIZE, &buf1_bytes, 1000) == ESP_OK) {
-            int num_nonzero = 0;
-            for (int i = 0; i < buf1_bytes; i++) {
-                if (buf1[i] != 0) {
-                    num_nonzero++;
-                }
-            }
-            if (num_nonzero > 0) {
-                // Average up channel 1 assuming width is 3 bytes
-                //calculate_average(buf1, buf1_bytes);
-            }
+        while (this->buf1_ready)
+            continue;
+        
+        ret = i2s_channel_read(rx_chan, buf1, BUFF_SIZE, &buf1_bytes_read, 1000);
+        ESP_ERROR_CHECK(ret);
 
-        } else {
-            printf("Read Task: i2s read failed\n");
-        }
-        //vTaskDelay(pdMS_TO_TICKS(200));
+        this->buf1_ready = true;
+
+        while (this->buf2_ready)
+            continue;
+
+        ret = i2s_channel_read(rx_chan, buf2, BUFF_SIZE, &buf2_bytes_read, 1000);
+        ESP_ERROR_CHECK(ret);
+
+        this->buf2_ready = true;
     }
+
+    // if (i2s_channel_read(rx_chan, buf1, BUFF_SIZE, &buf1_bytes_read, 1000) == ESP_OK) {
+        //     int num_nonzero = 0;
+        //     for (int i = 0; i < buf1_bytes; i++) {
+        //         if (buf1[i] != 0) {
+        //             num_nonzero++;
+        //         }
+        //     }
+        //     if (num_nonzero > 0) {
+        //         // Average up channel 1 assuming width is 3 bytes
+        //         //calculate_average(buf1, buf1_bytes);
+        //     }
+
+        // } else {
+        //     printf("Read Task: i2s read failed\n");
+        // }
+        //vTaskDelay(pdMS_TO_TICKS(200));
 }
 
 static void read_wrapper(void* pvParameters) {
@@ -219,25 +232,28 @@ SampleOutputBuffer::SampleOutputBuffer(i2s_chan_handle_t tx_chan, i2s_tdm_config
 
 void SampleOutputBuffer::write ( void* pvParameters) {
     esp_err_t ret;
-    size_t buf2_bytes = 0;
-    
-    // Output a sine wave
-    while (1) {
-        // Generate signed sin wave
-        for (int i = 0; i < SAMPLE_COUNT; i++) {
-            float phase = (float)i / SAMPLE_COUNT;
-            int64_t sample = (int64_t)(sin(phase * 2 * M_PI) * 0x3FFFFF); // 24-bit max amplitude
-            //TODO: Figure out conversion here
-            //buf2[i * 3]     = (sample >> 16) & 0xFF; // MSB
-            //buf2[i * 3 + 1] = (sample >> 8) & 0xFF;
-            //buf2[i * 3 + 2] = sample & 0xFF;        // LSB
-        }
+    size_t buf2_bytes_written;
+    size_t buf1_bytes_written;
+
+    for ( ;; ) {
+        while (!this->buf1_ready)
+            continue;
+
         // Send buffer to I2S
         size_t bytes_written;
-
-        ret = i2s_channel_write(tx_chan, buf2, BUFF_SIZE, &bytes_written, 1000);
+        
+        ret = i2s_channel_write(tx_chan, buf1, BUFF_SIZE, &buf1_bytes_written, 1000);
         ESP_ERROR_CHECK(ret);
-        //ESP_LOGI(TAG, "Wrote %d bytes to I2S", bytes_written);
+
+        this->buf1_ready = false;
+
+        while (!this->buf2_ready)
+            continue;
+        
+        ret = i2s_channel_write(tx_chan, buf2, BUFF_SIZE, &buf2_bytes_written, 1000);
+        ESP_ERROR_CHECK(ret);
+
+        this->buf2_ready = false;
     }
 }
 
@@ -334,7 +350,7 @@ void SampleOutputBuffer::pushIntSample(QuadIntSample sample) {
         this->read_ptr += 1;
 
         if (this->read_ptr >= BUFF_SIZE) {
-            this->buf1_ready = false;
+            this->buf1_ready = true;
         }
 
     } else {
@@ -353,7 +369,7 @@ void SampleOutputBuffer::pushIntSample(QuadIntSample sample) {
 
         if (this->read_ptr >= (2 * BUFF_SIZE)) {
             this->read_ptr = 0;
-            this->buf2_ready = false;
+            this->buf2_ready = true;
         } 
     }
 }
