@@ -19,10 +19,19 @@
 #define BUFF_SIZE (3 * 4 * SAMPLE_COUNT)
 #define BUFF_ALLOC (SAMPLE_COUNT * 3)
 
+#define SLEEP_MS 10
 
-SampleInputBuffer::SampleInputBuffer(i2s_chan_handle_t rx_chan, i2s_tdm_config_t i2s_tdm_config) {
+bool QuadInputBuffer::errored() const {
+    return false;
+}
+
+
+SampleInputBuffer::SampleInputBuffer(i2s_chan_handle_t rx_chan) {
     this->rx_chan = rx_chan;
-    this->i2s_tdm_config = i2s_tdm_config;
+}
+
+SampleInputBuffer::~SampleInputBuffer() {
+    // Cleanup if needed
 }
 
 /*
@@ -43,12 +52,14 @@ int SampleInputBuffer::size() const {
 * - Samples are in floating-point format in the range [-1.0, 1.0]
 */
 QuadSample SampleInputBuffer::nextSample() {
-    QuadSample next_sample = QuadSample();
+    QuadSample next_sample = {
+        .channels = {0.0f, 0.0f, 0.0f, 0.0f}
+    };
     
     for (int i = 0; i < 4; i++) {
         if (this->read_ptr < BUFF_SIZE) {
         while (!this->buf1_ready)
-            continue;
+            vTaskDelay(pdMS_TO_TICKS(SLEEP_MS));
 
         //TODO: Figure out conversion here
         /*
@@ -65,7 +76,7 @@ QuadSample SampleInputBuffer::nextSample() {
         }
     } else {
         while (!this->buf2_ready)
-            continue;
+            vTaskDelay(pdMS_TO_TICKS(SLEEP_MS));
 
         /*
         next_sample.channels[this->read_ptr % 4] = 
@@ -93,11 +104,13 @@ QuadSample SampleInputBuffer::nextSample() {
 * As such, this format has no guaranteed bit width beacuse it is up to the actual chip
 */
 QuadIntSample SampleInputBuffer::nextIntSample() {
+    QuadIntSample next_sample = {
+        .channels = {0, 0, 0, 0}
+    };
     if (this->read_ptr < BUFF_SIZE) {
         while (!this->buf1_ready)
-            continue;
+            vTaskDelay(pdMS_TO_TICKS(SLEEP_MS));
 
-        QuadIntSample next_sample = QuadIntSample();
 
         for (int i = 0; i < 4; i++) {
             next_sample.channels[i] = 
@@ -115,12 +128,12 @@ QuadIntSample SampleInputBuffer::nextIntSample() {
         return next_sample;
     } else {
         while (!this->buf2_ready)
-            continue;
+            vTaskDelay(pdMS_TO_TICKS(SLEEP_MS));
 
-        QuadIntSample next_sample_2 = QuadIntSample();
+
 
         for (int i = 0; i < 4; i++) {
-            next_sample_2.channels[i] = 
+            next_sample.channels[i] = 
             (buf2[this->read_ptr * 12 + i * 3 + 0] << 16) +
             (buf2[this->read_ptr * 12 + i * 3 + 1] << 8)  +
             (buf2[this->read_ptr * 12 + i * 3 + 2]);
@@ -134,11 +147,11 @@ QuadIntSample SampleInputBuffer::nextIntSample() {
             this->read_ptr = 0;
         }
 
-        return next_sample_2;
+        return next_sample;
     }
 }
 
-void SampleInputBuffer::read( void* pvParameters ) {
+void SampleInputBuffer::read( ) {
     esp_err_t ret;  
     size_t buf1_bytes_read = 0;
     size_t buf2_bytes_read = 0;
@@ -146,7 +159,7 @@ void SampleInputBuffer::read( void* pvParameters ) {
     // Input and print out
     for ( ;; ) {
         while (this->buf1_ready)
-            continue;
+            vTaskDelay(pdMS_TO_TICKS(SLEEP_MS));
         
         ret = i2s_channel_read(rx_chan, buf1, BUFF_SIZE, &buf1_bytes_read, 1000);
         ESP_ERROR_CHECK(ret);
@@ -154,7 +167,8 @@ void SampleInputBuffer::read( void* pvParameters ) {
         this->buf1_ready = true;
 
         while (this->buf2_ready)
-            continue;
+            vTaskDelay(pdMS_TO_TICKS(SLEEP_MS));
+
 
         ret = i2s_channel_read(rx_chan, buf2, BUFF_SIZE, &buf2_bytes_read, 1000);
         ESP_ERROR_CHECK(ret);
@@ -182,7 +196,7 @@ void SampleInputBuffer::read( void* pvParameters ) {
 
 static void read_wrapper(void* pvParameters) {
     SampleInputBuffer* buf = static_cast<SampleInputBuffer*>(pvParameters);
-    buf->read(pvParameters);
+    buf->read();
 }
 
 /*
@@ -201,7 +215,7 @@ void SampleInputBuffer::start() {
     xTaskCreatePinnedToCore( read_wrapper,
         "ReadIntoBuf",
         configMINIMAL_STACK_SIZE,
-        NULL,
+        this,
         tskIDLE_PRIORITY + 2,
         NULL,
         0);
@@ -223,21 +237,23 @@ bool SampleInputBuffer::errored() const {
 }
 
 
-SampleOutputBuffer::SampleOutputBuffer(i2s_chan_handle_t tx_chan, i2s_tdm_config_t i2s_config) {
+SampleOutputBuffer::SampleOutputBuffer(i2s_chan_handle_t tx_chan) {
     this->tx_chan = tx_chan;
-    this->i2s_tdm_config = i2s_config;
+}
+
+SampleOutputBuffer::~SampleOutputBuffer() {
+    // Cleanup if needed
 }
 
 
-
-void SampleOutputBuffer::write ( void* pvParameters) {
+void SampleOutputBuffer::write ( ) {
     esp_err_t ret;
     size_t buf2_bytes_written;
     size_t buf1_bytes_written;
 
     for ( ;; ) {
         while (!this->buf1_ready)
-            continue;
+            vTaskDelay(pdMS_TO_TICKS(SLEEP_MS));
 
         // Send buffer to I2S
         size_t bytes_written;
@@ -248,7 +264,7 @@ void SampleOutputBuffer::write ( void* pvParameters) {
         this->buf1_ready = false;
 
         while (!this->buf2_ready)
-            continue;
+            vTaskDelay(pdMS_TO_TICKS(SLEEP_MS));
         
         ret = i2s_channel_write(tx_chan, buf2, BUFF_SIZE, &buf2_bytes_written, 1000);
         ESP_ERROR_CHECK(ret);
@@ -260,7 +276,7 @@ void SampleOutputBuffer::write ( void* pvParameters) {
         
 static void write_wrapper ( void* pvParameters) {
     SampleOutputBuffer* buf = static_cast<SampleOutputBuffer*>(pvParameters);
-    //buf->write(pvParameters);
+    buf->write();
 }
 
 
@@ -285,7 +301,7 @@ void SampleOutputBuffer::pushSample(QuadSample sample) {
 
     if (this->read_ptr < BUFF_SIZE) {
         while (this->buf1_ready)
-            continue;
+            vTaskDelay(pdMS_TO_TICKS(SLEEP_MS));
 
         for (int i = 0; i < 4; i++) {
             uint32_t uint_sample = sample.channels[i];
@@ -304,8 +320,8 @@ void SampleOutputBuffer::pushSample(QuadSample sample) {
         }
 
     } else {
-        while (this->buf2_ready) 
-            continue;
+        while (this->buf2_ready)
+            vTaskDelay(pdMS_TO_TICKS(SLEEP_MS));
 
         for (int i = 0; i < 4; i++) {
             uint32_t uint_sample_2 = sample.channels[i];
@@ -337,7 +353,7 @@ void SampleOutputBuffer::pushIntSample(QuadIntSample sample) {
     // Commit guaranteeing comment
     if (this->read_ptr < BUFF_SIZE) {
         while (this->buf1_ready)
-            continue;
+            vTaskDelay(pdMS_TO_TICKS(SLEEP_MS));
 
         for (int i = 0; i < 4; i++) {
             uint32_t uint_sample = sample.channels[i];
@@ -355,7 +371,7 @@ void SampleOutputBuffer::pushIntSample(QuadIntSample sample) {
 
     } else {
         while (this->buf2_ready) 
-            continue;
+            vTaskDelay(pdMS_TO_TICKS(SLEEP_MS));
 
         for (int i = 0; i < 4; i++) {
             uint32_t uint_sample_2 = sample.channels[i];
@@ -383,7 +399,7 @@ void SampleOutputBuffer::start() {
     xTaskCreatePinnedToCore( write_wrapper,
         "ReadIntoBuf",
         configMINIMAL_STACK_SIZE,
-        NULL,
+        this,
         tskIDLE_PRIORITY + 2,
         NULL,
         0);

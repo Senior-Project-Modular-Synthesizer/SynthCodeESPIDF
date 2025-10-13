@@ -8,6 +8,8 @@
 #include "peripheral_cfg.h"
 #include "Processor.hpp"
 
+#include "Buffers.hpp"
+
 
 enum class ADCDigitalFilterType {
     SharpRollOff = 0b000,
@@ -33,12 +35,12 @@ class AK4619VN {
         void simple_loop( void* pvParameters );
         //void input_task();
         //void output_task();
+        i2s_chan_handle_t rx_chan;
+        i2s_chan_handle_t tx_chan;
 
     private:
         // Esp Idf SPI
         spi_device_handle_t spi;
-        i2s_chan_handle_t rx_chan;
-        i2s_chan_handle_t tx_chan;
 
         uint16_t writeRegister(uint8_t reg, uint8_t data);
         uint16_t readRegister(uint8_t reg);

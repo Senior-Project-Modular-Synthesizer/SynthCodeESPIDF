@@ -35,6 +35,8 @@
 #define PIN_NUM_SCREEN_DC GPIO_NUM_7  // Data/Command
 #define PIN_NUM_SCREEN_RST GPIO_NUM_15 // Reset
 
+#define SPI_TFT_CLOCK_SPEED_HZ  (40*1000*1000)
+
 // Screen defs
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 480

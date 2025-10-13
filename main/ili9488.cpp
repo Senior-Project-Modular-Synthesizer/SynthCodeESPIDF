@@ -83,11 +83,10 @@ void ili9488_init(void)
     io_conf.intr_type = GPIO_INTR_DISABLE;
     io_conf.mode = GPIO_MODE_OUTPUT;
     io_conf.pin_bit_mask = 1 << PIN_NUM_SCREEN_DC;
-    io_conf.pull_down_en = 0;
-    io_conf.pull_up_en = 0;
+    io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
+    io_conf.pull_up_en = GPIO_PULLUP_DISABLE;
     gpio_config(&io_conf);
 
-#if ILI9488_USE_RST
 	gpio_config_t io_conf = {};
     io_conf.intr_type = GPIO_INTR_DISABLE;
     io_conf.mode = GPIO_MODE_OUTPUT;
@@ -101,7 +100,6 @@ void ili9488_init(void)
 	vTaskDelay(100 / portTICK_RATE_MS);
 	gpio_set_level(PIN_NUM_SCREEN_RST, 1);
 	vTaskDelay(100 / portTICK_RATE_MS);
-#endif
 
 	ESP_LOGI(TAG, "ILI9488 initialization.");
 
@@ -135,7 +133,7 @@ void ili9488_init(void)
 }
 
 // Flush function based on mvturnho repo
-void ili9488_flush(lv_disp_drv_t * drv, const lv_area_t * area, lv_color_t * color_map)
+void ili9488_flush(lv_display_t * drv, const lv_area_t * area, lv_color_t * color_map)
 {
     uint32_t size = lv_area_get_width(area) * lv_area_get_height(area);
 
@@ -240,7 +238,6 @@ void disp_spi_send_colors(const void *data, size_t length) {
 
 static void ili9488_set_orientation(uint8_t orientation)
 {
-    // ESP_ASSERT(orientation < 4);
 
     const char *orientation_str[] = {
         "PORTRAIT", "PORTRAIT_INVERTED", "LANDSCAPE", "LANDSCAPE_INVERTED"
@@ -248,9 +245,7 @@ static void ili9488_set_orientation(uint8_t orientation)
 
     ESP_LOGI(TAG, "Display orientation: %s", orientation_str[orientation]);
 
-#if defined (CONFIG_LV_PREDEFINED_DISPLAY_NONE)
     uint8_t data[] = {0x48, 0x88, 0x28, 0xE8};
-#endif
 
     ESP_LOGI(TAG, "0x36 command value: 0x%02X", data[orientation]);
 

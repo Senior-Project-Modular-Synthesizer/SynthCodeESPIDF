@@ -15,12 +15,7 @@ extern "C" {
 #include <stdbool.h>
 #include <stdint.h>
 
-#ifdef LV_LVGL_H_INCLUDE_SIMPLE
 #include "lvgl.h"
-#else
-#include "lvgl/lvgl.h"
-#endif
-#include "../lvgl_helpers.h"
 
 /*********************
  *      DEFINES
@@ -145,7 +140,7 @@ typedef struct {
  **********************/
 
 void ili9488_init(void);
-void ili9488_flush(lv_disp_drv_t * drv, const lv_area_t * area, lv_color_t * color_map);
+void ili9488_flush(lv_display_t * drv, const lv_area_t * area, lv_color_t * color_map);
 
 /**********************
  *      MACROS

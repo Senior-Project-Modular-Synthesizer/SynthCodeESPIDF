@@ -21,11 +21,10 @@ class SampleInputBuffer : public QuadInputBuffer {
         i2s_tdm_config_t i2s_tdm_config;
 
     public:
-        SampleInputBuffer(i2s_chan_handle_t rx_chan, i2s_tdm_config_t i2s_tdm_config);
+        SampleInputBuffer(i2s_chan_handle_t rx_chan);
         ~SampleInputBuffer();
 
-        static void read_wrapper ( void* pvParameters);
-        void read ( void* pvParameters);
+        void read ();
 
         bool buf1_ready;
         bool buf2_ready;
@@ -52,7 +51,7 @@ class SampleInputBuffer : public QuadInputBuffer {
         * 
         * - Samples are in floating-point format in the range [-1.0, 1.0]
         */
-        virtual QuadSample nextSample();
+        QuadSample nextSample();
 
         /*
         * Retrieves an int sample from the buffer.
@@ -60,24 +59,24 @@ class SampleInputBuffer : public QuadInputBuffer {
         * Sample format is unspecified because it is up to the actual chip
         * As such, this format has no garunteed bit width beacuse it is up to the actual chip
         */
-        virtual QuadIntSample nextIntSample() = 0;
+        QuadIntSample nextIntSample();
 
         /*
         * Starts the buffer.
         * This is a non-blocking operation which allows the UI to continue running while the buffer fills itself.
         * It will be called once so it is the responsibility of the implementation to ensure that the buffer is continued to be filled.
         */
-        virtual void start() = 0;
+        void start();
 
         /*
         * Stops the buffer and whatever tasks it's running.
         */
-        virtual void stop() = 0;
+        void stop();
 
         /*
         * Returns true if the buffer ran into an unrecoverable error and must be restarted.
         */
-        virtual bool errored() const;
+        bool errored() const;
 };
 
 
@@ -88,12 +87,11 @@ class SampleOutputBuffer : public QuadOutputBuffer {
         i2s_tdm_config_t i2s_tdm_config;
 
     public:
-        SampleOutputBuffer(i2s_chan_handle_t tx_chan, i2s_tdm_config_t i2s_config);
+        SampleOutputBuffer(i2s_chan_handle_t tx_chan);
         ~SampleOutputBuffer();
 
-        static void write_wrapper ( void* pvParameters);
 
-        void write ( void* pvParameters);
+        void write ();
 
         bool buf1_ready;
         bool buf2_ready;
@@ -109,7 +107,7 @@ class SampleOutputBuffer : public QuadOutputBuffer {
         * - The returned value is always a power of 2.
         * - This represents the number of leeway (each containing 4 samples, one per channel).
         */
-        virtual int size() const = 0;
+        int size() const;
         
         /*
         * Pushes a sample to the buffer.
@@ -118,7 +116,7 @@ class SampleOutputBuffer : public QuadOutputBuffer {
         * - This function does not perform bounds checking.
         * - This function may block if the buffer is full.
         */
-        virtual void pushSample(QuadSample sample) = 0;
+        void pushSample(QuadSample sample);
 
         /*
         * Pushes an int sample to the buffer.
@@ -126,22 +124,22 @@ class SampleOutputBuffer : public QuadOutputBuffer {
         * Sample format is unspecified because it is up to the actual chip
         * As such, this format has no garunteed bit width beacuse it is up to the actual chip
         */
-        virtual void pushIntSample(QuadIntSample sample) = 0;
+        void pushIntSample(QuadIntSample sample);
         
         /*
         * Starts the buffer.
         * This is a non-blocking operation which allows the UI to continue running while the buffer fills itself.
         * It will be called once so it is the responsibility of the implementation to ensure that the buffer is continued to be filled.
         */
-        virtual void start() = 0;
+        void start();
 
         /*
         * Stops the buffer and whatever tasks it's running.
         */
-        virtual void stop() = 0;
+        void stop();
 
         /*
         * Returns true if the buffer ran into an unrecoverable error and must be restarted.
         */
-        virtual bool errored() const = 0;
+        bool errored() const;
 };  

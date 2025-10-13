@@ -6,10 +6,16 @@
 #include "peripheral_cfg.h"
 #include "AK4619VN.hpp"
 
+#include "ili9488.hpp"
+
+#include "Buffers.hpp"
+
 static const char* TAG = "MAIN";
 
 extern "C" void app_main(void)
 {
+    // Sleep to allow time for serial monitor to connect
+    vTaskDelay(2000 / portTICK_PERIOD_MS);
     ESP_LOGI(TAG, "Starting ESP-Synth Application");
     ESP_LOGI(TAG, "ESP-IDF Version: %s", esp_get_idf_version());
     
@@ -27,21 +33,19 @@ extern "C" void app_main(void)
     
     // Create codec instance on the stack - no exceptions needed
     AK4619VN* codec = new AK4619VN();
-    if (codec) {
-        ESP_LOGI(TAG, "✓ AK4619VN codec initialized successfully!");
-        ESP_LOGI(TAG, "✓ SPI communication appears to be working");
-        
-        codec->simple_loop( codec );
-        while(1){}
-        // Cleanup codec (though we never reach here in this infinite loop)
-        delete codec;
-    } else {
-        ESP_LOGE(TAG, "✗ Failed to allocate memory for AK4619VN codec");
+    SampleInputBuffer* inputBuffer = new SampleInputBuffer(codec->rx_chan);
+    SampleOutputBuffer* outputBuffer = new SampleOutputBuffer(codec->tx_chan);
+    inputBuffer->start();
+    outputBuffer->start();
+
+    while (true) {
+        QuadIntSample sample = inputBuffer->nextIntSample();
+        outputBuffer->pushIntSample(sample);
     }
     
     // Cleanup
     ESP_LOGI(TAG, "Cleaning up SPI bus");
     spi_bus_free(SPI_HOST);
     
-    ESP_LOGE(TAG, "Application ended unexpectedly");
+    ESP_LOGE(TAG, "Application ended unexpectedly"); 
 }
