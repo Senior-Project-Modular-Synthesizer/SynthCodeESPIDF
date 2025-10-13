@@ -18,7 +18,6 @@ class SampleInputBuffer : public QuadInputBuffer {
     private:
         i2s_chan_handle_t rx_chan;
         int read_ptr = 0;
-        i2s_tdm_config_t i2s_tdm_config;
 
     public:
         SampleInputBuffer(i2s_chan_handle_t rx_chan);
@@ -84,7 +83,6 @@ class SampleOutputBuffer : public QuadOutputBuffer {
     private:
         i2s_chan_handle_t tx_chan;
         int read_ptr = 0;
-        i2s_tdm_config_t i2s_tdm_config;
 
     public:
         SampleOutputBuffer(i2s_chan_handle_t tx_chan);
