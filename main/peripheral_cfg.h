@@ -24,11 +24,7 @@
 
 #define FREQ_96KHZ 0 // Select between 48kHz and 96kHz
 
-#if FREQ_96KHZ
-#define I2S_SAMPLE_RATE 96000
-#else
 #define I2S_SAMPLE_RATE 48000
-#endif
 
 // Wires for Screen
 #define PIN_NUM_SCREEN_CS GPIO_NUM_16
@@ -36,6 +32,7 @@
 #define PIN_NUM_SCREEN_RST GPIO_NUM_15 // Reset
 
 #define SPI_TFT_CLOCK_SPEED_HZ  (40*1000*1000)
+#define SPI_TFT_SPI_MODE 0
 
 // Screen defs
 #define SCREEN_WIDTH 320
@@ -43,13 +40,20 @@
 
 //To speed up transfers, every SPI transfer sends a bunch of lines. This define specifies how many. More means more memory use,
 //but less overhead for setting up / finishing transfers. Make sure SCREEN_WIDTH is dividable by this.
-#define PARALLEL_LINES 16
+#define PARALLEL_LINES 64
 
 const spi_bus_config_t SPI_BUS_CFG = {
     .mosi_io_num = PIN_NUM_MOSI,
     .miso_io_num = PIN_NUM_MISO,
     .sclk_io_num = PIN_NUM_SCLK,
-    .quadwp_io_num = -1,
-    .quadhd_io_num = -1,
-    .max_transfer_sz = PARALLEL_LINES * SCREEN_HEIGHT * 2 + 8
+    .quadwp_io_num = GPIO_NUM_NC,
+    .quadhd_io_num = GPIO_NUM_NC,
+    .data4_io_num = GPIO_NUM_NC,
+    .data5_io_num = GPIO_NUM_NC,
+    .data6_io_num = GPIO_NUM_NC,
+    .data7_io_num = GPIO_NUM_NC,
+    .max_transfer_sz = PARALLEL_LINES * SCREEN_HEIGHT * 2 + 8,
+    .flags = SPICOMMON_BUSFLAG_SCLK | SPICOMMON_BUSFLAG_MISO |
+                SPICOMMON_BUSFLAG_MOSI | SPICOMMON_BUSFLAG_MASTER,
+    .intr_flags = ESP_INTR_FLAG_LOWMED | ESP_INTR_FLAG_IRAM
 };

@@ -183,7 +183,7 @@ void AK4619VN::init_spi() {
     esp_err_t ret;
     spi_device_interface_config_t devcfg = {
         .mode = 0,                 // SPI mode 0
-        .clock_speed_hz = 1000000, // 1 MHz
+        .clock_speed_hz = 10000, // 10 kHz
         .spics_io_num = PIN_NUM_CODEC_CS,
         .queue_size = 7,
     };
