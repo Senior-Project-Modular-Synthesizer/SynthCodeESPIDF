@@ -19,6 +19,8 @@ class SampleInputBuffer : public QuadInputBuffer {
         i2s_chan_handle_t rx_chan;
         int read_ptr = 0;
 
+        TaskHandle_t readBuf_handle;
+
     public:
         SampleInputBuffer(i2s_chan_handle_t rx_chan);
         ~SampleInputBuffer();
@@ -83,6 +85,8 @@ class SampleOutputBuffer : public QuadOutputBuffer {
     private:
         i2s_chan_handle_t tx_chan;
         int read_ptr = 0;
+
+        TaskHandle_t writeBuf_handle;
 
     public:
         SampleOutputBuffer(i2s_chan_handle_t tx_chan);

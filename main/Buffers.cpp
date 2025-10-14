@@ -210,7 +210,7 @@ void SampleInputBuffer::start() {
         configMINIMAL_STACK_SIZE,
         this,
         tskIDLE_PRIORITY + 2,
-        NULL,
+        &readBuf_handle,
         0);
 }
 
@@ -219,7 +219,8 @@ void SampleInputBuffer::start() {
 * Stops the buffer and whatever tasks it's running.
 */
 void SampleInputBuffer::stop() {
-    
+    // Should this be a taskHandle_t?
+    vTaskDelete(readBuf_handle);
 }
 
 /*
@@ -394,7 +395,7 @@ void SampleOutputBuffer::start() {
         configMINIMAL_STACK_SIZE,
         this,
         tskIDLE_PRIORITY + 2,
-        NULL,
+        &writeBuf_handle,
         0);
 }
 
@@ -402,7 +403,7 @@ void SampleOutputBuffer::start() {
 * Stops the buffer and whatever tasks it's running.
 */
 void SampleOutputBuffer::stop() {
-    
+    vTaskDelete(writeBuf_handle);
 }
 
 /*
