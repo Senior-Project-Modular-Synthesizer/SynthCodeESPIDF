@@ -45,6 +45,18 @@
 //but less overhead for setting up / finishing transfers. Make sure SCREEN_WIDTH is dividable by this.
 #define PARALLEL_LINES 16
 
+
+// Buffer Waiting Bits
+#define INPUT_BUF1_READY = (1 << 0)
+#define INPUT_BUF1_WAIT  = (1 << 1)
+#define INPUT_BUF2_READY = (1 << 2)
+#define INPUT_BUF2_WAIT  = (1 << 3)
+#define OUTPUT_BUF1_READY = (1 << 4)
+#define OUTPUT_BUF1_WAIT  = (1 << 5)
+#define OUTPUT_BUF2_READY = (1 << 6)
+#define OUTPUT_BUF2_WAIT  = (1 << 7)
+
+
 const spi_bus_config_t SPI_BUS_CFG = {
     .mosi_io_num = PIN_NUM_MOSI,
     .miso_io_num = PIN_NUM_MISO,

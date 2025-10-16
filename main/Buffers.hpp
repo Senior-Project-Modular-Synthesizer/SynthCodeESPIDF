@@ -19,10 +19,13 @@ class SampleInputBuffer : public QuadInputBuffer {
         i2s_chan_handle_t rx_chan;
         int read_ptr = 0;
 
-        TaskHandle_t readBuf_handle;
+        TaskHandle_t writeBuf_handle;
+
+        EventGroupHandle_t xHandle;
+        EventBits_t uxBits;
 
     public:
-        SampleInputBuffer(i2s_chan_handle_t rx_chan);
+        SampleInputBuffer(i2s_chan_handle_t rx_chan, EventGroupHandle_t xHandle);
         ~SampleInputBuffer();
 
         void read ();
@@ -88,16 +91,14 @@ class SampleOutputBuffer : public QuadOutputBuffer {
 
         TaskHandle_t writeBuf_handle;
 
+        EventGroupHandle_t xHandle;
+        EventBits_t uxBits;
+
     public:
-        SampleOutputBuffer(i2s_chan_handle_t tx_chan);
+        SampleOutputBuffer(i2s_chan_handle_t tx_chan, EventGroupHandle_t xHandle);
         ~SampleOutputBuffer();
 
-
         void write ();
-
-        bool buf1_ready;
-        bool buf2_ready;
-
 
         uint8_t buf1[3 * 4 * SAMPLE_COUNT]; // * 4 - quad channel 
                                              // * 3 - 24 bit integers
