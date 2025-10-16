@@ -6,15 +6,14 @@
 #include "peripheral_cfg.h"
 #include "AK4619VN.hpp"
 
-#include "ili9488.hpp"
+#include "screen.hpp"
 
 #include "Buffers.hpp"
 
 static const char* TAG = "MAIN";
 
-extern "C" void app_main(void)
-{
-    // Sleep to allow time for serial monitor to connect
+void loopback_main() {
+        // Sleep to allow time for serial monitor to connect
     vTaskDelay(2000 / portTICK_PERIOD_MS);
     ESP_LOGI(TAG, "Starting ESP-Synth Application");
     ESP_LOGI(TAG, "ESP-IDF Version: %s", esp_get_idf_version());
@@ -27,7 +26,6 @@ extern "C" void app_main(void)
         return;
     }
     ESP_LOGI(TAG, "SPI bus initialized successfully");
-    
     // Test AK4619VN codec initialization
     ESP_LOGI(TAG, "Testing AK4619VN codec initialization...");
     
@@ -48,4 +46,18 @@ extern "C" void app_main(void)
     spi_bus_free(SPI_HOST);
     
     ESP_LOGE(TAG, "Application ended unexpectedly"); 
+}
+
+void screen_main() {
+    ESP_LOGI(TAG, "Initializing SPI bus (MOSI:%d, MISO:%d, CLK:%d)",
+            PIN_NUM_MOSI, PIN_NUM_MISO, PIN_NUM_SCLK);\
+    esp_err_t ret = spi_bus_initialize(SPI_HOST, &SPI_BUS_CFG, SPI_DMA_CH_AUTO);
+    ESP_ERROR_CHECK(ret);
+    ESP_LOGI(TAG, "SPI bus initialized successfully");
+    screen_thingy();
+}
+
+extern "C" void app_main(void)
+{
+    screen_main();
 }

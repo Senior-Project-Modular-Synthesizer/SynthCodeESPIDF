@@ -66,13 +66,14 @@ AK4619VN::AK4619VN() {
     // Loop through first 16 registers and read from them
     DEBUG_LOG("Reading initial register values");
     update_cache();
+    for (uint8_t i = 0; i <= 0x14; ++i) {
+        DEBUG_LOG("Register 0x%02X: 0x%02X", i, this->registerCache[i]);
+    }
+
     configure_codec();
     DEBUG_LOG("Updating cache after config");
     update_cache();
     // Loop and print out all cached register values
-    for (uint8_t i = 0; i < 0x14; ++i) {
-        DEBUG_LOG("Register 0x%02X: 0x%02X", i, this->registerCache[i]);
-    }
 
     DEBUG_CHECKPOINT("SPI initialization completed");
     
@@ -183,7 +184,7 @@ void AK4619VN::init_spi() {
     esp_err_t ret;
     spi_device_interface_config_t devcfg = {
         .mode = 0,                 // SPI mode 0
-        .clock_speed_hz = 1000000, // 1 MHz
+        .clock_speed_hz = 10000, // 10 kHz
         .spics_io_num = PIN_NUM_CODEC_CS,
         .queue_size = 7,
     };

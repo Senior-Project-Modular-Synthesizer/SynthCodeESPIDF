@@ -1,33 +1,11 @@
 #pragma once
 
-#include "driver/spi_master.h"
-#include "driver/gpio.h"
+#define USE_PCB 0
 
-#define SPI_HOST SPI2_HOST
-
-// Wires for SPI
-#define PIN_NUM_MOSI GPIO_NUM_11
-#define PIN_NUM_MISO GPIO_NUM_12
-#define PIN_NUM_SCLK GPIO_NUM_10
-
-// Wires for CODEC
-#define PIN_NUM_CODEC_CS GPIO_NUM_9
-#define PIN_NUM_CODEC_RX GPIO_NUM_13 // I2S Input (CODEC to ESP32)
-#define PIN_NUM_CODEC_TX GPIO_NUM_46 // I2S Output (ESP32 to CODEC)
-#define PIN_NUM_CODEC_WS GPIO_NUM_3  // I2S Word select
-#define PIN_NUM_CODEC_BCLK GPIO_NUM_8 // I2S Bit Clock
-#define PIN_NUM_CODEC_MCLK GPIO_NUM_18 // Master Clock
-#define PIN_NUM_CODEC_PDN GPIO_NUM_17 // Power Down
-
-#define PIN_NUM_CODEC_RX_DUMMY GPIO_NUM_20 // Need to provide two pins for I2S RX, one for data and one is unused
-#define PIN_NUM_CODEC_TX_DUMMY GPIO_NUM_21 // Need to provide two pins for I2S TX, one for data and one is unused
-
-#define FREQ_96KHZ 0 // Select between 48kHz and 96kHz
-
-#if FREQ_96KHZ
-#define I2S_SAMPLE_RATE 96000
+#if USE_PCB
+    #include "peripheral_cfg_pcb.h"
 #else
-#define I2S_SAMPLE_RATE 48000
+    #include "peripheral_cfg_prototype.h"
 #endif
 
 // Wires for Screen
