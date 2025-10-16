@@ -122,7 +122,10 @@ static esp_err_t panel_ili9488_init(esp_lcd_panel_t *panel)
 {
     ili9488_panel_t *ili9488 = __containerof(panel, ili9488_panel_t, base);
     esp_lcd_panel_io_handle_t io = ili9488->io;
-
+    uint8_t color_mode = ili9488->color_mode;
+    if (color_mode == ILI9488_COLOR_MODE_24BIT) {
+        color_mode = ILI9488_COLOR_MODE_18BIT; // Use 18-bit mode for 24-bit color over SPI
+    }
     lcd_init_cmd_t ili9488_init[] =
     {
         { ILI9488_POSITIVE_GAMMA_CTL,
@@ -141,7 +144,7 @@ static esp_err_t panel_ili9488_init(esp_lcd_panel_t *panel)
         { ILI9488_POWER_CTL_TWO, { 0x41 }, 1 },
         { ILI9488_POWER_CTL_THREE, { 0x00, 0x12, 0x80 }, 3 },
         { LCD_CMD_MADCTL, { ili9488->memory_access_control }, 1 },
-        { LCD_CMD_COLMOD, { ili9488->color_mode }, 1 },
+        { LCD_CMD_COLMOD, { color_mode }, 1 },
         { ILI9488_INTRFC_MODE_CTL, { ILI9488_INTERFACE_MODE_USE_SDO }, 1 },
         { ILI9488_FRAME_RATE_NORMAL_CTL, { ILI9488_FRAME_RATE_60HZ }, 1 },
         { ILI9488_INVERSION_CTL, { 0x02 }, 1 },
@@ -219,7 +222,7 @@ static esp_err_t panel_ili9488_draw_bitmap(
                                             ((raw_color_data[i] & 0x0010) >> 2));
         }
 
-        esp_lcd_panel_io_tx_color(io, LCD_CMD_RAMWR, buf, color_data_len * 3);
+        esp_lcd_panel_io_tx_color(io, LCD_CMD_RAMWR, buf, color_data_len * 2);
     }
 	else if (ili9488->color_mode == ILI9488_COLOR_MODE_24BIT)
     {

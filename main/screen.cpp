@@ -66,7 +66,7 @@ void initialize_display() {
 
     const esp_lcd_panel_dev_config_t lcd_config = {
         .reset_gpio_num = PIN_NUM_SCREEN_RST,
-        .color_space = ESP_LCD_COLOR_SPACE_BGR,
+        .color_space = ESP_LCD_COLOR_SPACE_RGB,
         .bits_per_pixel = 24,
         .flags =
         {
@@ -102,35 +102,88 @@ void initialize_display() {
 
     ESP_LOGI("SCREEN", "Display init complete. Free heap: %u", heap_caps_get_free_size(MALLOC_CAP_DEFAULT));
 }
+#include "buf.h"
 
 void screen_thingy() {
     initialize_display();
 
-    const int rows = PARALLEL_LINES; 
-    size_t buf_size = SCREEN_WIDTH * rows * sizeof(uint8_t) * 3;
+    const int rows = PARALLEL_LINES;
+    const int cols = 320;
+    size_t buf_size = cols * rows * sizeof(uint8_t) * 3;
     ESP_LOGI("SCREEN", "Allocating screen buffer of %u bytes", (unsigned)buf_size);
-
-    uint16_t *screen_buffer = (uint16_t *)heap_caps_malloc(buf_size, MALLOC_CAP_DMA);
+    //esp_lcd_panel_swap_xy(lcd_handle, true);
+    esp_lcd_panel_mirror(lcd_handle, false, false);
+    uint8_t *screen_buffer = (uint8_t *)heap_caps_malloc(buf_size, MALLOC_CAP_DMA);
     if (screen_buffer == NULL) {
         ESP_LOGE("SCREEN", "Failed to allocate screen buffer. Free heap: %u", heap_caps_get_free_size(MALLOC_CAP_DEFAULT));
     } else {
-        for (int i = 0; i < buf_size; i+=3) {
-            screen_buffer[i] = (i & ((1 << 6) - 1)) << 2;
-            screen_buffer[i+1] = ((i >> 6) & ((1 << 6) - 1)) << 2;
-            screen_buffer[i+2] = ((i >> 12) & ((1 << 6) - 1)) << 2;
+        while(true) {
+            for(int yt = 0; yt < SCREEN_HEIGHT; yt+=rows) {
+                for (int y = yt; y < yt + rows; y++) {
+                    for (int x = 0; x < cols; x++) {
+                        screen_buffer[(y - yt) * cols * 3 + x * 3 + 0] = image_data[y][x][2];
+                        screen_buffer[(y - yt) * cols * 3 + x * 3 + 1] = image_data[y][x][1];
+                        screen_buffer[(y - yt) * cols * 3 + x * 3 + 2] = image_data[y][x][0];
+                    }
+                }
+                ESP_LOGI("SCREEN", "Logging the first 48 bytes of the screen buffer:");
+                for (int i = 0; i < 48; i+=3) {
+                    ESP_LOGI("SCREEN", "Pixel %d: R=%02X G=%02X B=%02X", i/3, screen_buffer[i], screen_buffer[i+1], screen_buffer[i+2]);
+                }
+                ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(lcd_handle, 0, yt, cols, yt + rows, screen_buffer));
+                vTaskDelay(35 / portTICK_PERIOD_MS);
+            }
         }
-        ESP_LOGI("SCREEN", "Logging the first 48 bytes of the screen buffer:");
-        for (int i = 0; i < 48; i+=3) {
-            ESP_LOGI("SCREEN", "Pixel %d: R=%02X G=%02X B=%02X", i/3, screen_buffer[i], screen_buffer[i+1], screen_buffer[i+2]);
-        }
-        ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(lcd_handle, 0, 0, SCREEN_WIDTH, rows, screen_buffer));
-        ESP_LOGI("SCREEN", "Screen buffer var's value is %p", screen_buffer);
-        heap_caps_free(screen_buffer);
-        ESP_LOGI("SCREEN", "Draw complete. Free heap now: %u", heap_caps_get_free_size(MALLOC_CAP_DEFAULT));
     }
+    // size_t buf_size = cols * rows * sizeof(uint16_t);
+    // ESP_LOGI("SCREEN", "Allocating screen buffer of %u bytes", (unsigned)buf_size);
+    // uint16_t *screen_buffer = (uint16_t *)heap_caps_malloc(buf_size, MALLOC_CAP_DMA);
+    // if (screen_buffer == NULL) {
+    //     ESP_LOGE("SCREEN", "Failed to allocate screen buffer. Free heap: %u", heap_caps_get_free_size(MALLOC_CAP_DEFAULT));
+    // } else {
+    //     for(int j = 0; j < SCREEN_HEIGHT/rows; j++) {
+    //         for (int i = 0; i < buf_size; i+=2) {
+    //             int screen_color = i / 2 + j * cols * rows;
+    //             // RGB565 format
+    //             screen_buffer[i/2] = (uint16_t)i/2 + (uint16_t)(j * cols * rows); // Just a gradient for testing
+    //         }
+    //         ESP_LOGI("SCREEN", "Logging the first 24 uint16_t values of the screen buffer:");
+    //         for (int i = 0; i < 48; i+=2) {
+    //             ESP_LOGI("SCREEN", "Pixel %d: RGB565=%04X", i/2, screen_buffer[i/2]);
+    //         }
+    //         ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(lcd_handle, 0, rows * j, cols, rows * (j + 1), screen_buffer));
+    //     }
+    // }   
+
+    heap_caps_free(screen_buffer);
+    ESP_LOGI("SCREEN", "Draw complete. Free heap now: %u", heap_caps_get_free_size(MALLOC_CAP_DEFAULT));
 
     while (1) {
         vTaskDelay(pdMS_TO_TICKS(1000));
         ESP_LOGI("SCREEN", "Doing nothing in screen loop. Free heap: %u", heap_caps_get_free_size(MALLOC_CAP_DEFAULT));
     }
 }
+    // size_t buf_size = cols * rows * sizeof(uint8_t) * 3;
+    // ESP_LOGI("SCREEN", "Allocating screen buffer of %u bytes", (unsigned)buf_size);
+
+    // uint8_t *screen_buffer = (uint8_t *)heap_caps_malloc(buf_size, MALLOC_CAP_DMA);
+    // if (screen_buffer == NULL) {
+    //     ESP_LOGE("SCREEN", "Failed to allocate screen buffer. Free heap: %u", heap_caps_get_free_size(MALLOC_CAP_DEFAULT));
+    // } else {
+    //     for(int j = 0; j < SCREEN_HEIGHT/rows; j++) {
+    //         for (int i = 0; i < buf_size; i+=3) {
+    //             int screen_color = i / 2 + j * cols * rows;
+    //             // screen_buffer[i] = (screen_color & ((1 << 6) - 1)) << 2;
+    //             // screen_buffer[i+1] = ((screen_color >> 6) & ((1 << 6) - 1)) << 2;
+    //             // screen_buffer[i+2] = ((screen_color >> 12) & ((1 << 6) - 1)) << 2;
+    //             screen_buffer[i+2] = (uint8_t)(screen_color & 0x3F) << 2;
+    //             screen_buffer[i+1] = (uint8_t)((screen_color >> 6) & 0x3F) << 2;
+    //             screen_buffer[i] = (uint8_t)((screen_color >> 12) & 0x3F) << 2;
+    //         }
+    //         ESP_LOGI("SCREEN", "Logging the first 48 bytes of the screen buffer:");
+    //         for (int i = 0; i < 48; i+=3) {
+    //             ESP_LOGI("SCREEN", "Pixel %d: R=%02X G=%02X B=%02X", i/3, screen_buffer[i], screen_buffer[i+1], screen_buffer[i+2]);
+    //         }
+    //         ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(lcd_handle, 0, rows * j, cols, rows * (j + 1), screen_buffer));
+    //     }
+    // }
