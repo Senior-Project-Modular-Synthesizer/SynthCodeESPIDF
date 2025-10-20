@@ -12,8 +12,7 @@
     "algorithm": "cpp",
     "format": "cpp",
     "type_traits": "cpp",
-    "cstdlib": "cpp",
-    "regex": "cpp"
+    "cstdlib": "cpp"
   },
   "idf.customExtraVars": {
     "IDF_TARGET": "esp32s3"
