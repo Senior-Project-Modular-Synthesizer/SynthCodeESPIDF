@@ -73,15 +73,18 @@ AK4619VN::AK4619VN() {
     configure_codec();
     DEBUG_LOG("Updating cache after config");
     update_cache();
-    // Loop and print out all cached register values
-
-    DEBUG_CHECKPOINT("SPI initialization completed");
+    for (uint8_t i = 0; i <= 0x14; ++i) {
+        DEBUG_LOG("Register 0x%02X: 0x%02X", i, this->registerCache[i]);
+    }
     
     DEBUG_LOG("Initializing I2S interface");
+
     init_i2s();
     DEBUG_CHECKPOINT("I2S initialization completed");
     
     DEBUG_CHECKPOINT("AK4619VN initialization completed successfully");
+    DEBUG_LOG("Reading updated register values");
+
 }
 
 AK4619VN::~AK4619VN() {
@@ -170,9 +173,9 @@ uint16_t AK4619VN::writeRegister(uint8_t reg, uint8_t data) {
 }
 
 uint16_t AK4619VN::write_setting(uint8_t reg, uint8_t value, uint8_t width, uint8_t pos) {
-    uint8_t old_value = readRegister(reg);
+    uint16_t old_value = readRegister(reg);
     if (old_value == 0xFFFF) return 0xFFFF; // Error reading register
-    uint8_t new_value = (old_value & ~(((1 << width) - 1) << pos)) | ((value & ((1 << width) - 1)) << pos);
+    uint16_t new_value = (old_value & ~(((1 << width) - 1) << pos)) | ((value & ((1 << width) - 1)) << pos);
     return writeRegister(reg, new_value);
 }
 
@@ -275,6 +278,7 @@ void AK4619VN::init_i2s() {
     write_setting(PMDA2_REG, PMDAX_POWER_UP, PMDA2_WIDTH, PMDA2_POS);
     write_setting(PMDA1_REG, PMDAX_POWER_UP, PMDA1_WIDTH, PMDA1_POS);
     write_setting(RSTN_REG, RSTN_NORMAL, RSTN_WIDTH, RSTN_POS);
+    
     vTaskDelay(pdMS_TO_TICKS(100));
 
     DEBUG_CHECKPOINT("I2S initialization completed successfully");

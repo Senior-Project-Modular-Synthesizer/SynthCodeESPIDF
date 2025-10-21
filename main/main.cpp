@@ -11,6 +11,8 @@
 #include "screen.hpp"
 #include "Buffers.hpp"
 
+#include "math.h"
+
 static const char* TAG = "MAIN";
 
 void loopback_main() {
@@ -36,9 +38,29 @@ void loopback_main() {
     SampleOutputBuffer* outputBuffer = new SampleOutputBuffer(codec->tx_chan);
     inputBuffer->start();
     outputBuffer->start();
-
+    int32_t leaky_average0 = 0;
+    int32_t leaky_average1 = 0;
+    int32_t leaky_average2 = 0;
+    int32_t leaky_average3 = 0;
+    int32_t sample_count = 0;
+    ESP_LOGI(TAG, "Entering main processing loop");
     while (true) {
         QuadIntSample sample = inputBuffer->nextIntSample();
+
+        // Update leaky average
+        leaky_average0 = (leaky_average0 * 15 + sample.channels[0]) / 16;
+        leaky_average1 = (leaky_average1 * 15 + sample.channels[1]) / 16;
+        leaky_average2 = (leaky_average2 * 15 + sample.channels[2]) / 16;
+        leaky_average3 = (leaky_average3 * 15 + sample.channels[3]) / 16;
+        //ESP_LOGI(TAG, "Sample CH0=%d, Leaky Average=%d", sample.channels[0], leaky_average);
+        sample_count++;
+        if (sample_count % 1000 == 0) {
+            ESP_LOGI(TAG, "CH 0: %d\tCH 1: %d\tCH 2: %d\tCH 3: %d", leaky_average0, leaky_average1, leaky_average2, leaky_average3);
+        }
+        // Set sample to be sin wave based on sample_count (24 bit limit)
+        int32_t sine_sample = (int32_t)(sin((float)sample_count / 100.0f * 2.0f * M_PI) * 0x7FFFFF);
+        sample.channels[0] = sine_sample;
+        sample.channels[1] = sine_sample;
         outputBuffer->pushIntSample(sample);
     }
     
@@ -95,5 +117,5 @@ void screen_main() {
 
 extern "C" void app_main(void)
 {
-    screen_main();
+    loopback_main();
 }
