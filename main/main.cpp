@@ -38,29 +38,31 @@ void loopback_main() {
     SampleOutputBuffer* outputBuffer = new SampleOutputBuffer(codec->tx_chan);
     inputBuffer->start();
     outputBuffer->start();
-    int32_t leaky_average0 = 0;
-    int32_t leaky_average1 = 0;
-    int32_t leaky_average2 = 0;
-    int32_t leaky_average3 = 0;
     int32_t sample_count = 0;
     ESP_LOGI(TAG, "Entering main processing loop");
     while (true) {
         QuadIntSample sample = inputBuffer->nextIntSample();
-
-        // Update leaky average
-        leaky_average0 = (leaky_average0 * 15 + sample.channels[0]) / 16;
-        leaky_average1 = (leaky_average1 * 15 + sample.channels[1]) / 16;
-        leaky_average2 = (leaky_average2 * 15 + sample.channels[2]) / 16;
-        leaky_average3 = (leaky_average3 * 15 + sample.channels[3]) / 16;
-        //ESP_LOGI(TAG, "Sample CH0=%d, Leaky Average=%d", sample.channels[0], leaky_average);
         sample_count++;
-        if (sample_count % 1000 == 0) {
-            ESP_LOGI(TAG, "CH 0: %d\tCH 1: %d\tCH 2: %d\tCH 3: %d", leaky_average0, leaky_average1, leaky_average2, leaky_average3);
+        if (sample_count % 10000 == 0) {
+            int32_t sample0 = sample.channels[0];
+            int32_t sample1 = sample.channels[1];
+            int32_t sample2 = sample.channels[2];
+            int32_t sample3 = sample.channels[3];
+            float samplef0 = (float)sample0 / (float)0x7FFFFF;
+            float samplef1 = (float)sample1 / (float)0x7FFFFF;
+            float samplef2 = (float)sample2 / (float)0x7FFFFF;
+            float samplef3 = (float)sample3 / (float)0x7FFFFF;
+            ESP_LOGI(TAG, "CH 0: %d (%.6f)  \tCH 1: %d (%.6f)  \tCH 2: %d (%.6f)  \tCH 3: %d (%.6f)",
+                sample0, samplef0,
+                sample1, samplef1,
+                sample2, samplef2,
+                sample3, samplef3);
+            
         }
         // Set sample to be sin wave based on sample_count (24 bit limit)
-        int32_t sine_sample = (int32_t)(sin((float)sample_count / 100.0f * 2.0f * M_PI) * 0x7FFFFF);
-        sample.channels[0] = sine_sample;
-        sample.channels[1] = sine_sample;
+        // int32_t sine_sample = (int32_t)(sin((float)sample_count / 100.0f * 2.0f * M_PI) * 0x7FFFFF);
+        // sample.channels[0] = sine_sample;
+        // sample.channels[1] = sine_sample;
         outputBuffer->pushIntSample(sample);
     }
     

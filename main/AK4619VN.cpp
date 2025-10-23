@@ -229,21 +229,21 @@ void AK4619VN::init_i2s() {
             .clk_src = I2S_CLK_SRC_DEFAULT,
             .ext_clk_freq_hz = 0,
             .mclk_multiple = I2S_MCLK_MULTIPLE_512,
-            .bclk_div = 8
+            .bclk_div = 4
         },
         .slot_cfg = {
             .data_bit_width = I2S_DATA_BIT_WIDTH_24BIT,
             .slot_bit_width = I2S_SLOT_BIT_WIDTH_32BIT,
-            .slot_mode = I2S_SLOT_MODE_MONO,
+            .slot_mode = I2S_SLOT_MODE_STEREO,
             .slot_mask = (i2s_tdm_slot_mask_t)(I2S_TDM_SLOT0 | I2S_TDM_SLOT1 | I2S_TDM_SLOT2 | I2S_TDM_SLOT3),
             .ws_width = 64,
             .ws_pol = false,
-            .bit_shift = false,
+            .bit_shift = true,
             .left_align = true,
             .big_endian = true,
             .bit_order_lsb = false,
             .skip_mask = false,
-            .total_slot = 4
+            .total_slot = I2S_TDM_AUTO_SLOT_NUM
         },
         .gpio_cfg = {
             .mclk = PIN_NUM_CODEC_MCLK,
@@ -391,13 +391,13 @@ void AK4619VN::configure_codec() {
     write_setting(DSL_REG, DSL_32_BIT, DSL_WIDTH, DSL_POS);
 
     // BICK Edge Setting (POTENTIAL ERROR)
-    write_setting(BCKP_REG, BCKP_RISING_EDGE, BCKP_WIDTH, BCKP_POS);
+    write_setting(BCKP_REG, BCKP_FALLING_EDGE, BCKP_WIDTH, BCKP_POS);
 
     // Set Slow Mode
     write_setting(SDOPH_REG, SDOPH_SLOW_MODE, SDOPH_WIDTH, SDOPH_POS);
 
-    // Slot length (POTENTIAL ERROR)
-    write_setting(SLOT_REG,  SLOT_LRCK_EDGE_BASIS, SLOT_WIDTH, SLOT_POS);
+    // Slot length
+    write_setting(SLOT_REG, SLOT_SLOT_LENGTH_BASIS, SLOT_WIDTH, SLOT_POS);
     
     // Volume
     write_setting(VOLAD1L_REG, 0x30, VOLAD1L_WIDTH, VOLAD1L_POS);

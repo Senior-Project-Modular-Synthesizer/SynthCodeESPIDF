@@ -82,10 +82,15 @@ QuadIntSample SampleInputBuffer::nextIntSample() {
         //    vTaskDelay(pdMS_TO_TICKS(SLEEP_MS));
         xEventGroupWaitBits(xHandle, INPUT_BUF1_READY, pdFALSE, pdTRUE, portMAX_DELAY);
         for (int i = 0; i < 4; i++) {
-            next_sample.channels[i] = 
-            (buf1[this->read_ptr * 12 + i * 3 + 0] << 16) +
-            (buf1[this->read_ptr * 12 + i * 3 + 1] << 8)  +
+            uint32_t unsigned_sample = 
+            (buf1[this->read_ptr * 12 + i * 3 + 0] << 16) |
+            (buf1[this->read_ptr * 12 + i * 3 + 1] << 8)  |
             (buf1[this->read_ptr * 12 + i * 3 + 2]);
+            uint32_t signed_sample = unsigned_sample;
+            if (unsigned_sample & 0x800000) { // If sign bit is set
+                signed_sample |= 0xFF000000; // Sign extend to 32 bits
+            }
+            next_sample.channels[i] = signed_sample;
         }
 
         this->read_ptr += 1;
@@ -100,10 +105,15 @@ QuadIntSample SampleInputBuffer::nextIntSample() {
         xEventGroupWaitBits(xHandle, INPUT_BUF2_READY, pdFALSE, pdTRUE, portMAX_DELAY);
 
         for (int i = 0; i < 4; i++) {
-            next_sample.channels[i] = 
+            uint32_t unsigned_sample = 
             (buf2[(this->read_ptr - SAMPLE_COUNT) * 12 + i * 3 + 0] << 16) +
             (buf2[(this->read_ptr - SAMPLE_COUNT) * 12 + i * 3 + 1] << 8)  +
             (buf2[(this->read_ptr - SAMPLE_COUNT) * 12 + i * 3 + 2]);
+            uint32_t signed_sample = unsigned_sample;
+            if (unsigned_sample & 0x800000) { // If sign bit is set
+                signed_sample |= 0xFF000000; // Sign extend to 32 bits
+            }
+            next_sample.channels[i] = signed_sample;
         }
 
         this->read_ptr += 1;
@@ -118,8 +128,9 @@ QuadIntSample SampleInputBuffer::nextIntSample() {
     }
 }
 
-void SampleInputBuffer::read( ) {
 
+void SampleInputBuffer::read( ) {
+    int num_read = 0;
     esp_err_t ret;  
     size_t buf1_bytes_read = 0;
     size_t buf2_bytes_read = 0;
@@ -130,13 +141,12 @@ void SampleInputBuffer::read( ) {
         //    vTaskDelay(pdMS_TO_TICKS(SLEEP_MS));
         xEventGroupWaitBits(xHandle, INPUT_BUF1_WAIT, pdFALSE, pdTRUE, portMAX_DELAY);
         ret = i2s_channel_read(rx_chan, buf1, BUF_SIZE, &buf1_bytes_read, 1000);
+
         ESP_ERROR_CHECK(ret);
         //this->buf1_ready = true;
         xEventGroupClearBits(xHandle, INPUT_BUF1_WAIT);
         xEventGroupSetBits(xHandle, INPUT_BUF1_READY);
 
-        //while (this->buf2_ready)
-        //    vTaskDelay(pdMS_TO_TICKS(SLEEP_MS));
         xEventGroupWaitBits(xHandle, INPUT_BUF2_WAIT, pdFALSE, pdTRUE, portMAX_DELAY);
 
         ret = i2s_channel_read(rx_chan, buf2, BUF_SIZE, &buf2_bytes_read, 1000);
@@ -145,6 +155,7 @@ void SampleInputBuffer::read( ) {
         //this->buf2_ready = true;
         xEventGroupClearBits(xHandle, INPUT_BUF2_WAIT);
         xEventGroupSetBits(xHandle, INPUT_BUF2_READY);
+
     }
 }
 
@@ -162,7 +173,7 @@ static void read_wrapper(void* pvParameters) {
 void SampleInputBuffer::start() {
     xTaskCreatePinnedToCore( read_wrapper,
         "ReadIntoBuf",
-        configMINIMAL_STACK_SIZE,
+        configMINIMAL_STACK_SIZE + 4096,
         this,
         configMAX_PRIORITIES - 1,
         &writeBuf_handle,

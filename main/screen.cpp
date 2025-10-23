@@ -118,7 +118,6 @@ void initialize_display() {
     esp_lcd_panel_swap_xy(lcd_handle, true);
 
 }
-#include "buf.h"
 
 void screen_thingy() {
     initialize_display();
@@ -143,9 +142,9 @@ void screen_thingy() {
             for(int yt = 0; yt < SCREEN_HEIGHT; yt+=rows) {
                 for (int y = yt; y < yt + rows; y++) {
                     for (int x = 0; x < cols; x++) {
-                        screen_buffer[(y - yt) * cols * 3 + x * 3 + 0] = image_data[y][x][2];
-                        screen_buffer[(y - yt) * cols * 3 + x * 3 + 1] = image_data[y][x][1];
-                        screen_buffer[(y - yt) * cols * 3 + x * 3 + 2] = image_data[y][x][0];
+                        screen_buffer[(y - yt) * cols * 3 + x * 3 + 0] = 0;
+                        screen_buffer[(y - yt) * cols * 3 + x * 3 + 1] = 0;
+                        screen_buffer[(y - yt) * cols * 3 + x * 3 + 2] = 0;
                     }
                 }
                 ESP_ERROR_CHECK(esp_lcd_panel_draw_bitmap(lcd_handle, 0, yt, cols, yt + rows, screen_buffer));
