@@ -14,6 +14,8 @@
 #include "Processor.hpp"
 #include "AK4619VN.hpp"
 
+#define BUF_SIZE (3 * 4 * SAMPLE_COUNT)
+
 class SampleInputBuffer : public QuadInputBuffer {
     private:
         i2s_chan_handle_t rx_chan;
@@ -25,18 +27,15 @@ class SampleInputBuffer : public QuadInputBuffer {
         EventBits_t uxBits;
 
     public:
-        SampleInputBuffer(i2s_chan_handle_t rx_chan, EventGroupHandle_t xHandle);
+        SampleInputBuffer(i2s_chan_handle_t rx_chan);
         ~SampleInputBuffer();
 
         void read ();
 
-        bool buf1_ready;
-        bool buf2_ready;
 
-
-        uint8_t buf1[3 * 4 * 1]; // * 4 - quad channel 
+        uint8_t* buf1; // * 4 - quad channel 
                                             // * 3 - 24 bit integers
-        uint8_t buf2[3 * 4 * SAMPLE_COUNT];
+        uint8_t* buf2;
 
         void default_i2s_stream_init();
 
@@ -95,14 +94,14 @@ class SampleOutputBuffer : public QuadOutputBuffer {
         EventBits_t uxBits;
 
     public:
-        SampleOutputBuffer(i2s_chan_handle_t tx_chan, EventGroupHandle_t xHandle);
+        SampleOutputBuffer(i2s_chan_handle_t tx_chan);
         ~SampleOutputBuffer();
 
         void write ();
 
-        uint8_t buf1[3 * 4 * SAMPLE_COUNT]; // * 4 - quad channel 
-                                             // * 3 - 24 bit integers
-        uint8_t buf2[3 * 4 * SAMPLE_COUNT];
+        uint8_t* buf1; // * 4 - quad channel 
+                       // * 3 - 24 bit integers
+        uint8_t* buf2;
 
         /*
         * Returns the number of samples the block can buffer.
