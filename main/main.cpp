@@ -39,30 +39,17 @@ void loopback_main() {
     inputBuffer->start();
     outputBuffer->start();
     int32_t sample_count = 0;
+    float running_average = 0;
     ESP_LOGI(TAG, "Entering main processing loop");
     while (true) {
         QuadIntSample sample = inputBuffer->nextIntSample();
-        sample_count++;
-        if (sample_count % 10000 == 0) {
-            int32_t sample0 = sample.channels[0];
-            int32_t sample1 = sample.channels[1];
-            int32_t sample2 = sample.channels[2];
-            int32_t sample3 = sample.channels[3];
-            float samplef0 = (float)sample0 / (float)0x7FFFFF;
-            float samplef1 = (float)sample1 / (float)0x7FFFFF;
-            float samplef2 = (float)sample2 / (float)0x7FFFFF;
-            float samplef3 = (float)sample3 / (float)0x7FFFFF;
-            ESP_LOGI(TAG, "CH 0: %d (%.6f)  \tCH 1: %d (%.6f)  \tCH 2: %d (%.6f)  \tCH 3: %d (%.6f)",
-                sample0, samplef0,
-                sample1, samplef1,
-                sample2, samplef2,
-                sample3, samplef3);
-            
+        float channel0_float = (float)(sample.channels[0]) / (float)(0x7FFFFF);
+        float alpha = sin(sample_count * 0.0001f) * 0.5f + 0.5f; // Varies between 0 and 1
+        if (sample_count++ % 10000 == 0) {
+            ESP_LOGI(TAG, "Channel 0 Sample: %d, Float: %.6f, Running Average: %.6f", sample.channels[0], channel0_float, running_average);
         }
-        // Set sample to be sin wave based on sample_count (24 bit limit)
-        // int32_t sine_sample = (int32_t)(sin((float)sample_count / 100.0f * 2.0f * M_PI) * 0x7FFFFF);
-        // sample.channels[0] = sine_sample;
-        // sample.channels[1] = sine_sample;
+        running_average = (running_average * (1.0 - alpha) + channel0_float * alpha);
+        sample.channels[0] = (int32_t)(running_average * 0x7FFFFF);
         outputBuffer->pushIntSample(sample);
     }
     

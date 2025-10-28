@@ -58,9 +58,10 @@ struct QuadSample {
 };
 
 typedef uint32_t uint_sample_t;
+typedef int32_t int_sample_t;
 
 struct QuadIntSample {
-    uint_sample_t channels[4];
+    int_sample_t channels[4];
 };
 
 /*
