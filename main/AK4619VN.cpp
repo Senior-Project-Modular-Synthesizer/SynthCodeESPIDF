@@ -129,6 +129,10 @@ uint16_t AK4619VN::readRegister(uint8_t reg) {
         .tx_buffer = tx_data,
         .rx_buffer = rx_data
     };
+
+    trans = {
+        .length
+    }
     
     esp_err_t ret = spi_device_transmit(this->spi, &trans);
     if (ret != ESP_OK) {
