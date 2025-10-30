@@ -5,6 +5,7 @@
 #include "driver/spi_master.h"
 #include "peripheral_cfg.h"
 #include "AK4619VN.hpp"
+#include "XPT2046.hpp"
 
 #include "lvgl.h"
 
@@ -98,6 +99,21 @@ void screen_main() {
     while(1) {
         /* Provide updates to currently-displayed Widgets here. */
         lv_timer_handler();
+        vTaskDelay(pdMS_TO_TICKS(500));
+    }
+}
+
+void touchscreen_test() {
+    esp_err_t ret = spi_bus_initialize(SPI_HOST, &SPI_BUS_CFG, SPI_DMA_CH_AUTO);
+    XPT2046 ts(PIN_NUM_TOUCH_CS, 0);
+    ts.begin();
+    int16_t x, y, z;
+    while (1) {
+        if (ts.read(&x, &y, &z)) {
+            ESP_LOGI(TAG, "Touch detected at X: %d, Y: %d, Z: %d", x, y, z);
+        } else {
+            ESP_LOGI(TAG, "No touch detected");
+        }
         vTaskDelay(pdMS_TO_TICKS(500));
     }
 }

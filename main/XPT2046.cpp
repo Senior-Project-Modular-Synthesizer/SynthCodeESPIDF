@@ -1,6 +1,6 @@
-#include "XPT4026.hpp"
+#include "XPT2046.hpp"
 #include "driver/spi_master.h"
-#include "peripheral_cfg_prototype.h"
+#include "peripheral_cfg.h"
 #include "driver/gpio.h"
 
 /*  XPT2046 touchscreen driver
@@ -22,7 +22,7 @@ XPT2046::XPT2046(uint8_t cs) {
 
 void XPT2046::begin() {
 
-    devcfg = {
+    this->devcfg = {
         .mode = 0,                 // SPI mode 0
         .clock_speed_hz = 1'000'000, // 10 kHz
         .spics_io_num = PIN_NUM_TOUCH_CS,
@@ -38,10 +38,8 @@ uint8_t XPT2046::getInput() {
     // AK4619VN SPI read format: [CMD][ADDR_HIGH][ADDR_LOW] -> [DATA]
     // CMD=0x43, ADDR_HIGH=0x00, ADDR_LOW=register_address
     // Need 4-byte transaction due to SPI shift register behavior
-    uint8_t tx_data[4] = {READ_COMMAND_CODE, 0x00, reg, 0x00};
+    // uint8_t tx_data[4] = {READ_COMMAND_CODE, 0x00, reg, 0x00};
     uint8_t rx_data[4] = {0};
-
-    gpio_set_level(_cs, 0);
 
     spi_transaction_t trans = {
         .length = 1,
@@ -49,15 +47,13 @@ uint8_t XPT2046::getInput() {
         .rx_buffer = rx_data
     };
 
-    esp_err_t ret = spi_bus_add_device(SPI_HOST, &devcfg, &spi);
+    esp_err_t ret = spi_bus_add_device(SPI_HOST, &this->devcfg, &spi);
     
     int16_t z1 = spi_send_16(spi, 0xC1) >> 3;
     int16_t z2 = spi_send_16(spi, 0x91) >> 3;
 
     x = spi_send_16(spi, 0xD0) >> 3;
     y = spi_send_16(spi, 0x0) >> 3;
-
-    gpio_set_level(_cs, 1);
 
     z = z1 + 4095 - z2;
     
