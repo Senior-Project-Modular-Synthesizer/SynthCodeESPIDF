@@ -12,6 +12,7 @@ class XPT2046 {
         XPT2046(uint8_t cs);
 
         spi_device_handle_t spi;
+        spi_device_interface_config_t devcfg;
 
         void begin();
         void setCallback(void (*cb)());
