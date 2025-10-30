@@ -18,6 +18,7 @@
 #define PIN_NUM_CODEC_BCLK GPIO_NUM_8 // I2S Bit Clock
 #define PIN_NUM_CODEC_MCLK GPIO_NUM_18 // Master Clock
 #define PIN_NUM_CODEC_PDN GPIO_NUM_17 // Power Down
+#define PIN_NUM_TOUCH_CS GPIO_NUM_4
 
 #define FREQ_96KHZ 0 // Select between 48kHz and 96kHz
 
