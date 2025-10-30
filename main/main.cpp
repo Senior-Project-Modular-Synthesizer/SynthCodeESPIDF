@@ -44,12 +44,10 @@ void loopback_main() {
     while (true) {
         QuadIntSample sample = inputBuffer->nextIntSample();
         float channel0_float = (float)(sample.channels[0]) / (float)(0x7FFFFF);
-        float alpha = sin(sample_count * 0.0001f) * 0.5f + 0.5f; // Varies between 0 and 1
-        if (sample_count++ % 10000 == 0) {
-            ESP_LOGI(TAG, "Channel 0 Sample: %d, Float: %.6f, Running Average: %.6f", sample.channels[0], channel0_float, running_average);
-        }
-        running_average = (running_average * (1.0 - alpha) + channel0_float * alpha);
-        sample.channels[0] = (int32_t)(running_average * 0x7FFFFF);
+        float alpha = 0.01f;
+        float a = sin(sample_count * 0.0001f) * 0.5f + 0.5f; // Varies between 0 and 1
+        //running_average = (running_average * (1.0 - alpha) + channel0_float * alpha);
+        sample.channels[0] = (int32_t)(a * 0x7FFFFF);
         outputBuffer->pushIntSample(sample);
     }
     

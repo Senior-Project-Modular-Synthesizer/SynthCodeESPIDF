@@ -16,8 +16,6 @@
 
 static const char* TAG = "AK4619VN";
 
-#define SAMPLE_COUNT 1024 
-
 // Debug macros - set to 1 to enable debug output
 #define DEBUG_AK4619VN 1
 #if DEBUG_AK4619VN
