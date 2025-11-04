@@ -18,6 +18,9 @@
 
 #define SLEEP_MS 10
 
+#define WAIT_FOR_READ 1
+#define WAIT_FOR_WRITE 1
+
 bool QuadInputBuffer::errored() const {
     return false;
 }
@@ -97,7 +100,9 @@ QuadIntSample SampleInputBuffer::nextIntSample() {
 
         if (this->read_ptr >= SAMPLE_COUNT) {
             xEventGroupClearBits(xHandle, INPUT_BUF1_READY);
+#if WAIT_FOR_READ
             xEventGroupSetBits(xHandle, INPUT_BUF1_WAIT);
+#endif
         }
 
         return next_sample;
@@ -121,7 +126,9 @@ QuadIntSample SampleInputBuffer::nextIntSample() {
         if (this->read_ptr >= (2 * SAMPLE_COUNT)) {
             this->read_ptr = 0;
             xEventGroupClearBits(xHandle, INPUT_BUF2_READY);
+#if WAIT_FOR_READ
             xEventGroupSetBits(xHandle, INPUT_BUF2_WAIT);
+#endif
         }
 
         return next_sample;
@@ -139,21 +146,29 @@ void SampleInputBuffer::read( ) {
     for ( ;; ) {
         //while (this->buf1_ready)
         //    vTaskDelay(pdMS_TO_TICKS(SLEEP_MS));
+#if WAIT_FOR_READ
         xEventGroupWaitBits(xHandle, INPUT_BUF1_WAIT, pdFALSE, pdTRUE, portMAX_DELAY);
+#endif
         ret = i2s_channel_read(rx_chan, buf1, BUF_SIZE, &buf1_bytes_read, 1000);
 
         ESP_ERROR_CHECK(ret);
         //this->buf1_ready = true;
+#if WAIT_FOR_READ
         xEventGroupClearBits(xHandle, INPUT_BUF1_WAIT);
+#endif
         xEventGroupSetBits(xHandle, INPUT_BUF1_READY);
-
+    
+#if WAIT_FOR_READ
         xEventGroupWaitBits(xHandle, INPUT_BUF2_WAIT, pdFALSE, pdTRUE, portMAX_DELAY);
+#endif
 
         ret = i2s_channel_read(rx_chan, buf2, BUF_SIZE, &buf2_bytes_read, 1000);
         ESP_ERROR_CHECK(ret);
 
         //this->buf2_ready = true;
+#if WAIT_FOR_READ
         xEventGroupClearBits(xHandle, INPUT_BUF2_WAIT);
+#endif
         xEventGroupSetBits(xHandle, INPUT_BUF2_READY);
 
     }
@@ -233,8 +248,9 @@ void SampleOutputBuffer::write ( ) {
     for ( ;; ) {
         //while (!this->buf1_ready)
         //   vTaskDelay(pdMS_TO_TICKS(SLEEP_MS));
+#if WAIT_FOR_WRITE
         xEventGroupWaitBits(xHandle, OUTPUT_BUF1_WAIT, pdFALSE, pdTRUE, portMAX_DELAY);
-
+#endif
         // Send buffer to I2S
         size_t bytes_written;
         
@@ -242,18 +258,24 @@ void SampleOutputBuffer::write ( ) {
         ESP_ERROR_CHECK(ret);
 
         //this->buf1_ready = false;
+#if WAIT_FOR_WRITE
         xEventGroupClearBits(xHandle, OUTPUT_BUF1_WAIT);
+#endif
         xEventGroupSetBits(xHandle, OUTPUT_BUF1_READY);
 
         // while (!this->buf2_ready)
         //     vTaskDelay(pdMS_TO_TICKS(SLEEP_MS));
+#if WAIT_FOR_WRITE
         xEventGroupWaitBits(xHandle, OUTPUT_BUF2_WAIT, pdFALSE, pdTRUE, portMAX_DELAY);
+#endif
         
         ret = i2s_channel_write(tx_chan, buf2, BUF_SIZE, &buf2_bytes_written, 1000);
         ESP_ERROR_CHECK(ret);
 
         //this->buf2_ready = false;
+#if WAIT_FOR_WRITE
         xEventGroupClearBits(xHandle, OUTPUT_BUF2_WAIT);
+#endif
         xEventGroupSetBits(xHandle, OUTPUT_BUF2_READY);
     }
 }
@@ -309,7 +331,9 @@ void SampleOutputBuffer::pushIntSample(QuadIntSample sample) {
         if (this->read_ptr >= SAMPLE_COUNT) {
             //this->buf1_rebuf1ady = true;
             xEventGroupClearBits(xHandle, OUTPUT_BUF1_READY);
+#if WAIT_FOR_WRITE
             xEventGroupSetBits(xHandle, OUTPUT_BUF1_WAIT);
+#endif
         }
 
     } else {
@@ -329,7 +353,9 @@ void SampleOutputBuffer::pushIntSample(QuadIntSample sample) {
             this->read_ptr = 0;
             //this->buf2_ready = true;
             xEventGroupClearBits(xHandle, OUTPUT_BUF2_READY);
+#if WAIT_FOR_WRITE
             xEventGroupSetBits(xHandle, OUTPUT_BUF2_WAIT);
+#endif
         }
     }
 }

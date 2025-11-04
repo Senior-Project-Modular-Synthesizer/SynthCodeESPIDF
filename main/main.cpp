@@ -46,9 +46,10 @@ void loopback_main() {
         QuadIntSample sample = inputBuffer->nextIntSample();
         float channel0_float = (float)(sample.channels[0]) / (float)(0x7FFFFF);
         float alpha = 0.01f;
-        float a = sin(sample_count * 0.0001f) * 0.5f + 0.5f; // Varies between 0 and 1
+        float a = sin(sample_count * 0.1f); // Varies between 0 and 1
         //running_average = (running_average * (1.0 - alpha) + channel0_float * alpha);
-        sample.channels[0] = (int32_t)(a * 0x7FFFFF);
+        sample.channels[0] = (int32_t)(a * 0x3FFFFF);
+        sample_count += 1;
         outputBuffer->pushIntSample(sample);
     }
     
@@ -107,12 +108,13 @@ void touchscreen_test() {
     esp_err_t ret = spi_bus_initialize(SPI_HOST, &SPI_BUS_CFG, SPI_DMA_CH_AUTO);
     XPT2046 ts(PIN_NUM_TOUCH_CS, 0);
     ts.begin();
-    int16_t x, y, z;
     while (1) {
-        if (ts.read(&x, &y, &z)) {
-            ESP_LOGI(TAG, "Touch detected at X: %d, Y: %d, Z: %d", x, y, z);
+        uint8_t result = ts.getInput();
+        if (result != 0) {
+            ESP_LOGI(TAG, "Touchscreen input: 0x%02X", result);
+            ESP_LOGI(TAG, "X: %d, Y: %d, Z: %d", ts.x, ts.y, ts.z);
         } else {
-            ESP_LOGI(TAG, "No touch detected");
+            ESP_LOGI(TAG, "No input detected");
         }
         vTaskDelay(pdMS_TO_TICKS(500));
     }
@@ -120,5 +122,5 @@ void touchscreen_test() {
 
 extern "C" void app_main(void)
 {
-    loopback_main();
+    touchscreen_test();
 }

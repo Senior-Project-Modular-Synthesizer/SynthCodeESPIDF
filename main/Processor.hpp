@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstdint>
-#define SAMPLE_COUNT 32
+#define SAMPLE_COUNT 1024
 
 /*
  * This file defines the core interfaces for a quadraphonic audio processor system.
