@@ -6,7 +6,8 @@
 #include "peripheral_cfg.h"
 #include "AK4619VN.hpp"
 #include "xpt2046.hpp"
-
+#include "ui/screens/home/home_gen.h"
+#include "ui/screens/effect/effect_gen.h"
 #include "lvgl.h"
 
 #include "screen.hpp"
@@ -118,7 +119,9 @@ void screen_main() {
         vTaskDelay(pdMS_TO_TICKS(10));
     }
 }
-
+void synth_gui(){
+    home_create();
+}
 void touchscreen_test() {
     
     vTaskDelay(500 / portTICK_PERIOD_MS);
