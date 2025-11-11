@@ -1,6 +1,9 @@
 #pragma once
 
 #include <cstdint>
+#include <variant>
+#include <map>
+#include <string>
 #define SAMPLE_COUNT 1024
 
 /*
@@ -184,7 +187,22 @@ public:
     virtual bool errored() const = 0;
 };
     
+enum UIElement {
+    SLIDER, // Input float
+    KNOB, // Input float
+    BUTTON, // Input bool
+    POT1, // Input float
+    POT2, // Input float
+    NUMBER, // Output float
+    LIGHT // Output bool
+};
 
+class CustomUI{
+    virtual CustomUI() = 0;
+    virutal ~CustomUI() = 0;
+
+    virtual start() = 0;
+}
 /*
  * A processor is any object that will process audio.
  * 
@@ -214,4 +232,7 @@ public:
      *   - This is used to determine the size of the input and output buffers.
      */
     virtual int blockSize() const = 0;
+
+    virtual std::variant<std::map<std::string, std::pair<UIElement, void*>>, CustomUI> getUIType() const = 0;
+
 };
