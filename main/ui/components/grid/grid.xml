@@ -1,0 +1,6 @@
+<component>
+   <view extends="lv_obj" style_layout="grid">
+            <lv_checkbox text="Check" bind_checked="check" style_grid_cell_row_pos="0" style_grid_cell_column_pos="0"></lv_checkbox>
+            <effectslider style_grid_cell_row_pos="1" style_grid_cell_column_pos="1"/>
+    </view>
+</component>
