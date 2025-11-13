@@ -1,32 +1,30 @@
-# _Sample project_
+# Name of Synth
+## What is a Modular Synth?
+A modular synth is a type of synthesizer that is made from seperate modules connected together via patch cables. Each module has a specific, and basic, function. Each module connects together to creame something more than the sum of its parts. The modular synth can give you any sound you want. Complex sounds can be made by simple easy to understand modules.
 
-(See the README.md file in the upper level 'examples' directory for more information about examples.)
+#### Eurorack
+The most common format for modular synths is Eurorack. Eurorack specifies the height, width, and voltages of modules. This allows modules from different manufacturers to be used together. The standard width of a module is 3U (128.5mm) and the height is 3U (128.5mm). The standard voltage range is -10v to 10v.
 
-This is the simplest buildable example. The example is used by command `idf.py create-project`
-that copies the project to user specified path and set it's name. For more information follow the [docs page](https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/build-system.html#start-a-new-project)
+### Why Modular Synths?
+Modular synths are physical and tactile. Just like a piano, the tactile feedback leads to a connection with your music that you won't get from software.  
 
+### The Problem with Synths
 
+#### Expensive
+Modular synths are expensive. A single module with circuitry an Electrical Engineering Sophomore can make can cost $200. A full modular synth can cost thousands of dollars.
 
-## How to use example
-We encourage the users to use the example as a template for the new projects.
-A recommended way is to follow the instructions on a [docs page](https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/build-system.html#start-a-new-project).
+#### Single Function
+Each module has a single function. Once you spend money on a module, you're locked into its behavior. If you don't need it for a particular sound, it just takes up space in your rack.
 
-## Example folder contents
+## Our Goal
+Our goal is to develop a module capable of taking on the behavior of any module. We want it to be reprogrammable, so it can be used for any sound. We want it to be affordable, so anybody can use it in their projects. And we want it to be accessable. So anybody with an idea and a little bit of programming skill can write their own module.
 
-The project **sample_project** contains one source file in C language [main.c](main/main.c). The file is located in folder [main](main).
-
-ESP-IDF projects are built using CMake. The project build configuration is contained in `CMakeLists.txt`
-files that provide set of directives and instructions describing the project's source files and targets
-(executable, library, or both). 
-
-Below is short explanation of remaining files in the project folder.
-
-```
-├── CMakeLists.txt
-├── main
-│   ├── CMakeLists.txt
-│   └── main.c
-└── README.md                  This is the file you are currently reading
-```
-Additionally, the sample project contains Makefile and component.mk files, used for the legacy Make based build system. 
-They are not used or needed when building with CMake and idf.py.
+### Features
+- 4 Inputs/4 Outputs
+- 3.5" Touchscreen
+- -10v to 10v Output Range
+- 24 Bit 48kHz Audio
+- 240 MHZ ESP32-S3 Processor
+- Reprogrammable
+- Hot Swappable Modules
+- Open Source and Simple API
