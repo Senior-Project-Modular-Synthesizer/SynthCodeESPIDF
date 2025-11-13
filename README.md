@@ -1,23 +1,23 @@
-# Name of Synth
+# Seven Deadly Synths
 ## What is a Modular Synth?
-A modular synth is a type of synthesizer that is made from seperate modules connected together via patch cables. Each module has a specific, and basic, function. Each module connects together to creame something more than the sum of its parts. The modular synth can give you any sound you want. Complex sounds can be made by simple easy to understand modules.
+A modular synth is a type of synthesizer that is made from seperate modules connected together via patch cables. Each module has a specific, and basic, function. They may take in audio signals and control voltages and output something accordingly. These module connects together to create something more than the sum of its parts. By combining multiple simple effects, you can use a modular synth to make complex sounds.
 
 #### Eurorack
-The most common format for modular synths is Eurorack. Eurorack specifies the height, width, and voltages of modules. This allows modules from different manufacturers to be used together. The standard width of a module is 3U (128.5mm) and the height is 3U (128.5mm). The standard voltage range is -10v to 10v.
+The most common format for modular synths is Eurorack. Eurorack specifies the height, width, and voltages of modules. This allows modules from different manufacturers to be used together. The width of a module is a multiple of .2 in (5.08 mm) and the height is 3U (128.5 mm). The standard voltage range is -10v to 10v.
 
 ### Why Modular Synths?
-Modular synths are physical and tactile. Just like a piano, the tactile feedback leads to a connection with your music that you won't get from software.  
+Modular synths, especially Euroracks, are a staple in music production because of their flexibility and versatility, allowing users to design and reconfigure their instruments on the fly. As the needs of a user changes, they can get additional modules that work with their existing tools. They are physical and tactile, just like a piano, the tactile feedback leads to a connection with your music that you won't get from software.
 
 ### The Problem with Synths
 
 #### Expensive
-Modular synths are expensive. A single module with circuitry an Electrical Engineering Sophomore can make can cost $200. A full modular synth can cost thousands of dollars.
+Modular synths are expensive. A single module with circuitry an Sophomore electrical engineering student can make can cost $200. A full modular synth can cost thousands of dollars.
 
 #### Single Function
 Each module has a single function. Once you spend money on a module, you're locked into its behavior. If you don't need it for a particular sound, it just takes up space in your rack.
 
-## Our Goal
-Our goal is to develop a module capable of taking on the behavior of any module. We want it to be reprogrammable, so it can be used for any sound. We want it to be affordable, so anybody can use it in their projects. And we want it to be accessable. So anybody with an idea and a little bit of programming skill can write their own module.
+## Our Module
+We are developing a Eurorack-compliant module capable of taking on the behavior of any module. Through a simple GUI, the user can switch between different effects so they can always have a use for the module. Additional effects can be written in C by using our simple API. The module is affordable to help lower the barrier to entry for modular synthesizers. These characteristics mean that anybody with an idea and a little bit of programming skill could create a custom effect.
 
 ### Features
 - 4 Inputs/4 Outputs
@@ -25,6 +25,3 @@ Our goal is to develop a module capable of taking on the behavior of any module.
 - -10v to 10v Output Range
 - 24 Bit 48kHz Audio
 - 240 MHZ ESP32-S3 Processor
-- Reprogrammable
-- Hot Swappable Modules
-- Open Source and Simple API
