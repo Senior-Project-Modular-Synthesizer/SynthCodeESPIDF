@@ -13,7 +13,8 @@
     "format": "cpp",
     "type_traits": "cpp",
     "cstdlib": "cpp",
-    "cmath": "cpp"
+    "cmath": "cpp",
+    "effect_gen.h": "c"
   },
   "idf.customExtraVars": {
     "IDF_TARGET": "esp32s3"
