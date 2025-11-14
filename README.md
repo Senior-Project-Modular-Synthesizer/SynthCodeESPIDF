@@ -25,9 +25,11 @@ We are developing a Eurorack-compliant module capable of taking on the behavior 
 - -10v to 10v Output Range
 - 24 Bit 48kHz Audio
 - 240 MHZ ESP32-S3 Processor
+- 4 Unused GPIO pins for the user
 
 ## Demo Day
-Our synthesizer will be demonstrated on December 5th from 10 AM to noon. 
+Our synthesizer will be demonstrated on December 5th from 10 AM to noon. It will have a number of basic effects that will let a user make sounds by connecting different effects together. We will also let the user apply effects to input audio, such as regular music from a laptop or a keyboard. The GUI will be similar to the example below:
+![Example GUI](images/SampleLVGL.png "Sample GUI")
 
 ## Additional Resources
-
+Details about the hardware and API, sufficient to create a module and program effects, will be added to our [repo](https://github.com/Senior-Project-Modular-Synthesizer/SynthCodeESPIDF). Four additional GPIO pins are available on the board and the [ESP32 S3 documentation](https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/get-started/index.html) may be needed as well as the .
