@@ -25,3 +25,9 @@ We are developing a Eurorack-compliant module capable of taking on the behavior 
 - -10v to 10v Output Range
 - 24 Bit 48kHz Audio
 - 240 MHZ ESP32-S3 Processor
+
+## Demo Day
+Our synthesizer will be demonstrated on December 5th from 10 AM to noon. 
+
+## Additional Resources
+
