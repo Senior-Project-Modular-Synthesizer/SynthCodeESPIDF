@@ -6,7 +6,7 @@ A modular synth is a type of synthesizer that is made from seperate modules conn
 The most common format for modular synths is Eurorack. Eurorack specifies the height, width, and voltages of modules. This allows modules from different manufacturers to be used together. The width of a module is a multiple of .2 in (5.08 mm) and the height is 3U (128.5 mm). The standard voltage range is -10v to 10v.
 
 ### Why Modular Synths?
-Modular synths, especially Euroracks, are a staple in music production because of their flexibility and versatility, allowing users to design and reconfigure their instruments on the fly. As the needs of a user changes, they can get additional modules that work with their existing tools. They are physical and tactile, just like a piano, the tactile feedback leads to a connection with your music that you won't get from software.
+Modular synths, especially Euroracks, are a staple in music production because of their flexibility and versatility, allowing users to design and reconfigure their instruments on the fly. As the needs of a user changes, they can get additional modules that work with their existing tools. They are physical and tactile--much like a physical instrument, feedback from a modular synth lets the user feel a connection to the music that software often lacks.
 
 ### Problems with Synthesizers
 
