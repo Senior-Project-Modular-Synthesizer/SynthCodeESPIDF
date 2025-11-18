@@ -7,7 +7,7 @@
  *      INCLUDES
  *********************/
 #include "subtitle_gen.h"
-#include "ui.h"
+#include "../../ui.h"
 
 /*********************
  *      DEFINES

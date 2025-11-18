@@ -1,7 +1,7 @@
 <component>
     <api>
         <prop name="title" type="string" default="GAIN"></prop>
-        <prop name="variable" type="int" default="arc1"></prop>
+        <prop name="variable" type="subject" default="arc1"></prop>
     </api>
 
     <previews>

@@ -6,7 +6,6 @@
     <styles>
         <style name="box" transform_width="0" transform_height="0"/>
     </styles>
-    
     <view extends="lv_checkbox" bind_checked="$subject" text="$text">
         <style name="box" selector="indicator|pressed" />
     </view>

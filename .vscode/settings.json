@@ -14,7 +14,14 @@
     "type_traits": "cpp",
     "cstdlib": "cpp",
     "cmath": "cpp",
-    "effect_gen.h": "c"
+    "effect_gen.h": "c",
+    "ui.h": "c",
+    "lvgl.h": "c",
+    "home_gen.h": "c",
+    "lv_types.h": "c",
+    "header_gen.h": "c",
+    "icon_gen.h": "c",
+    "title_gen.h": "c"
   },
   "idf.customExtraVars": {
     "IDF_TARGET": "esp32s3"

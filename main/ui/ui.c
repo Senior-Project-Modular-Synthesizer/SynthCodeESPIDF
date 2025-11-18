@@ -26,18 +26,6 @@
  *  STATIC VARIABLES
  **********************/
 
-/*----------------
- * Translations
- *----------------*/
-static const char * translation_languages[] = {"en", "de", NULL};
-static const char * translation_tags[] = {"settings", "about", "back", "info", NULL};
-static const char * translation_texts[] = {
-    "Settings", "Einstellungen", /* settings */
-    "About", "Über", /* about */
-    "Back", "Zurück", /* back */
-    "This UI was created with LVGL's UI Editor", "Diese Benutzeroberfläche wurde mit dem UI-Editor von LVGL erstellt.", /* info */
-};
-
 /**********************
  *  GLOBAL VARIABLES
  **********************/
@@ -136,7 +124,6 @@ void Project_init_gen(const char * asset_path)
     /*----------------
      * Translations
      *----------------*/
-    lv_translation_add_static(translation_languages, translation_tags, translation_texts);
 
 
 #if LV_USE_XML
@@ -162,6 +149,7 @@ void Project_init_gen(const char * asset_path)
 
     /* Register callbacks */
     lv_xml_register_event_cb(NULL, "arc_changed", arc_changed);
+    lv_xml_register_event_cb(NULL, "slider_changed", slider_changed);
 #endif
 
     /* Register all the global assets so that they won't be created again when globals.xml is parsed.
@@ -192,6 +180,11 @@ void __attribute__((weak)) arc_changed(lv_event_t * e)
 {
    LV_UNUSED(e);
    LV_LOG("arc_changed was called\n");
+}
+void __attribute__((weak)) slider_changed(lv_event_t * e)
+{
+   LV_UNUSED(e);
+   LV_LOG("slider_changed was called\n");
 }
 #endif
 

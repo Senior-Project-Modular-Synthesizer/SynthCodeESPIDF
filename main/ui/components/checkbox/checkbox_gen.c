@@ -7,7 +7,7 @@
  *      INCLUDES
  *********************/
 #include "checkbox_gen.h"
-#include "ui.h"
+#include "../../ui.h"
 
 /*********************
  *      DEFINES

@@ -1,9 +1,9 @@
 /**
- * @file ui.h
+ * @file Project_gen.h
  */
 
-#ifndef UI_H
-#define UI_H
+#ifndef PROJECT_GEN_H
+#define PROJECT_GEN_H
 
 #ifndef UI_SUBJECT_STRING_LENGTH
 #define UI_SUBJECT_STRING_LENGTH 256
@@ -17,11 +17,8 @@ extern "C" {
  *      INCLUDES
  *********************/
 
-#ifdef LV_LVGL_H_INCLUDE_SIMPLE
-    #include "lvgl.h"
-#else
-    #include "lvgl/lvgl.h"
-#endif
+#include "lvgl.h"
+#include "lv_types.h"
 
 /*********************
  *      DEFINES
@@ -86,6 +83,7 @@ extern lv_subject_t check;
  * Event Callbacks
  *----------------*/
 void arc_changed(lv_event_t * e);
+void slider_changed(lv_event_t * e);
 
 /**
  * Initialize the component library
@@ -119,4 +117,4 @@ void Project_init_gen(const char * asset_path);
 } /*extern "C"*/
 #endif
 
-#endif /*UI_H*/
+#endif /*PROJECT_GEN_H*/

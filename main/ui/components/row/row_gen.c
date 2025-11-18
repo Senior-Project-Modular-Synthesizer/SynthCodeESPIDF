@@ -7,7 +7,7 @@
  *      INCLUDES
  *********************/
 #include "row_gen.h"
-#include "ui.h"
+#include "../../ui.h"
 
 /*********************
  *      DEFINES

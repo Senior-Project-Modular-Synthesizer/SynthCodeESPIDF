@@ -12,11 +12,7 @@ extern "C" {
 /*********************
  *      INCLUDES
  *********************/
-#ifdef LV_LVGL_H_INCLUDE_SIMPLE
-    #include "lvgl.h"
-#else
-    #include "lvgl/lvgl.h"
-#endif
+#include "lvgl.h"
 
 /*********************
  *      DEFINES
@@ -31,7 +27,7 @@ extern "C" {
  **********************/
 
 
-lv_obj_t * arc_create(lv_obj_t * parent, const char * title, int32_t variable);
+lv_obj_t * arc_create(lv_obj_t * parent, const char * title, lv_subject_t * variable);
 
 /**********************
  *      MACROS

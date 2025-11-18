@@ -7,7 +7,7 @@
  *      INCLUDES
  *********************/
 #include "column_gen.h"
-#include "ui.h"
+#include "../../ui.h"
 
 /*********************
  *      DEFINES
