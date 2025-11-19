@@ -155,6 +155,8 @@ void SampleInputBuffer::read( ) {
         //this->buf1_ready = true;
 #if WAIT_FOR_READ
         xEventGroupClearBits(xHandle, INPUT_BUF1_WAIT);
+#else
+        this->read_ptr = 0;
 #endif
         xEventGroupSetBits(xHandle, INPUT_BUF1_READY);
     
@@ -168,6 +170,8 @@ void SampleInputBuffer::read( ) {
         //this->buf2_ready = true;
 #if WAIT_FOR_READ
         xEventGroupClearBits(xHandle, INPUT_BUF2_WAIT);
+#else
+        this->read_ptr = SAMPLE_COUNT;
 #endif
         xEventGroupSetBits(xHandle, INPUT_BUF2_READY);
 
@@ -186,6 +190,9 @@ static void read_wrapper(void* pvParameters) {
 * It will be called once so it is the responsibility of the implementation to ensure that the buffer is continued to be filled.
 */
 void SampleInputBuffer::start() {
+    xEventGroupClearBits(xHandle, INPUT_BUF1_READY | INPUT_BUF2_READY);
+    xEventGroupSetBits(xHandle, INPUT_BUF1_WAIT | INPUT_BUF2_WAIT);
+    this->read_ptr = 0;
     xTaskCreatePinnedToCore( read_wrapper,
         "ReadIntoBuf",
         configMINIMAL_STACK_SIZE + 4096,
@@ -201,9 +208,11 @@ void SampleInputBuffer::start() {
 */
 void SampleInputBuffer::stop() {
     // Should this be a taskHandle_t?
-    vTaskDelete(writeBuf_handle);
+    if (writeBuf_handle) {
+        vTaskDelete(writeBuf_handle);
+        writeBuf_handle = nullptr;
+    }
 }
-
 /*
 * Returns true if the buffer ran into an unrecoverable error and must be restarted.
 */
@@ -366,6 +375,9 @@ void SampleOutputBuffer::pushIntSample(QuadIntSample sample) {
 * It will be called once so it is the responsibility of the implementation to ensure that the buffer is continued to be filled.
 */
 void SampleOutputBuffer::start() {
+    xEventGroupClearBits(xHandle, OUTPUT_BUF1_READY | OUTPUT_BUF2_READY);
+    xEventGroupSetBits(xHandle, OUTPUT_BUF1_WAIT | OUTPUT_BUF2_WAIT);
+    this->read_ptr = 0;
     xTaskCreatePinnedToCore( write_wrapper,
         "ReadIntoBuf",
         configMINIMAL_STACK_SIZE,
@@ -379,7 +391,10 @@ void SampleOutputBuffer::start() {
 * Stops the buffer and whatever tasks it's running.
 */
 void SampleOutputBuffer::stop() {
-    vTaskDelete(writeBuf_handle);
+    if (writeBuf_handle) {
+        vTaskDelete(writeBuf_handle);
+        writeBuf_handle = nullptr;
+    }
 }
 
 /*

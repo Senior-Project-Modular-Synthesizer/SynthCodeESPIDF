@@ -15,15 +15,14 @@ ProcessorFactory::~ProcessorFactory() {
     this->registry.clear();
 }
 
-ProcessorFactory& ProcessorFactory::instance() {
-    static ProcessorFactory factory;
-    return factory;
-}
-
 std::unique_ptr<Processor> ProcessorFactory::createProcessor(const std::string& name) {
     auto it = registry.find(name);
     if (it != registry.end()) {
         return it->second();
     }
     return nullptr;
+}
+
+void ProcessorFactory::registerProcessor(const std::string& name, std::function<std::unique_ptr<Processor>()> creator) {
+    registry[name] = creator;
 }

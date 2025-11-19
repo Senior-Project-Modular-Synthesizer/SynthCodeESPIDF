@@ -198,9 +198,7 @@ enum UIElement {
 };
 
 class CustomUI{
-    virtual ~CustomUI() = default;
 
-    virtual void start() = 0;
 };
 /*
  * A processor is any object that will process audio.
