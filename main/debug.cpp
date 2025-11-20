@@ -149,7 +149,7 @@ void synth_gui(){
     lv_indev_set_type(indev, LV_INDEV_TYPE_POINTER);
     lv_indev_set_read_cb(indev, touchscreen_cb);
 
-    home_create();
+    effect_create();
 }
 
 void touchscreen_test() {
