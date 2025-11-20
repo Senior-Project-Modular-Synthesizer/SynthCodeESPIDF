@@ -80,8 +80,6 @@ lv_obj_t * effectslider_create(lv_obj_t * parent, const char * title, lv_subject
 
     LV_TRACE_OBJ_CREATE("finished");
 
-    lv_obj_set_name(lv_obj_0, "effectslider_#");
-
     return lv_obj_0;
 }
 

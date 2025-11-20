@@ -76,10 +76,9 @@ lv_obj_t * effect_create(void)
     lv_obj_set_align(lv_button_0, LV_ALIGN_TOP_RIGHT);
 
     lv_obj_t * lv_label_1 = lv_label_create(lv_button_0);
-    lv_label_set_text(lv_label_1, lv_tr("back"));
+    lv_label_set_text(lv_label_1, "back");
 
-    lv_obj_add_screen_load_event(lv_button_0, LV_EVENT_CLICKED, home, LV_SCREEN_LOAD_ANIM_NONE, 0, 0);
-
+    lv_obj_add_screen_load_event(lv_button_0, LV_EVENT_CLICKED, home, LV_SCR_LOAD_ANIM_NONE, 0, 0);
 
     lv_obj_t * arc_0 = arc_create(lv_obj_0, "GAIN", &arc1);
     lv_obj_set_align(arc_0, LV_ALIGN_BOTTOM_LEFT);
@@ -91,8 +90,6 @@ lv_obj_t * effect_create(void)
 
 
     LV_TRACE_OBJ_CREATE("finished");
-
-    lv_obj_set_name(lv_obj_0, "effect");
 
     return lv_obj_0;
 }

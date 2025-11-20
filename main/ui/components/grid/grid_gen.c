@@ -54,8 +54,6 @@ lv_obj_t * grid_create(lv_obj_t * parent)
 
     LV_TRACE_OBJ_CREATE("finished");
 
-    lv_obj_set_name(lv_obj_0, "grid_#");
-
     return lv_obj_0;
 }
 

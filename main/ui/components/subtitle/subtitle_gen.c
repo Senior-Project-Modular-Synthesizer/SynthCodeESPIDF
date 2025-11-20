@@ -53,8 +53,6 @@ lv_obj_t * subtitle_create(lv_obj_t * parent, const char * text)
 
     LV_TRACE_OBJ_CREATE("finished");
 
-    lv_obj_set_name(lv_label_0, "subtitle_#");
-
     return lv_label_0;
 }
 

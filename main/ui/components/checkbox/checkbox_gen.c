@@ -55,8 +55,6 @@ lv_obj_t * checkbox_create(lv_obj_t * parent, const char * text, lv_subject_t * 
 
     LV_TRACE_OBJ_CREATE("finished");
 
-    lv_obj_set_name(lv_checkbox_0, "checkbox_#");
-
     return lv_checkbox_0;
 }
 

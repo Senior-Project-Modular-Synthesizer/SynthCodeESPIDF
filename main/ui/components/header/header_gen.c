@@ -67,7 +67,7 @@ lv_obj_t * header_create(lv_obj_t * parent, const char * title)
     lv_obj_add_style(lv_obj_0, &main, 0);
 
     lv_obj_t * subtitle_0 = subtitle_create(lv_obj_0, "settings");
-    lv_label_set_text(subtitle_0, lv_tr(title));
+    lv_label_set_text(subtitle_0, title);
     lv_obj_set_flex_grow(subtitle_0, 1);
 
 
@@ -93,21 +93,19 @@ lv_obj_t * header_create(lv_obj_t * parent, const char * title)
     lv_obj_set_style_pad_column(row_0, 0, 0);
 
     lv_obj_t * subtitle_1 = subtitle_create(row_0, "settings");
-    lv_label_bind_text(subtitle_1, &hours, NULL);    lv_obj_bind_style(subtitle_1, &edited, 0, &hour_edited, 1);
+    lv_label_bind_text(subtitle_1, &hours, NULL);    lv_obj_add_style(subtitle_1, &edited, 0);
 
 
     lv_obj_t * subtitle_2 = subtitle_create(row_0, ":");
 
 
     lv_obj_t * subtitle_3 = subtitle_create(row_0, "settings");
-    lv_label_bind_text(subtitle_3, &mins, NULL);    lv_obj_bind_style(subtitle_3, &edited, 0, &min_edited, 1);
+    lv_label_bind_text(subtitle_3, &mins, NULL);    lv_obj_add_style(subtitle_3, &edited, 0);
 
 
 
 
     LV_TRACE_OBJ_CREATE("finished");
-
-    lv_obj_set_name(lv_obj_0, "header_#");
 
     return lv_obj_0;
 }

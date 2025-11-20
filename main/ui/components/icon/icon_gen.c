@@ -62,8 +62,6 @@ lv_obj_t * icon_create(lv_obj_t * parent)
 
     LV_TRACE_OBJ_CREATE("finished");
 
-    lv_obj_set_name(lv_image_0, "icon_#");
-
     return lv_image_0;
 }
 
