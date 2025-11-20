@@ -103,7 +103,7 @@ void screen_main() {
     
     
     lv_obj_t * label = lv_label_create(lv_screen_active());
-    lv_obj_add_style(label , &st, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_add_style(label , &st, LV_PART_MAIN);
     lv_obj_set_style_text_color(label, lv_color_hex(0xffff00), LV_PART_MAIN);
     lv_label_set_text(label, "Hello LVGL!");
     

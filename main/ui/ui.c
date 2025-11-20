@@ -191,3 +191,11 @@ void __attribute__((weak)) slider_changed(lv_event_t * e)
 /**********************
  *   STATIC FUNCTIONS
  **********************/
+
+void arc_changed(lv_event_t * e) {
+
+}
+
+void slider_changed(lv_event_t * e) {
+
+}
