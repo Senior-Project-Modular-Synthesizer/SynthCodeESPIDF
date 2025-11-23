@@ -3,5 +3,7 @@ sdkconfig.old
 
 .vscode/
 settings.json
+.vscode
 
 managed_components/
+.vscode/settings.json
