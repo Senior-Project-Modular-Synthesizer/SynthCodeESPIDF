@@ -33,8 +33,6 @@ SampleInputBuffer::SampleInputBuffer(i2s_chan_handle_t rx_chan) {
     buf1 = (uint8_t*)heap_caps_malloc(BUF_SIZE, MALLOC_CAP_DMA);
     buf2 = (uint8_t*)heap_caps_malloc(BUF_SIZE, MALLOC_CAP_DMA);
 
-    xEventGroupClearBits(xHandle, INPUT_BUF1_READY | INPUT_BUF2_READY);
-    xEventGroupSetBits(xHandle, INPUT_BUF1_WAIT | INPUT_BUF2_WAIT);
 }
 
 SampleInputBuffer::~SampleInputBuffer() {
@@ -150,8 +148,10 @@ void SampleInputBuffer::read( ) {
         xEventGroupWaitBits(xHandle, INPUT_BUF1_WAIT, pdFALSE, pdTRUE, portMAX_DELAY);
 #endif
         ret = i2s_channel_read(rx_chan, buf1, BUF_SIZE, &buf1_bytes_read, 1000);
-
         ESP_ERROR_CHECK(ret);
+        if (xEventGroupGetBits(xHandle) & INPUT_KILLED) {
+            break;
+        }
         //this->buf1_ready = true;
 #if WAIT_FOR_READ
         xEventGroupClearBits(xHandle, INPUT_BUF1_WAIT);
@@ -167,6 +167,9 @@ void SampleInputBuffer::read( ) {
         ret = i2s_channel_read(rx_chan, buf2, BUF_SIZE, &buf2_bytes_read, 1000);
         ESP_ERROR_CHECK(ret);
 
+        if (xEventGroupGetBits(xHandle) & INPUT_KILLED) {
+            break;
+        }
         //this->buf2_ready = true;
 #if WAIT_FOR_READ
         xEventGroupClearBits(xHandle, INPUT_BUF2_WAIT);
@@ -182,6 +185,9 @@ static void read_wrapper(void* pvParameters) {
     SampleInputBuffer* buf = static_cast<SampleInputBuffer*>(pvParameters);
     
     buf->read();
+    while(true) {
+        vTaskDelay(pdMS_TO_TICKS(1000));
+    }
 }
 
 /*
@@ -190,12 +196,19 @@ static void read_wrapper(void* pvParameters) {
 * It will be called once so it is the responsibility of the implementation to ensure that the buffer is continued to be filled.
 */
 void SampleInputBuffer::start() {
-    xEventGroupClearBits(xHandle, INPUT_BUF1_READY | INPUT_BUF2_READY);
+    if (writeBuf_handle != nullptr) {
+        // Already started
+        return;
+    }
+    esp_err_t ret;
+    ret = i2s_channel_enable(rx_chan);
+    ESP_ERROR_CHECK(ret);
+    xEventGroupClearBits(xHandle, INPUT_BUF1_READY | INPUT_BUF2_READY | INPUT_KILLED);
     xEventGroupSetBits(xHandle, INPUT_BUF1_WAIT | INPUT_BUF2_WAIT);
     this->read_ptr = 0;
     xTaskCreatePinnedToCore( read_wrapper,
         "ReadIntoBuf",
-        configMINIMAL_STACK_SIZE + 4096,
+        configMINIMAL_STACK_SIZE + 8192 * 4,
         this,
         configMAX_PRIORITIES - 1,
         &writeBuf_handle,
@@ -207,11 +220,18 @@ void SampleInputBuffer::start() {
 * Stops the buffer and whatever tasks it's running.
 */
 void SampleInputBuffer::stop() {
-    // Should this be a taskHandle_t?
+    xEventGroupSetBits(xHandle, INPUT_KILLED);
+    vTaskDelay(pdMS_TO_TICKS(100));
     if (writeBuf_handle) {
         vTaskDelete(writeBuf_handle);
+        esp_err_t ret;
+        ret = i2s_channel_disable(rx_chan);
+        ESP_ERROR_CHECK(ret);
         writeBuf_handle = nullptr;
     }
+    xEventGroupClearBits(xHandle, INPUT_BUF1_READY | INPUT_BUF2_READY);
+    xEventGroupSetBits(xHandle, INPUT_BUF1_WAIT | INPUT_BUF2_WAIT);
+    this->read_ptr = 0;
 }
 /*
 * Returns true if the buffer ran into an unrecoverable error and must be restarted.
@@ -227,9 +247,6 @@ SampleOutputBuffer::SampleOutputBuffer(i2s_chan_handle_t tx_chan) {
 
     buf1 = (uint8_t*)heap_caps_malloc(BUF_SIZE, MALLOC_CAP_DMA);
     buf2 = (uint8_t*)heap_caps_malloc(BUF_SIZE, MALLOC_CAP_DMA);    
-
-    xEventGroupSetBits(xHandle, OUTPUT_BUF1_READY | OUTPUT_BUF2_READY);
-    xEventGroupClearBits(xHandle, OUTPUT_BUF1_WAIT | OUTPUT_BUF2_WAIT);
 
     // if (xHandle != NULL) {
     //     printf("Create SUCCESS\n");
@@ -265,7 +282,9 @@ void SampleOutputBuffer::write ( ) {
         
         ret = i2s_channel_write(tx_chan, buf1, BUF_SIZE, &buf1_bytes_written, 1000);
         ESP_ERROR_CHECK(ret);
-
+        if (xEventGroupGetBits(xHandle) & OUTPUT_KILLED) {
+            break;
+        }
         //this->buf1_ready = false;
 #if WAIT_FOR_WRITE
         xEventGroupClearBits(xHandle, OUTPUT_BUF1_WAIT);
@@ -280,7 +299,9 @@ void SampleOutputBuffer::write ( ) {
         
         ret = i2s_channel_write(tx_chan, buf2, BUF_SIZE, &buf2_bytes_written, 1000);
         ESP_ERROR_CHECK(ret);
-
+        if (xEventGroupGetBits(xHandle) & OUTPUT_KILLED) {
+            break;
+        }
         //this->buf2_ready = false;
 #if WAIT_FOR_WRITE
         xEventGroupClearBits(xHandle, OUTPUT_BUF2_WAIT);
@@ -293,6 +314,9 @@ void SampleOutputBuffer::write ( ) {
 static void write_wrapper ( void* pvParameters) {
     SampleOutputBuffer* buf = static_cast<SampleOutputBuffer*>(pvParameters);
     buf->write();
+    while(true) {
+        vTaskDelay(pdMS_TO_TICKS(1000));
+    }
 }
 
 
@@ -375,7 +399,15 @@ void SampleOutputBuffer::pushIntSample(QuadIntSample sample) {
 * It will be called once so it is the responsibility of the implementation to ensure that the buffer is continued to be filled.
 */
 void SampleOutputBuffer::start() {
-    xEventGroupClearBits(xHandle, OUTPUT_BUF1_READY | OUTPUT_BUF2_READY);
+    if (writeBuf_handle != nullptr) {
+        // Already started
+        return;
+    }
+    esp_err_t ret;
+    ret = i2s_channel_enable(tx_chan);
+    ESP_ERROR_CHECK(ret);
+
+    xEventGroupClearBits(xHandle, OUTPUT_BUF1_READY | OUTPUT_BUF2_READY | OUTPUT_KILLED);
     xEventGroupSetBits(xHandle, OUTPUT_BUF1_WAIT | OUTPUT_BUF2_WAIT);
     this->read_ptr = 0;
     xTaskCreatePinnedToCore( write_wrapper,
@@ -391,10 +423,18 @@ void SampleOutputBuffer::start() {
 * Stops the buffer and whatever tasks it's running.
 */
 void SampleOutputBuffer::stop() {
+    xEventGroupSetBits(xHandle, OUTPUT_KILLED);
+    vTaskDelay(pdMS_TO_TICKS(100));
     if (writeBuf_handle) {
         vTaskDelete(writeBuf_handle);
+        esp_err_t ret;
+        ret = i2s_channel_disable(tx_chan);
+        ESP_ERROR_CHECK(ret);
         writeBuf_handle = nullptr;
     }
+    xEventGroupClearBits(xHandle, OUTPUT_BUF1_READY | OUTPUT_BUF2_READY);
+    xEventGroupSetBits(xHandle, OUTPUT_BUF1_WAIT | OUTPUT_BUF2_WAIT);
+    this->read_ptr = 0;
 }
 
 /*

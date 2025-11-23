@@ -263,11 +263,6 @@ void AK4619VN::init_i2s() {
     ESP_ERROR_CHECK(ret);
     DEBUG_LOG("Enabling I2S channels");
 
-    ret = i2s_channel_enable(tx_chan);
-    ESP_ERROR_CHECK(ret);
-    ret = i2s_channel_enable(rx_chan);
-    ESP_ERROR_CHECK(ret);
-
     //wait 100 ms
     vTaskDelay(pdMS_TO_TICKS(100));
         // Power up adcs and dacs

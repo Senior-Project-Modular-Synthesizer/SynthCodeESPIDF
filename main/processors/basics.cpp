@@ -1,14 +1,14 @@
 #include "basics.hpp"
 
-Filter::Filter() {
+LowPass::LowPass() {
     // Initialize any necessary state here
 }
 
-Filter::~Filter() {
+LowPass::~LowPass() {
     // Clean up any resources if necessary
 }
 
-void Filter::process(QuadInputBuffer& input, QuadOutputBuffer& output) {
+void LowPass::process(QuadInputBuffer& input, QuadOutputBuffer& output) {
     int sample_count = 0;
     float running_average[4] = {0.0f, 0.0f, 0.0f, 0.0f};
     while (true) {
@@ -22,18 +22,54 @@ void Filter::process(QuadInputBuffer& input, QuadOutputBuffer& output) {
     }
 }
 
-int Filter::blockSize() const {
+int LowPass::blockSize() const {
     return 64; // Example block size
 }
 
-std::variant<std::map<std::string, std::pair<UIElement, void*>>, CustomUI> Filter::getUIType() const {
+HighPass::HighPass() {
+    // Initialize any necessary state here
+}
+
+HighPass::~HighPass() {
+    // Clean up any resources if necessary
+}
+
+void HighPass::process(QuadInputBuffer& input, QuadOutputBuffer& output) {
+    int sample_count = 0;
+    float running_average[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+    while (true) {
+        QuadIntSample sample = input.nextIntSample();
+        for (int i = 0; i < 4; i++) {
+            float channel_float = (float)(sample.channels[i]) / (float)(0x7FFFFF);
+            running_average[i] = alpha * channel_float + (1.0f - alpha) * running_average[i];
+            sample.channels[i] = (int32_t)((channel_float - running_average[i]) * 0x7FFFFF);
+        }
+        output.pushIntSample(sample);
+    }
+}
+
+int HighPass::blockSize() const {
+    return 64; // Example block size
+}
+
+std::variant<std::map<std::string, std::pair<UIElement, void*>>, CustomUI> HighPass::getUIType() const {
+    std::map<std::string, std::pair<UIElement, void*>> ui_map;
+    ui_map[std::string("Alpha")] = std::make_pair(UIElement::SLIDER, static_cast<void*>(const_cast<float*>(&alpha)));
+    return ui_map;
+}   
+
+std::variant<std::map<std::string, std::pair<UIElement, void*>>, CustomUI> LowPass::getUIType() const {
     std::map<std::string, std::pair<UIElement, void*>> ui_map;
     ui_map[std::string("Alpha")] = std::make_pair(UIElement::SLIDER, static_cast<void*>(const_cast<float*>(&alpha)));
     return ui_map;
 }   
 
 void registerBasicProcessors() {
-    ProcessorFactory::instance().registerProcessor("Filter", []() {
-        return std::make_unique<Filter>();
+    ProcessorFactory::instance().registerProcessor("LowPass", []() {
+        return std::make_unique<LowPass>();
+    });
+    ProcessorFactory::instance().registerProcessor("HighPass", []() {
+        return std::make_unique<HighPass>();
     });
 }
+

@@ -7,16 +7,28 @@
 #include <string>
 #include <memory>
 
-class Filter : public Processor {
+class LowPass : public Processor {
     public:
-        Filter();
-        ~Filter();
+        LowPass();
+        ~LowPass();
 
         void process(QuadInputBuffer& input, QuadOutputBuffer& output) override;
         int blockSize() const override;
         std::variant<std::map<std::string, std::pair<UIElement, void*>>, CustomUI> getUIType() const override;
     private:
-        float alpha = 1.0f;
+        float alpha = 0.01f;
+};
+
+class HighPass : public Processor {
+    public:
+        HighPass();
+        ~HighPass();
+
+        void process(QuadInputBuffer& input, QuadOutputBuffer& output) override;
+        int blockSize() const override;
+        std::variant<std::map<std::string, std::pair<UIElement, void*>>, CustomUI> getUIType() const override;
+    private:
+        float alpha = 0.01f;
 };
 
 void registerBasicProcessors();

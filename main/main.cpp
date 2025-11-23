@@ -27,6 +27,7 @@
 Processor *processor = nullptr;
 QuadInputBuffer *input_buffer = nullptr;
 QuadOutputBuffer *output_buffer = nullptr;
+AK4619VN* codec = nullptr;
 
 TaskHandle_t processor_task_handle = nullptr;
 
@@ -47,7 +48,7 @@ void init_devices() {
     ESP_LOGI(TAG, "Testing AK4619VN codec initialization...");
     
     // Create codec instance on the stack - no exceptions needed
-    AK4619VN* codec = new AK4619VN();
+    codec = new AK4619VN();
     input_buffer = new SampleInputBuffer(codec->rx_chan);
     output_buffer = new SampleOutputBuffer(codec->tx_chan);
 
@@ -77,10 +78,20 @@ void new_processor(std::string name) {
     }
     ESP_LOGI(TAG, "Debug Point 3");
     if (processor != nullptr) {
+        // Stop the processor task before deleting
+        if (processor_task_handle) {
+            vTaskDelete(processor_task_handle);
+            processor_task_handle = nullptr;
+        }
         delete processor;
         processor = nullptr;
     }
     ESP_LOGI(TAG, "Debug Point 4");
+
+    esp_err_t ret;
+
+    vTaskDelay(100 / portTICK_PERIOD_MS); // Wait for tasks to stop
+    ESP_LOGI(TAG, "Debug Point 5");
     processor = ProcessorFactory::instance().createProcessor(name).release();
     if (processor == nullptr) {
         printf("Processor '%s' not found\n", name.c_str());
@@ -88,6 +99,8 @@ void new_processor(std::string name) {
         printf("Processor '%s' created\n", name.c_str());
     }
     auto ui = processor->getUIType();
+ 
+
     /// TODO: Handle UI
     input_buffer->start();
     output_buffer->start();
@@ -96,6 +109,7 @@ void new_processor(std::string name) {
 
 void main_task_wrapper(void* pvParameters) {
     ESP_LOGI(TAG, "Starting main task");
+    init_devices();
     new_processor("Filter");
     while (true) {
         vTaskDelay(1000 / portTICK_PERIOD_MS);
@@ -107,8 +121,11 @@ extern "C" void app_main(void)
     init_devices();
     registerBasicProcessors();
     // Start the main task on core 0
-    new_processor("Filter");
+    
     while (true) {
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        new_processor("LowPass");
+        vTaskDelay(2000 / portTICK_PERIOD_MS);
+        new_processor("HighPass");
+        vTaskDelay(2000 / portTICK_PERIOD_MS);
     }
 }
