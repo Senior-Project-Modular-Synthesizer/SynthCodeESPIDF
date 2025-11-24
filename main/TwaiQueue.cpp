@@ -16,7 +16,7 @@
 #include "Buffers.hpp"
 #include "AK4619VN.hpp"
 #include "math.h"
-#include "CanQueue.hpp"
+#include "TwaiQueue.hpp"
 #include "esp_log.h"
 
 #define QUEUE_SIZE 128
@@ -28,7 +28,7 @@ static const char* TWAI = "TWAIDRIVER";
 
 // Initializer list here, because we want config responsibility to fall on the caller
 // (Largely in case of difference in operation)
-CanQueue::CanQueue(twai_handle_t twai_handle, twai_general_config_t twai_config) 
+TwaiQueue::TwaiQueue(twai_handle_t twai_handle, twai_general_config_t twai_config) 
 	: twai_hdl(twai_handle), twai_cfg(twai_config) {
 	
 	xMessageQueue = xQueueCreate(QUEUE_SIZE, sizeof(twai_message_t *));
@@ -40,22 +40,22 @@ CanQueue::CanQueue(twai_handle_t twai_handle, twai_general_config_t twai_config)
 	}
 }
 
-CanQueue::~CanQueue() {
+TwaiQueue::~TwaiQueue() {
     if (twai_hdl) heap_caps_free(twai_hdl);
     twai_hdl = nullptr;
 
     if (xMessageQueue) vQueueDelete(xMessageQueue);
 }
 
-void CanQueue::start() {
+void TwaiQueue::start() {
     twai_start();
 }
 
-void CanQueue::stop() {
+void TwaiQueue::stop() {
 	twai_stop();
 }
 
-size_t CanQueue::getMessage(const twai_message_t* out) {	
+size_t TwaiQueue::getMessage(const twai_message_t* out) {	
 	if (xQueueReceive(xMessageQueue, &out, (TickType_t) 10) == pdPASS) {}
 	else {
 		ESP_LOGE(TWAI, "Waited for 10 ticks but did not receive message from TWAI Bus");
@@ -65,7 +65,7 @@ size_t CanQueue::getMessage(const twai_message_t* out) {
 	return out->data_length_code;
 }
 
-void CanQueue::receiveMessage() {
+void TwaiQueue::receiveMessage() {
 	twai_message_t message;
 	
 	if (twai_receive(&message, pdMS_TO_TICKS(10000)) == ESP_OK) {
@@ -73,10 +73,10 @@ void CanQueue::receiveMessage() {
 	}
 }
 
-void CanQueue::enableMIDI(bool enabled) {
+void TwaiQueue::enableMIDI(bool enabled) {
 	
 }
 
-esp_err_t CanQueue::getStatusInfo(twai_status_info_t status_info) {
+esp_err_t TwaiQueue::getStatusInfo(twai_status_info_t status_info) {
 	return twai_get_status_info(&status_info);
 }

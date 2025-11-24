@@ -1,15 +1,15 @@
-/* push, pop from CanQueue */
+/* push, pop from TwaiQueue */
 /* Use task-safe FreeRTOS queue */
 #include "freertos/queue.h"
 #include "driver/gpio.h"
 #include "driver/twai.h"
 #include "esp_log.h"
 
-class CanQueue {
+class TwaiQueue {
 	public:
-		CanQueue(twai_handle_t twai_hdl, twai_general_config_t twai_config);
+		TwaiQueue(twai_handle_t twai_hdl, twai_general_config_t twai_config);
 
-		~CanQueue();		
+		~TwaiQueue();		
 
 		void start();
 
