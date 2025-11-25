@@ -34,7 +34,7 @@
 lv_obj_t * effect_create(void)
 {
     LV_TRACE_OBJ_CREATE("begin");
-
+    ESP_LOGI("GUI", "Creating Effect");
 
     static bool style_inited = false;
 

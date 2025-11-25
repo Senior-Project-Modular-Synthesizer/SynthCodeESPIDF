@@ -153,7 +153,14 @@ void synth_gui(){
     lv_indev_set_read_cb(indev, touchscreen_cb);
 
     lv_obj_t * effect_screen = effect_create();
-    lv_obj_set_parent(effect_screen, lv_screen_active());
+    lv_scr_load(effect_screen);
+    
+    /* Make LVGL periodically execute its tasks */
+    while(1) {
+        /* Provide updates to currently-displayed Widgets here. */
+        lv_timer_handler();
+        vTaskDelay(pdMS_TO_TICKS(10));
+    }
 }
 
 void touchscreen_test() {

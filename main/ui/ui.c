@@ -83,6 +83,7 @@ lv_subject_t check;
 
 void gui_init()
 {
+    ESP_LOGI("GUI", "Initializing GUI");
     char buf[256];
 
     /*----------------
@@ -121,57 +122,11 @@ void gui_init()
     lv_subject_init_int(&slide, 50);
     lv_subject_init_int(&check, 0);
 
-    /*----------------
-     * Translations
-     *----------------*/
-
-
-#if LV_USE_XML
-    /*Register widgets*/
-
-    /* Register fonts */
-    lv_xml_register_font(NULL, "font_title", font_title);
-    lv_xml_register_font(NULL, "font_subtitle", font_subtitle);
-
-    /* Register subjects */
-    lv_xml_register_subject(NULL, "hours", &hours);
-    lv_xml_register_subject(NULL, "mins", &mins);
-    lv_xml_register_subject(NULL, "age", &age);
-    lv_xml_register_subject(NULL, "bluetooth_on", &bluetooth_on);
-    lv_xml_register_subject(NULL, "wifi_on", &wifi_on);
-    lv_xml_register_subject(NULL, "notification_on", &notification_on);
-    lv_xml_register_subject(NULL, "hour_edited", &hour_edited);
-    lv_xml_register_subject(NULL, "min_edited", &min_edited);
-    lv_xml_register_subject(NULL, "arc1", &arc1);
-    lv_xml_register_subject(NULL, "arc2", &arc2);
-    lv_xml_register_subject(NULL, "slide", &slide);
-    lv_xml_register_subject(NULL, "check", &check);
-
-    /* Register callbacks */
-    lv_xml_register_event_cb(NULL, "arc_changed", arc_changed);
-    lv_xml_register_event_cb(NULL, "slider_changed", slider_changed);
-#endif
-
-    /* Register all the global assets so that they won't be created again when globals.xml is parsed.
-     * While running in the editor skip this step to update the preview when the XML changes */
-#if LV_USE_XML && !defined(LV_EDITOR_PREVIEW)
-
-    /* Register images */
-    lv_xml_register_image(NULL, "img_wifi", img_wifi);
-    lv_xml_register_image(NULL, "img_bluetooth", img_bluetooth);
-    lv_xml_register_image(NULL, "img_bell", img_bell);
-#endif
-
-#if LV_USE_XML == 0
     /*--------------------
     *  Permanent screens
     *-------------------*/
+    // home = home_create();
 
-    /*If XML is enabled it's assumed that the permanent screens are created
-     *manaully from XML using lv_xml_create()*/
-
-    home = home_create();
-#endif
     ESP_LOGI("GUI", "GUI Initialized");
 }
 

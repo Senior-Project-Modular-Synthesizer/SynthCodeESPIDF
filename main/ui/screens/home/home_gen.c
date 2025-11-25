@@ -34,6 +34,7 @@
 lv_obj_t * home_create(void)
 {
     LV_TRACE_OBJ_CREATE("begin");
+    ESP_LOGI("GUI", "Creating Home");
 
     static lv_style_t cell;
 
@@ -45,19 +46,22 @@ lv_obj_t * home_create(void)
 
         style_inited = true;
     }
+    ESP_LOGI("GUI", "Home0");
 
     lv_obj_t * lv_obj_0 = lv_obj_create(NULL);
+    ESP_LOGI("GUI", "Home1");
 
     lv_obj_t * lv_table_0 = lv_table_create(lv_obj_0);
+        ESP_LOGI("GUI", "Home2");
+
     lv_table_set_column_count(lv_table_0, 2);
     lv_table_set_row_count(lv_table_0, 2);
     lv_obj_set_style_border_side(lv_table_0, LV_BORDER_SIDE_FULL, 0);
     lv_obj_add_style(lv_table_0, &cell, 0);
     lv_table_set_cell_value(lv_table_0, 0, 0, "0");
 
-
-
     LV_TRACE_OBJ_CREATE("finished");
+    ESP_LOGI("GUI", "Home Created");
 
     return lv_obj_0;
 }
