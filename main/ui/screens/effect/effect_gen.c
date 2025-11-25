@@ -57,12 +57,13 @@ lv_obj_t * effect_create(void)
     lv_obj_set_width(column_0, lv_pct(100));
     lv_obj_set_y(column_0, 25);
 
-    lv_obj_t * checkbox_0 = checkbox_create(column_0, "Check", &check);
+    lv_obj_t * checkbox_0 = checkbox_create(lv_obj_0, "Check", &check);
+    lv_obj_set_style_align(checkbox_0, LV_ALIGN_CENTER, 0);
 
 
-    lv_obj_t * lv_slider_0 = lv_slider_create(column_0);
-    lv_slider_bind_value(lv_slider_0, &arc1);
-    lv_obj_add_event_cb(lv_slider_0, slider_changed, LV_EVENT_VALUE_CHANGED, NULL);
+    // lv_obj_t * lv_slider_0 = lv_slider_create(column_0);
+    // lv_slider_bind_value(lv_slider_0, &arc1);
+    // lv_obj_add_event_cb(lv_slider_0, slider_changed, LV_EVENT_VALUE_CHANGED, NULL);
 
 
     lv_obj_t * lv_label_0 = lv_label_create(column_0);

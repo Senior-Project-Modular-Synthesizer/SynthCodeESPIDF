@@ -34,7 +34,7 @@
 lv_obj_t * checkbox_create(lv_obj_t * parent, const char * text, lv_subject_t * subject)
 {
     LV_TRACE_OBJ_CREATE("begin");
-
+    ESP_LOGI("GUI", "Checkbox");
     static lv_style_t box;
 
     static bool style_inited = false;
