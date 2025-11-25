@@ -55,9 +55,6 @@ extern lv_font_t * font_subtitle;
 /*----------------
  * Images
  *----------------*/
-extern const void * img_wifi;
-extern const void * img_bluetooth;
-extern const void * img_bell;
 
 /*----------------
  * Subjects

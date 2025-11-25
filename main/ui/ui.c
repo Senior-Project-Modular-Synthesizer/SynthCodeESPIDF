@@ -50,12 +50,6 @@ lv_font_t * font_subtitle;
 /*----------------
  * Images
  *----------------*/
-const void * img_wifi;
-extern const void * img_wifi_data;
-const void * img_bluetooth;
-extern const void * img_bluetooth_data;
-const void * img_bell;
-extern const void * img_bell_data;
 
 /*----------------
  * Subjects
@@ -101,9 +95,6 @@ void gui_init()
     /*----------------
      * Images
      *----------------*/
-    // img_wifi = &img_wifi_data;
-    // img_bluetooth = &img_bluetooth_data;
-    // img_bell = &img_bell_data;
 
 
     /*----------------
