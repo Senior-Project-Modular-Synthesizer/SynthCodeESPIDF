@@ -91,6 +91,7 @@ lv_obj_t * effect_create(void)
 
     LV_TRACE_OBJ_CREATE("finished");
 
+    ESP_LOGI("GUI", "Effect created");
     return lv_obj_0;
 }
 

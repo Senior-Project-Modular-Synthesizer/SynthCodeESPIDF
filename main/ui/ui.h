@@ -19,7 +19,7 @@ extern "C" {
 
 #include "lvgl.h"
 #include "../../managed_components/lvgl__lvgl/src/misc/lv_types.h"
-
+#include "esp_log.h"
 /*********************
  *      DEFINES
  *********************/
@@ -89,7 +89,7 @@ void slider_changed(lv_event_t * e);
  * Initialize the component library
  */
 
-void Project_init_gen(const char * asset_path);
+void gui_init();
 
 /**********************
  *      MACROS

@@ -6,6 +6,7 @@
 #include "peripheral_cfg.h"
 #include "AK4619VN.hpp"
 #include "xpt2046.hpp"
+#include "ui/ui.h"
 #include "ui/screens/home/home_gen.h"
 #include "ui/screens/effect/effect_gen.h"
 #include "ui/screens/home/home_gen.h"
@@ -127,6 +128,8 @@ void synth_gui(){
     init_touchscreen();
     lv_init();
 
+    gui_init();
+
     lv_tick_set_cb(esp_log_early_timestamp);
 
     lv_display_t * display = lv_display_create(480, 320);
@@ -149,7 +152,8 @@ void synth_gui(){
     lv_indev_set_type(indev, LV_INDEV_TYPE_POINTER);
     lv_indev_set_read_cb(indev, touchscreen_cb);
 
-    effect_create();
+    lv_obj_t * effect_screen = effect_create();
+    lv_obj_set_parent(effect_screen, lv_screen_active());
 }
 
 void touchscreen_test() {

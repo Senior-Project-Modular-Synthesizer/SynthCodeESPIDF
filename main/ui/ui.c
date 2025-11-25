@@ -81,7 +81,7 @@ lv_subject_t check;
  *   GLOBAL FUNCTIONS
  **********************/
 
-void Project_init_gen(const char * asset_path)
+void gui_init()
 {
     char buf[256];
 
@@ -100,9 +100,9 @@ void Project_init_gen(const char * asset_path)
     /*----------------
      * Images
      *----------------*/
-    img_wifi = &img_wifi_data;
-    img_bluetooth = &img_bluetooth_data;
-    img_bell = &img_bell_data;
+    // img_wifi = &img_wifi_data;
+    // img_bluetooth = &img_bluetooth_data;
+    // img_bell = &img_bell_data;
 
 
     /*----------------
@@ -172,6 +172,7 @@ void Project_init_gen(const char * asset_path)
 
     home = home_create();
 #endif
+    ESP_LOGI("GUI", "GUI Initialized");
 }
 
 /* callbacks */
