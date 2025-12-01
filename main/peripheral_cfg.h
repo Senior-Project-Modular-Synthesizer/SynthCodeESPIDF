@@ -16,3 +16,5 @@
 #define OUTPUT_BUF1_WAIT  (1 << 5)
 #define OUTPUT_BUF2_READY (1 << 6)
 #define OUTPUT_BUF2_WAIT  (1 << 7)
+#define INPUT_KILLED (1 << 8)
+#define OUTPUT_KILLED (1 << 9)

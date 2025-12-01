@@ -14,12 +14,14 @@ public:
         return factory;
     }
     std::unique_ptr<Processor> createProcessor(const std::string& name);
-private:
-    ProcessorFactory() = default;
-    ~ProcessorFactory() = default;
 
-    ProcessorFactory(const ProcessorFactory&) = delete;
-    ProcessorFactory& operator=(const ProcessorFactory&) = delete;
+    void registerProcessor(const std::string& name, std::function<std::unique_ptr<Processor>()> creator);
+private:
+    ProcessorFactory();
+    ~ProcessorFactory();
+
+    ProcessorFactory(const ProcessorFactory&);
+    ProcessorFactory& operator=(const ProcessorFactory&);
 
     std::unordered_map<std::string, std::function<std::unique_ptr<Processor>()>> registry;
 };

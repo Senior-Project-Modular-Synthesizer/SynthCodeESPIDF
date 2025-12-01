@@ -28,4 +28,10 @@
   },
   "idf.pythonInstallPath": "C:\\Users\\lukej\\.espressif\\tools\\idf-python\\3.11.2\\python.exe",
   "idf.portWin": "COM19",
+  "clangd.path": "C:\\Users\\lukej\\.espressif\\tools\\esp-clang\\esp-19.1.2_20250312\\esp-clang\\bin\\clangd.exe",
+  "clangd.arguments": [
+    "--background-index",
+    "--query-driver=C:\\Users\\lukej\\.espressif\\tools\\xtensa-esp-elf\\esp-14.2.0_20241119\\xtensa-esp-elf\\bin\\xtensa-esp32s3-elf-gcc.exe",
+    "--compile-commands-dir=c:\\repos\\SynthCodeESPIDF\\build"
+  ]
 }
