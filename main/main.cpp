@@ -118,15 +118,14 @@ void main_task_wrapper(void* pvParameters) {
 
 extern "C" void app_main(void)
 {
-    // init_devices();
-    // registerBasicProcessors();
-    // // Start the main task on core 0
+    init_devices();
+    registerBasicProcessors();
+    // Start the main task on core 0
     
-    // while (true) {
-    //     new_processor("LowPass");
-    //     vTaskDelay(2000 / portTICK_PERIOD_MS);
-    //     new_processor("HighPass");
-    //     vTaskDelay(2000 / portTICK_PERIOD_MS);
-    // }
-    synth_gui();
+    while (true) {
+        new_processor("LowPass");
+        vTaskDelay(2000 / portTICK_PERIOD_MS);
+        new_processor("HighPass");
+        vTaskDelay(2000 / portTICK_PERIOD_MS);
+    }
 }
