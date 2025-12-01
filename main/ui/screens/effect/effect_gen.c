@@ -62,7 +62,7 @@ lv_obj_t * effect_create(void)
     lv_obj_add_screen_load_event(lv_button_0, LV_EVENT_CLICKED, home, LV_SCR_LOAD_ANIM_NONE, 0, 0);
 
     static int32_t col_dsc[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
-    static int32_t row_dsc[] = {LV_GRID_FR(1), LV_GRID_FR(1), 120, LV_GRID_TEMPLATE_LAST};
+    static int32_t row_dsc[] = {LV_GRID_FR(1), LV_GRID_FR(1), 150, LV_GRID_TEMPLATE_LAST};
 
     lv_obj_t * grid = lv_obj_create(lv_obj_0);
     lv_obj_set_size(grid, 480, 270);
@@ -73,7 +73,7 @@ lv_obj_t * effect_create(void)
     lv_obj_set_style_align(checkbox_0, LV_ALIGN_CENTER, 0);
     lv_obj_set_grid_cell(checkbox_0, LV_GRID_ALIGN_CENTER, 0, 1, LV_GRID_ALIGN_CENTER, 0, 1);
 
-    lv_obj_t * effect_slider_0 = effectslider_create(grid, "Test", arc1);
+    lv_obj_t * effect_slider_0 = effectslider_create(grid, "Test", &arc1);
     lv_obj_set_grid_cell(effect_slider_0, LV_GRID_ALIGN_CENTER, 1, 1, LV_GRID_ALIGN_CENTER, 0, 1);
 
     lv_obj_t * arc_0 = arc_create(grid, "GAIN", &arc1);

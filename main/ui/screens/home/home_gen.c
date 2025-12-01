@@ -3,38 +3,36 @@
  * @description Template source file for LVGL objects
  */
 
-/*********************
- *      INCLUDES
- *********************/
 #include "home_gen.h"
 #include "../../ui.h"
 
-/*********************
- *      DEFINES
- *********************/
-
-
-
-/**********************
- *      TYPEDEFS
- **********************/
 
 /***********************
  *  STATIC VARIABLES
  **********************/
-
-/***********************
- *  STATIC PROTOTYPES
- **********************/
+static const char * btnm_map[] = {"1", "2", "3", "4", "5", "\n",
+                                  "6", "7", "8", "9", "0", "\n",
+                                  ""
+                                 };
 
 /**********************
  *   GLOBAL FUNCTIONS
  **********************/
+static void event_handler(lv_event_t * e)
+{
+    lv_event_code_t code = lv_event_get_code(e);
+    lv_obj_t * obj = lv_event_get_target_obj(e);
+    if(code == LV_EVENT_VALUE_CHANGED) {
+        uint32_t id = lv_buttonmatrix_get_selected_button(obj);
+        const char * txt = lv_buttonmatrix_get_button_text(obj, id);
+        LV_UNUSED(txt);
+        ESP_LOGI("GUI", "%s was pressed\n", txt);
+    }
+}
 
 lv_obj_t * home_create(void)
 {
     LV_TRACE_OBJ_CREATE("begin");
-    ESP_LOGI("GUI", "Creating Home");
 
     static lv_style_t cell;
 
@@ -46,22 +44,15 @@ lv_obj_t * home_create(void)
 
         style_inited = true;
     }
-    ESP_LOGI("GUI", "Home0");
 
     lv_obj_t * lv_obj_0 = lv_obj_create(NULL);
-    ESP_LOGI("GUI", "Home1");
 
-    lv_obj_t * lv_table_0 = lv_table_create(lv_obj_0);
-        ESP_LOGI("GUI", "Home2");
-
-    lv_table_set_column_count(lv_table_0, 2);
-    lv_table_set_row_count(lv_table_0, 2);
-    lv_obj_set_style_border_side(lv_table_0, LV_BORDER_SIDE_FULL, 0);
-    lv_obj_add_style(lv_table_0, &cell, 0);
-    lv_table_set_cell_value(lv_table_0, 0, 0, "0");
+    lv_obj_t * lv_buttonmatrix_0 = lv_buttonmatrix_create(lv_obj_0);
+    lv_buttonmatrix_set_map(btnm1, btnm_map);
+    lv_obj_align(btnm1, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_add_event_cb(btnm1, event_handler, LV_EVENT_ALL, NULL);
 
     LV_TRACE_OBJ_CREATE("finished");
-    ESP_LOGI("GUI", "Home Created");
 
     return lv_obj_0;
 }
