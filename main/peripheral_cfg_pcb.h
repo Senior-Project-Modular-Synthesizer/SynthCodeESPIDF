@@ -7,7 +7,7 @@
 
 // Wires for SPI
 #define PIN_NUM_MOSI GPIO_NUM_6
-#define PIN_NUM_MISO GPIO_NUM_1
+#define PIN_NUM_MISO GPIO_NUM_7
 #define PIN_NUM_SCLK GPIO_NUM_5
 
 // Wires for CODEC

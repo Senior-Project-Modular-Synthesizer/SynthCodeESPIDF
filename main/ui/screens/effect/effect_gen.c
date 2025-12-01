@@ -71,20 +71,18 @@ lv_obj_t * effect_create(void)
     
     lv_obj_t * checkbox_0 = checkbox_create(lv_obj_0, "Check", &check);
     lv_obj_set_style_align(checkbox_0, LV_ALIGN_CENTER, 0);
+    lv_obj_set_grid_cell(checkbox_0, LV_GRID_ALIGN_CENTER, 0, 1, LV_GRID_ALIGN_CENTER, 0, 1)
 
-
-    lv_obj_t * lv_slider_0 = lv_slider_create(grid);
-    lv_slider_bind_value(lv_slider_0, &arc1);
-    lv_obj_add_event_cb(lv_slider_0, slider_changed, LV_EVENT_VALUE_CHANGED, NULL);
-
-    lv_obj_t * lv_label_0 = lv_label_create(grid);
-    lv_label_set_text(lv_label_0, "asd");
+    lv_obj_t * effect_slider_0 = effectslider_create(grid, "Test", arc1);
+    lv_obj_set_grid_cell(effect_slider_0, LV_GRID_ALIGN_CENTER, 1, 1, LV_GRID_ALIGN_CENTER, 0, 1)
 
     lv_obj_t * arc_0 = arc_create(grid, "GAIN", &arc1);
     lv_obj_set_align(arc_0, LV_ALIGN_BOTTOM_LEFT);
+    lv_obj_set_grid_cell(arc_0, LV_GRID_ALIGN_CENTER, 0, 1, LV_GRID_ALIGN_CENTER, 2, 1)
 
     lv_obj_t * arc_1 = arc_create(grid, "GAIN", &arc2);
     lv_obj_set_align(arc_1, LV_ALIGN_BOTTOM_RIGHT);
+    lv_obj_set_grid_cell(arc_1, LV_GRID_ALIGN_CENTER, 1, 1, LV_GRID_ALIGN_CENTER, 2, 1)
 
 
     LV_TRACE_OBJ_CREATE("finished");
