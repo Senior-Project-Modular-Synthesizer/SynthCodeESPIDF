@@ -2,5 +2,6 @@
 
 extern "C" void app_main(void)
 {
-    synth_gui();
+    // synth_gui();
+    touchscreen_test();
 }

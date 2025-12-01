@@ -7,7 +7,7 @@
 
 // Wires for SPI
 #define PIN_NUM_MOSI GPIO_NUM_6
-#define PIN_NUM_MISO GPIO_NUM_7
+#define PIN_NUM_MISO GPIO_NUM_1
 #define PIN_NUM_SCLK GPIO_NUM_5
 
 // Wires for CODEC
@@ -18,7 +18,6 @@
 #define PIN_NUM_CODEC_BCLK GPIO_NUM_10 // I2S Bit Clock
 #define PIN_NUM_CODEC_MCLK GPIO_NUM_9 // Master Clock
 #define PIN_NUM_CODEC_PDN GPIO_NUM_21 // Power Down
-#define PIN_NUM_TOUCH_CS GPIO_NUM_2
 
 #define FREQ_96KHZ 0 // Select between 48kHz and 96kHz
 
@@ -28,6 +27,7 @@
 #define PIN_NUM_SCREEN_CS GPIO_NUM_15
 #define PIN_NUM_SCREEN_DC GPIO_NUM_16  // Data/Command
 #define PIN_NUM_SCREEN_RST GPIO_NUM_4 // Reset
+#define PIN_NUM_TOUCH_CS GPIO_NUM_2
 
 #define SPI_TFT_CLOCK_SPEED_HZ  (40*1000*1000)
 #define SPI_TFT_SPI_MODE 0
@@ -39,6 +39,7 @@
 //To speed up transfers, every SPI transfer sends a bunch of lines. This define specifies how many. More means more memory use,
 //but less overhead for setting up / finishing transfers. Make sure SCREEN_WIDTH is dividable by this.
 #define PARALLEL_LINES 96
+// #define PARALLEL_LINES 1
 
 const spi_bus_config_t SPI_BUS_CFG = {
     .mosi_io_num = PIN_NUM_MOSI,

@@ -27,5 +27,5 @@
     "IDF_TARGET": "esp32s3"
   },
   "idf.pythonInstallPath": "C:\\Users\\lukej\\.espressif\\tools\\idf-python\\3.11.2\\python.exe",
-  "idf.portWin": "COM20",
+  "idf.portWin": "COM19",
 }

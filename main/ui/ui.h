@@ -102,8 +102,6 @@ void gui_init();
 #include "components/column/column_gen.h"
 #include "components/effectslider/effectslider_gen.h"
 #include "components/grid/grid_gen.h"
-#include "components/header/header_gen.h"
-#include "components/icon/icon_gen.h"
 #include "components/row/row_gen.h"
 #include "components/subtitle/subtitle_gen.h"
 #include "components/title/title_gen.h"
