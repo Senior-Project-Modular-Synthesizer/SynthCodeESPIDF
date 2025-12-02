@@ -1,0 +1,32 @@
+/* push, pop from TwaiQueue */
+/* Use task-safe FreeRTOS queue */
+#include "freertos/queue.h"
+#include "driver/gpio.h"
+#include "driver/twai.h"
+#include "esp_log.h"
+
+class TwaiQueue {
+	public:
+		TwaiQueue(twai_handle_t twai_hdl, twai_general_config_t twai_config);
+
+		~TwaiQueue();		
+
+		void start();
+
+		void stop();
+		
+		size_t getMessage(const twai_message_t* out);
+
+		void receiveMessage();
+		
+		void enableMIDI(bool enabled);
+
+		esp_err_t getStatusInfo(twai_status_info_t status_info);
+
+	private:
+		QueueHandle_t xMessageQueue;
+
+		twai_handle_t twai_hdl;
+
+		twai_general_config_t twai_cfg;
+};
