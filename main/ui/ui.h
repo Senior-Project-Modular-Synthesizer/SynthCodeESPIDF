@@ -99,10 +99,7 @@ void gui_init();
 /*Include all the widget and components of this library*/
 #include "components/arc/arc_gen.h"
 #include "components/checkbox/checkbox_gen.h"
-#include "components/column/column_gen.h"
 #include "components/effectslider/effectslider_gen.h"
-#include "components/grid/grid_gen.h"
-#include "components/row/row_gen.h"
 #include "components/subtitle/subtitle_gen.h"
 #include "components/title/title_gen.h"
 #include "screens/effect/effect_gen.h"

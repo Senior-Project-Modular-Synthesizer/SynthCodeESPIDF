@@ -10,8 +10,8 @@
 /***********************
  *  STATIC VARIABLES
  **********************/
-static const char * btnm_map[] = {"1", "2", "3", "4", "5", "\n",
-                                  "6", "7", "8", "9", "0", "\n",
+static const char * btnm_map[] = {"High Pass", "Low Pass", "Gain" "4", "\n",
+                                  "5", "6", "7", "8", "\n",
                                   ""
                                  };
 
@@ -27,6 +27,8 @@ static void event_handler(lv_event_t * e)
         const char * txt = lv_buttonmatrix_get_button_text(obj, id);
         LV_UNUSED(txt);
         ESP_LOGI("GUI", "%s was pressed\n", txt);
+        lv_obj_t * effect_scr = effect_create();
+        lv_screen_load(effect_scr);
     }
 }
 
