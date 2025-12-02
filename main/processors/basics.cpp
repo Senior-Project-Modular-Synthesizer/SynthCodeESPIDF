@@ -1,4 +1,5 @@
 #include "basics.hpp"
+#include "esp_log.h"
 
 LowPass::LowPass() {
     // Initialize any necessary state here
@@ -11,8 +12,13 @@ LowPass::~LowPass() {
 void LowPass::process(QuadInputBuffer& input, QuadOutputBuffer& output) {
     int sample_count = 0;
     float running_average[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+    int count = 0;
     while (true) {
         QuadIntSample sample = input.nextIntSample();
+        if (count % 10000 == 0) {
+            ESP_LOGI("LowPass", "Processing sample %d %d %d %d", sample.channels[0], sample.channels[1], sample.channels[2], sample.channels[3]);
+        }
+        count++;
         for (int i = 0; i < 4; i++) {
             float channel_float = (float)(sample.channels[i]) / (float)(0x7FFFFF);
             running_average[i] = alpha * channel_float + (1.0f - alpha) * running_average[i];

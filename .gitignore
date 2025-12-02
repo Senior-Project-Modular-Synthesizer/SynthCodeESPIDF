@@ -7,3 +7,4 @@ settings.json
 
 managed_components/
 .vscode/settings.json
+./.vscode
