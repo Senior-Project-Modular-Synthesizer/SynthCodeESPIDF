@@ -38,8 +38,8 @@ lv_obj_t * arc_create(lv_obj_t * parent, const char * title, lv_subject_t * vari
 
     lv_obj_t * lv_arc_0 = lv_arc_create(parent);
     lv_arc_bind_value(lv_arc_0, variable);
-    lv_obj_set_width(lv_arc_0, 150);
-    lv_obj_set_height(lv_arc_0, 150);
+    lv_obj_set_width(lv_arc_0, 135);
+    lv_obj_set_height(lv_arc_0, 135);
     lv_obj_set_ext_click_area(lv_arc_0, 5);
     lv_obj_add_event_cb(lv_arc_0, arc_changed, LV_EVENT_VALUE_CHANGED, NULL);
 

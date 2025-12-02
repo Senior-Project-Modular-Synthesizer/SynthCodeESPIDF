@@ -37,13 +37,17 @@ lv_obj_t * effect_create(void)
     ESP_LOGI("GUI", "Creating Effect");
 
     static lv_style_t main;
-
+    static int32_t col_dsc[];
+    static int32_t row_dsc[];
     static bool style_inited = false;
 
     if (!style_inited) {
         lv_style_init(&main);
         lv_style_set_text_font(&main, font_subtitle);
-
+        
+        col_dsc = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
+        row_dsc = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
+        
         style_inited = true;
     }
 
@@ -56,20 +60,18 @@ lv_obj_t * effect_create(void)
     lv_obj_set_align(title_0, LV_ALIGN_TOP_LEFT);
 
     lv_obj_t * lv_button_0 = lv_button_create(lv_obj_0);
-    lv_obj_set_style_align(lv_button_0, LV_ALIGN_BOTTOM_MID, 0);
+    lv_obj_set_height(lv_button_0, 30);
     lv_obj_set_style_text_font(lv_button_0, font_subtitle, 0);
     lv_obj_set_align(lv_button_0, LV_ALIGN_TOP_RIGHT);
 
-    lv_obj_t * lv_label_1 = lv_label_create(lv_button_0);
-    lv_label_set_text(lv_label_1, "Back");
+    lv_obj_t * lv_label_0 = lv_label_create(lv_button_0);
+    lv_label_set_text(lv_label_0, "Back");
+    lv_obj_set_align(lv_label_0, LV_ALIGN_CENTER);
 
     lv_obj_add_screen_load_event(lv_button_0, LV_EVENT_CLICKED, home, LV_SCR_LOAD_ANIM_NONE, 0, 0);
 
-    static int32_t col_dsc[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
-    static int32_t row_dsc[] = {LV_GRID_FR(1), LV_GRID_FR(1), 150, LV_GRID_TEMPLATE_LAST};
-
     lv_obj_t * grid = lv_obj_create(lv_obj_0);
-    lv_obj_set_size(grid, 480, 270);
+    lv_obj_set_size(grid, 480, 280);
     lv_obj_set_style_align(grid, LV_ALIGN_BOTTOM_MID, 0);
     lv_obj_set_grid_dsc_array(grid, col_dsc, row_dsc);
     lv_obj_set_flag(grid, LV_OBJ_FLAG_SCROLLABLE, false);
@@ -83,11 +85,11 @@ lv_obj_t * effect_create(void)
 
     lv_obj_t * arc_0 = arc_create(grid, "GAIN", &arc1);
     lv_obj_set_align(arc_0, LV_ALIGN_BOTTOM_LEFT);
-    lv_obj_set_grid_cell(arc_0, LV_GRID_ALIGN_CENTER, 0, 1, LV_GRID_ALIGN_CENTER, 2, 1);
+    lv_obj_set_grid_cell(arc_0, LV_GRID_ALIGN_CENTER, 0, 1, LV_GRID_ALIGN_CENTER, 1, 1);
 
     lv_obj_t * arc_1 = arc_create(grid, "GAIN", &arc2);
     lv_obj_set_align(arc_1, LV_ALIGN_BOTTOM_RIGHT);
-    lv_obj_set_grid_cell(arc_1, LV_GRID_ALIGN_CENTER, 1, 1, LV_GRID_ALIGN_CENTER, 2, 1);
+    lv_obj_set_grid_cell(arc_1, LV_GRID_ALIGN_CENTER, 2, 1, LV_GRID_ALIGN_CENTER, 1, 1);
 
 
     LV_TRACE_OBJ_CREATE("finished");
