@@ -8,6 +8,8 @@
  *********************/
 #include "effect_gen.h"
 #include "../../ui.h"
+#include "../../../globals.h"
+
 
 /***********************
  *  STATIC VARIABLES
@@ -19,7 +21,7 @@ static int32_t row_dsc[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
  *   GLOBAL FUNCTIONS
  **********************/
 
-lv_obj_t * effect_create(void)
+lv_obj_t * effect_create(UIElement data[static 6])
 {
     LV_TRACE_OBJ_CREATE("begin");
     ESP_LOGI("GUI", "Creating Effect");
@@ -59,8 +61,24 @@ lv_obj_t * effect_create(void)
     lv_obj_set_grid_dsc_array(grid, col_dsc, row_dsc);
     lv_obj_set_flag(grid, LV_OBJ_FLAG_SCROLLABLE, false);
 
+    for (int i = 0; i < 6; i++) {
+        int row = i / 3;
+        int col = i % 3;
+        lv_obj_t * comp;
+        switch () {
+            case :
+                comp = checkbox_create(grid, "Check", &check);
+                break;
+            case :
+                comp = effectslider_create(grid, "Test", &arc1);
+                break;
+            case :
+                comp = arc_create(grid, "GAIN", &arc1);
+        }
+        lv_obj_set_grid_cell(comp, LV_GRID_ALIGN_CENTER, col, 1, LV_GRID_ALIGN_CENTER, row, 1);
+    }
+
     lv_obj_t * checkbox_0 = checkbox_create(grid, "Check", &check);
-    lv_obj_set_style_align(checkbox_0, LV_ALIGN_CENTER, 0);
     lv_obj_set_grid_cell(checkbox_0, LV_GRID_ALIGN_CENTER, 0, 1, LV_GRID_ALIGN_CENTER, 0, 1);
 
     lv_obj_t * effect_slider_0 = effectslider_create(grid, "Test", &arc1);

@@ -20,7 +20,8 @@
     "home_gen.h": "c",
     "lv_types.h": "c",
     "title_gen.h": "c",
-    "arc_gen.h": "c"
+    "arc_gen.h": "c",
+    "variant": "cpp"
   },
   "idf.customExtraVars": {
     "IDF_TARGET": "esp32s3"
