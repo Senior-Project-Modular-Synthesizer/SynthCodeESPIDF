@@ -88,9 +88,9 @@ void gui_init()
      * Fonts
      *----------------*/
     /* create tiny ttf font 'font_title' from C array */
-    font_title = &lv_font_montserrat_20;
+    font_title = &lv_font_montserrat_28;
     /* create tiny ttf font 'font_subtitle' from C array */
-    font_subtitle = &lv_font_montserrat_14;
+    font_subtitle = &lv_font_montserrat_20;
 
     /*----------------
      * Images

@@ -153,8 +153,10 @@ void synth_gui(){
     lv_indev_set_read_cb(indev, touchscreen_cb);
 
     lv_obj_t * effect_screen = effect_create();
+    ESP_LOGI("GUI", "Loading Effect");
     lv_scr_load(effect_screen);
-    
+    ESP_LOGI("GUI", "Loaded Effect");
+
     /* Make LVGL periodically execute its tasks */
     while(1) {
         /* Provide updates to currently-displayed Widgets here. */

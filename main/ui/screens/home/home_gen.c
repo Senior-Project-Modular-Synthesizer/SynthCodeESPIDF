@@ -48,9 +48,9 @@ lv_obj_t * home_create(void)
     lv_obj_t * lv_obj_0 = lv_obj_create(NULL);
 
     lv_obj_t * lv_buttonmatrix_0 = lv_buttonmatrix_create(lv_obj_0);
-    lv_buttonmatrix_set_map(btnm1, btnm_map);
-    lv_obj_align(btnm1, LV_ALIGN_CENTER, 0, 0);
-    lv_obj_add_event_cb(btnm1, event_handler, LV_EVENT_ALL, NULL);
+    lv_buttonmatrix_set_map(lv_buttonmatrix_0, btnm_map);
+    lv_obj_align(lv_buttonmatrix_0, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_add_event_cb(lv_buttonmatrix_0, event_handler, LV_EVENT_ALL, NULL);
 
     LV_TRACE_OBJ_CREATE("finished");
 

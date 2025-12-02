@@ -46,6 +46,7 @@ lv_obj_t * effectslider_create(lv_obj_t * parent, const char * title, lv_subject
         lv_style_set_width(&slider, LV_SIZE_CONTENT);
         lv_style_set_height(&slider, 60);
         lv_style_set_flex_flow(&slider, LV_FLEX_FLOW_COLUMN);
+        lv_style_set_text_font(&slider, font_subtitle);
 
         style_inited = true;
     }
@@ -57,12 +58,12 @@ lv_obj_t * effectslider_create(lv_obj_t * parent, const char * title, lv_subject
     lv_obj_t * lv_label_0 = lv_label_create(lv_obj_0);
     lv_obj_set_align(lv_label_0, LV_ALIGN_CENTER);
     lv_label_set_text(lv_label_0, title);
-    lv_obj_set_style_pad_bottom(lv_label_0, 50, 0);
+    lv_obj_set_style_pad_bottom(lv_label_0, 45, 0);
 
 
     lv_obj_t * lv_slider_0 = lv_slider_create(lv_obj_0);
     lv_slider_bind_value(lv_slider_0, variable);
-    lv_obj_set_width(lv_slider_0, 200);
+    lv_obj_set_width(lv_slider_0, 150);
     lv_obj_set_align(lv_slider_0, LV_ALIGN_CENTER);
     lv_obj_add_event_cb(lv_slider_0, slider_changed, LV_EVENT_VALUE_CHANGED, NULL);
 

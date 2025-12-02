@@ -36,9 +36,13 @@ lv_obj_t * effect_create(void)
     LV_TRACE_OBJ_CREATE("begin");
     ESP_LOGI("GUI", "Creating Effect");
 
+    static lv_style_t main;
+
     static bool style_inited = false;
 
     if (!style_inited) {
+        lv_style_init(&main);
+        lv_style_set_text_font(&main, font_subtitle);
 
         style_inited = true;
     }
@@ -68,8 +72,9 @@ lv_obj_t * effect_create(void)
     lv_obj_set_size(grid, 480, 270);
     lv_obj_set_style_align(grid, LV_ALIGN_BOTTOM_MID, 0);
     lv_obj_set_grid_dsc_array(grid, col_dsc, row_dsc);
-    
-    lv_obj_t * checkbox_0 = checkbox_create(lv_obj_0, "Check", &check);
+    lv_obj_set_flag(grid, LV_OBJ_FLAG_SCROLLABLE, false);
+
+    lv_obj_t * checkbox_0 = checkbox_create(grid, "Check", &check);
     lv_obj_set_style_align(checkbox_0, LV_ALIGN_CENTER, 0);
     lv_obj_set_grid_cell(checkbox_0, LV_GRID_ALIGN_CENTER, 0, 1, LV_GRID_ALIGN_CENTER, 0, 1);
 
