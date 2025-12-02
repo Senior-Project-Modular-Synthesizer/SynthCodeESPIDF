@@ -17,11 +17,12 @@
 static int32_t col_dsc[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
 static int32_t row_dsc[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
 
+static char num_buf[8];
 /**********************
  *   GLOBAL FUNCTIONS
  **********************/
 
-lv_obj_t * effect_create(UIElement data[static 6])
+lv_obj_t * effect_create(UIElement elements[static 6])
 {
     LV_TRACE_OBJ_CREATE("begin");
     ESP_LOGI("GUI", "Creating Effect");
@@ -64,34 +65,26 @@ lv_obj_t * effect_create(UIElement data[static 6])
     for (int i = 0; i < 6; i++) {
         int row = i / 3;
         int col = i % 3;
+        UIElement element = elements[i];
         lv_obj_t * comp;
-        switch () {
-            case :
+        switch (element.type) {
+            case UITypes.BUTTON:
                 comp = checkbox_create(grid, "Check", &check);
                 break;
-            case :
+            case UITypes.SLIDER:
                 comp = effectslider_create(grid, "Test", &arc1);
                 break;
-            case :
+            case POT1:
+            case POT2:
                 comp = arc_create(grid, "GAIN", &arc1);
+                break;
+            case LIGHT:
+                break;
+            default: // (empty)
+                break;
         }
         lv_obj_set_grid_cell(comp, LV_GRID_ALIGN_CENTER, col, 1, LV_GRID_ALIGN_CENTER, row, 1);
     }
-
-    lv_obj_t * checkbox_0 = checkbox_create(grid, "Check", &check);
-    lv_obj_set_grid_cell(checkbox_0, LV_GRID_ALIGN_CENTER, 0, 1, LV_GRID_ALIGN_CENTER, 0, 1);
-
-    lv_obj_t * effect_slider_0 = effectslider_create(grid, "Test", &arc1);
-    lv_obj_set_grid_cell(effect_slider_0, LV_GRID_ALIGN_CENTER, 1, 1, LV_GRID_ALIGN_CENTER, 0, 1);
-
-    lv_obj_t * arc_0 = arc_create(grid, "GAIN", &arc1);
-    lv_obj_set_align(arc_0, LV_ALIGN_BOTTOM_LEFT);
-    lv_obj_set_grid_cell(arc_0, LV_GRID_ALIGN_CENTER, 0, 1, LV_GRID_ALIGN_CENTER, 1, 1);
-
-    lv_obj_t * arc_1 = arc_create(grid, "GAIN", &arc2);
-    lv_obj_set_align(arc_1, LV_ALIGN_BOTTOM_RIGHT);
-    lv_obj_set_grid_cell(arc_1, LV_GRID_ALIGN_CENTER, 2, 1, LV_GRID_ALIGN_CENTER, 1, 1);
-
 
     LV_TRACE_OBJ_CREATE("finished");
 
@@ -102,3 +95,17 @@ lv_obj_t * effect_create(UIElement data[static 6])
 /**********************
  *   STATIC FUNCTIONS
  **********************/
+
+    // lv_obj_t * checkbox_0 = checkbox_create(grid, "Check", &check);
+    // lv_obj_set_grid_cell(checkbox_0, LV_GRID_ALIGN_CENTER, 0, 1, LV_GRID_ALIGN_CENTER, 0, 1);
+
+    // lv_obj_t * effect_slider_0 = effectslider_create(grid, "Test", &arc1);
+    // lv_obj_set_grid_cell(effect_slider_0, LV_GRID_ALIGN_CENTER, 1, 1, LV_GRID_ALIGN_CENTER, 0, 1);
+
+    // lv_obj_t * arc_0 = arc_create(grid, "GAIN", &arc1);
+    // lv_obj_set_align(arc_0, LV_ALIGN_BOTTOM_LEFT);
+    // lv_obj_set_grid_cell(arc_0, LV_GRID_ALIGN_CENTER, 0, 1, LV_GRID_ALIGN_CENTER, 1, 1);
+
+    // lv_obj_t * arc_1 = arc_create(grid, "GAIN", &arc2);
+    // lv_obj_set_align(arc_1, LV_ALIGN_BOTTOM_RIGHT);
+    // lv_obj_set_grid_cell(arc_1, LV_GRID_ALIGN_CENTER, 2, 1, LV_GRID_ALIGN_CENTER, 1, 1);

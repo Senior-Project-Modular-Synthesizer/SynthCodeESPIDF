@@ -31,10 +31,9 @@
  *   GLOBAL FUNCTIONS
  **********************/
 
-lv_obj_t * arc_create(lv_obj_t * parent, const char * title, lv_subject_t * variable)
+lv_obj_t * arc_create(lv_obj_t * parent, const char * title, lv_subject_t * variable, short min, short max, short start)
 {
     LV_TRACE_OBJ_CREATE("begin");
-
 
     lv_obj_t * lv_arc_0 = lv_arc_create(parent);
     lv_arc_bind_value(lv_arc_0, variable);
