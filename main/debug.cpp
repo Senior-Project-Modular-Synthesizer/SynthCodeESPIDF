@@ -128,8 +128,6 @@ void synth_gui(){
     init_touchscreen();
     lv_init();
 
-    gui_init();
-
     lv_tick_set_cb(esp_log_early_timestamp);
 
     lv_display_t * display = lv_display_create(480, 320);
@@ -152,9 +150,12 @@ void synth_gui(){
     lv_indev_set_type(indev, LV_INDEV_TYPE_POINTER);
     lv_indev_set_read_cb(indev, touchscreen_cb);
 
+    gui_init();
+
     lv_obj_t * effect_screen = effect_create();
     ESP_LOGI("GUI", "Loading Effect");
-    lv_scr_load(effect_screen);
+    // lv_scr_load(effect_screen);
+    lv_scr_load(home);
     ESP_LOGI("GUI", "Loaded Effect");
 
     /* Make LVGL periodically execute its tasks */

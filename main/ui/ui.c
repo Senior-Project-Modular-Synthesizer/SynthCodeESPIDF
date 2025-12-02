@@ -116,7 +116,7 @@ void gui_init()
     /*--------------------
     *  Permanent screens
     *-------------------*/
-    // home = home_create();
+    home = home_create();
 
     ESP_LOGI("GUI", "GUI Initialized");
 }

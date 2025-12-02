@@ -9,23 +9,11 @@
 #include "effect_gen.h"
 #include "../../ui.h"
 
-/*********************
- *      DEFINES
- *********************/
-
-
-
-/**********************
- *      TYPEDEFS
- **********************/
-
 /***********************
  *  STATIC VARIABLES
  **********************/
-
-/***********************
- *  STATIC PROTOTYPES
- **********************/
+static int32_t col_dsc[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
+static int32_t row_dsc[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
 
 /**********************
  *   GLOBAL FUNCTIONS
@@ -37,16 +25,11 @@ lv_obj_t * effect_create(void)
     ESP_LOGI("GUI", "Creating Effect");
 
     static lv_style_t main;
-    static int32_t col_dsc[];
-    static int32_t row_dsc[];
     static bool style_inited = false;
 
     if (!style_inited) {
         lv_style_init(&main);
         lv_style_set_text_font(&main, font_subtitle);
-        
-        col_dsc = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
-        row_dsc = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
         
         style_inited = true;
     }
