@@ -68,14 +68,14 @@ lv_obj_t * effect_create(UIElement* elements)
         lv_obj_t * comp = NULL;
         switch (element.type) {
             case BUTTON:
-                comp = checkbox_create(grid, "Check", &check);
+                comp = checkbox_create(grid, "Check", &subjects[i]);
                 break;
             case SLIDER:
-                comp = effectslider_create(grid, "Test", &arc1, element.min, element.max, element.start);
+                comp = effectslider_create(grid, "Test", &subjects[i], element.min, element.max, element.start);
                 break;
             case ARC1:
             case ARC2:
-                comp = arc_create(grid, "GAIN", &arc1, element.min, element.max, element.start);
+                comp = arc_create(grid, "GAIN", &subjects[i], element.min, element.max, element.start);
                 break;
             case LIGHT:
                 break;

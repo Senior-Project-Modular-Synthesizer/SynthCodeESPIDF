@@ -71,9 +71,8 @@ lv_obj_t * effectslider_create(lv_obj_t * parent, const char * title, lv_subject
 
     lv_obj_t * lv_label_1 = lv_label_create(lv_obj_0);
     lv_obj_set_align(lv_label_1, LV_ALIGN_CENTER);
-    lv_label_bind_text(lv_label_1, variable, NULL);lv_obj_set_style_pad_top(lv_label_1, 45, 0);
-
-
+    lv_label_bind_text(lv_label_1, variable, NULL);
+    lv_obj_set_style_pad_top(lv_label_1, 45, 0);
 
     LV_TRACE_OBJ_CREATE("finished");
 

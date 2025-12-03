@@ -59,18 +59,7 @@ extern lv_font_t * font_subtitle;
 /*----------------
  * Subjects
  *----------------*/
-extern lv_subject_t hours;
-extern lv_subject_t mins;
-extern lv_subject_t age;
-extern lv_subject_t bluetooth_on;
-extern lv_subject_t wifi_on;
-extern lv_subject_t notification_on;
-extern lv_subject_t hour_edited;
-extern lv_subject_t min_edited;
-extern lv_subject_t arc1;
-extern lv_subject_t arc2;
-extern lv_subject_t slide;
-extern lv_subject_t check;
+extern lv_subject_t subjects[6]
 
 /**********************
  * GLOBAL PROTOTYPES
@@ -81,6 +70,7 @@ extern lv_subject_t check;
  *----------------*/
 void arc_changed(lv_event_t * e);
 void slider_changed(lv_event_t * e);
+void check_changed(lv_event_t * e);
 
 /**
  * Initialize the component library

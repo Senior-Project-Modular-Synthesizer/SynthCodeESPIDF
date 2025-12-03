@@ -54,18 +54,8 @@ lv_font_t * font_subtitle;
 /*----------------
  * Subjects
  *----------------*/
-lv_subject_t hours;
-lv_subject_t mins;
-lv_subject_t age;
-lv_subject_t bluetooth_on;
-lv_subject_t wifi_on;
-lv_subject_t notification_on;
-lv_subject_t hour_edited;
-lv_subject_t min_edited;
-lv_subject_t arc1;
-lv_subject_t arc2;
-lv_subject_t slide;
-lv_subject_t check;
+lv_subject_t subjects[6];
+void* pointers[6];
 
 /**********************
  *      MACROS
@@ -93,25 +83,10 @@ void gui_init()
     font_subtitle = &lv_font_montserrat_20;
 
     /*----------------
-     * Images
-     *----------------*/
-
-
-    /*----------------
      * Subjects
      *----------------*/
-    lv_subject_init_int(&hours, 17);
-    lv_subject_init_int(&mins, 45);
-    lv_subject_init_int(&age, 17);
-    lv_subject_init_int(&bluetooth_on, 0);
-    lv_subject_init_int(&wifi_on, 0);
-    lv_subject_init_int(&notification_on, 0);
-    lv_subject_init_int(&hour_edited, 0);
-    lv_subject_init_int(&min_edited, 0);
-    lv_subject_init_int(&arc1, 50);
-    lv_subject_init_int(&arc2, 50);
-    lv_subject_init_int(&slide, 50);
-    lv_subject_init_int(&check, 0);
+    for (int i = 0; i < 6; i++)
+      lv_subject_init_float(&subjects[i], 0);
 
     /*--------------------
     *  Permanent screens
@@ -145,4 +120,8 @@ void arc_changed(lv_event_t * e) {
 
 void slider_changed(lv_event_t * e) {
 
+}
+
+void check_changes(lv_event_t * e) {
+   int i = lv_obj_get_index(lv_event_get_target_obj(e));
 }

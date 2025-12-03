@@ -55,6 +55,7 @@ lv_obj_t * checkbox_create(lv_obj_t * parent, const char * text, lv_subject_t * 
     lv_obj_add_style(lv_checkbox_0, &box, LV_PART_INDICATOR | LV_STATE_PRESSED);
     lv_obj_set_style_text_font(lv_checkbox_0, font_subtitle, 0);
     lv_obj_set_ext_click_area(lv_checkbox_0, 10);
+    lv_obj_add_event_cb(lv_checkbox_0, checkbox_changed, LV_EVENT_VALUE_CHANGED, NULL);
 
 
     LV_TRACE_OBJ_CREATE("finished");
