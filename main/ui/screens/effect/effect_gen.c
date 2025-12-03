@@ -71,7 +71,7 @@ lv_obj_t * effect_create(UIElement* elements)
                 comp = checkbox_create(grid, "Check", &check);
                 break;
             case SLIDER:
-                comp = effectslider_create(grid, "Test", &arc1);
+                comp = effectslider_create(grid, "Test", &arc1, element.min, element.max, element.start);
                 break;
             case ARC1:
             case ARC2:

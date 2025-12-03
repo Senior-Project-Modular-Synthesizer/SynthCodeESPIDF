@@ -31,7 +31,7 @@
  *   GLOBAL FUNCTIONS
  **********************/
 
-lv_obj_t * effectslider_create(lv_obj_t * parent, const char * title, lv_subject_t * variable)
+lv_obj_t * effectslider_create(lv_obj_t * parent, const char * title, lv_subject_t * variable, short min, short max, short start)
 {
     LV_TRACE_OBJ_CREATE("begin");
 
@@ -66,7 +66,8 @@ lv_obj_t * effectslider_create(lv_obj_t * parent, const char * title, lv_subject
     lv_obj_set_width(lv_slider_0, 150);
     lv_obj_set_align(lv_slider_0, LV_ALIGN_CENTER);
     lv_obj_add_event_cb(lv_slider_0, slider_changed, LV_EVENT_VALUE_CHANGED, NULL);
-
+    lv_slider_set_range(lv_slider_0, min, max);
+    lv_slider_set_value(lv_slider_0, start, LV_ANIM_OFF);
 
     lv_obj_t * lv_label_1 = lv_label_create(lv_obj_0);
     lv_obj_set_align(lv_label_1, LV_ALIGN_CENTER);

@@ -41,6 +41,8 @@ lv_obj_t * arc_create(lv_obj_t * parent, const char * title, lv_subject_t * vari
     lv_obj_set_height(lv_arc_0, 135);
     lv_obj_set_ext_click_area(lv_arc_0, 5);
     lv_obj_add_event_cb(lv_arc_0, arc_changed, LV_EVENT_VALUE_CHANGED, NULL);
+    lv_arc_set_range(lv_arc_0, min, max);
+    lv_arc_set_value(lv_arc_0, start);
 
     lv_obj_t * lv_label_0 = lv_label_create(lv_arc_0);
     lv_obj_set_style_text_font(lv_label_0, font_subtitle, 0);
