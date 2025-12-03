@@ -64,7 +64,12 @@ QuadSample SampleInputBuffer::nextSample() {
     QuadSample next_sample = {
         .channels = {0.0f, 0.0f, 0.0f, 0.0f}
     };
-    // Disable floating point for now
+
+    QuadIntSample next_intSample = nextIntSample();
+
+    for (int i = 0; i < 4; i++)
+        next_sample.channels[i] = ((float) next_intSample.channels[i]) / ((float) 0x7FFFFF);
+
     return next_sample;
 }
 
@@ -338,7 +343,14 @@ int SampleOutputBuffer::size() const {
 * - This function may block if the buffer is full.
 */
 void SampleOutputBuffer::pushSample(QuadSample sample) {
-    return; // Disable floating point for now
+    QuadIntSample intSample = {
+        .channels = {0, 0, 0, 0},
+    };
+
+    for (int i = 0; i < 4; i++)
+        intSample.channels[i] = ((int32_t) sample.channels[i]) * ((int32_t) 0xFFFFFF);
+
+    pushIntSample(intSample);
 }
 
 /*

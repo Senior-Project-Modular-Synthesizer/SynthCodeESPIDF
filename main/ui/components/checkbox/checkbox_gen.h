@@ -1,0 +1,40 @@
+/**
+ * @file checkbox_gen.h
+ */
+
+#ifndef CHECKBOX_H
+#define CHECKBOX_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/*********************
+ *      INCLUDES
+ *********************/
+#include "lvgl.h"
+
+/*********************
+ *      DEFINES
+ *********************/
+
+/**********************
+ *      TYPEDEFS
+ **********************/
+
+/**********************
+ * GLOBAL PROTOTYPES
+ **********************/
+
+
+lv_obj_t * checkbox_create(lv_obj_t * parent, lv_subject_t * subject, const char * text, char enabled);
+
+/**********************
+ *      MACROS
+ **********************/
+
+#ifdef __cplusplus
+} /*extern "C"*/
+#endif
+
+#endif /*CHECKBOX_H*/

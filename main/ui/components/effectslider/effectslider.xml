@@ -1,0 +1,35 @@
+<component>
+    <api>
+        <prop name="title" type="string" default="GAIN"></prop>
+        <prop name="variable" type="subject" default="arc1"></prop>
+    </api>
+
+    <previews>
+        <preview width="400" height="200" style_pad_all="20"/>
+    </previews>
+
+    <styles>
+        <style name="slider" 
+            bg_opa="0" border_width="0"
+            width="content" height="130"
+            flex_flow="column" text_font="font_title"
+            />
+    </styles>
+
+    <view scrollable="false">
+        <style name="slider"/>
+        <lv_label align="center" text="$title" style_pad_bottom="45"></lv_label>
+        <lv_slider bind_value="$variable" width="150" align="center">
+            <event_cb callback="arc_changed" trigger="value_changed"/>
+        </lv_slider>
+        <lv_button height="30" width="30" align="bottom_left">
+            <lv_label text="-" align="center"/>
+            <subject_increment_event trigger="clicked" subject="$variable" step="-10"/>
+        </lv_button>
+        <lv_button height="30" width="30" align="bottom_right">
+            <lv_label text="+" align="center"/>
+            <subject_increment_event trigger="clicked" subject="$variable" step="10"/>
+        </lv_button>
+        <lv_label align="center" bind_text="$variable" style_pad_top="45"></lv_label>
+    </view>
+</component>

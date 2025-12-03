@@ -6,7 +6,10 @@
 #include "peripheral_cfg.h"
 #include "AK4619VN.hpp"
 #include "xpt2046.hpp"
-
+#include "ui/ui.h"
+#include "ui/screens/home/home_gen.h"
+#include "ui/screens/effect/effect_gen.h"
+#include "ui/screens/home/home_gen.h"
 #include "lvgl.h"
 
 #include "screen.hpp"
@@ -101,7 +104,7 @@ void screen_main() {
     
     
     lv_obj_t * label = lv_label_create(lv_screen_active());
-    lv_obj_add_style(label , &st, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_add_style(label , &st, LV_PART_MAIN);
     lv_obj_set_style_text_color(label, lv_color_hex(0xffff00), LV_PART_MAIN);
     lv_label_set_text(label, "Hello LVGL!");
     
@@ -111,6 +114,63 @@ void screen_main() {
     lv_obj_align(slider, LV_ALIGN_CENTER, 0, 100);
     lv_slider_set_range(slider, 0, 100);
     lv_slider_set_value(slider, 50, LV_ANIM_OFF);
+    /* Make LVGL periodically execute its tasks */
+    while(1) {
+        /* Provide updates to currently-displayed Widgets here. */
+        lv_timer_handler();
+        vTaskDelay(pdMS_TO_TICKS(10));
+    }
+}
+
+float floats[2];
+int ints[2];
+
+void synth_gui(){
+    esp_err_t ret = spi_bus_initialize(SPI_HOST, &SPI_BUS_CFG, SPI_DMA_CH_AUTO);
+    initialize_display();
+    init_touchscreen();
+    lv_init();
+
+    lv_tick_set_cb(esp_log_early_timestamp);
+
+    lv_display_t * display = lv_display_create(480, 320);
+
+    const size_t buf_size = 480 * 320 / 10 * 3;
+
+    uint8_t* buf = (uint8_t *)heap_caps_malloc(buf_size, MALLOC_CAP_DMA);
+
+    if (buf == NULL) {
+        ESP_LOGE("SCREEN", "Failed to allocate LVGL buffer. Free heap: %u", heap_caps_get_free_size(MALLOC_CAP_DEFAULT));
+        return;
+    }
+
+
+    lv_display_set_buffers(display, buf, NULL, buf_size, LV_DISPLAY_RENDER_MODE_PARTIAL);
+
+    lv_display_set_flush_cb(display, ili9488_flush_cb);
+
+    lv_indev_t * indev = lv_indev_create();
+    lv_indev_set_type(indev, LV_INDEV_TYPE_POINTER);
+    lv_indev_set_read_cb(indev, touchscreen_cb);
+
+    gui_init();
+
+    ints[1] = 1;
+    UIElement ui_map[6] = {
+        { SLIDER, "Alpha", 0, 1, 1, &floats[0] },
+        { ARC1, "Gain", 0, 100, 0, &floats[1] },
+        { NUMBER, "VAL", 0, 0, 0, &floats[0]},
+        { CHECKBOX, "CHECK", 0, 0, 0, &ints[0]},
+        { LIGHT, "LIGHT", 0, 0, 0, &ints[1]},
+        EMPTY_ELEMENT
+    };
+
+    lv_obj_t * effect_screen = effect_create(ui_map);
+    ESP_LOGI("GUI", "Loading Effect");
+    lv_scr_load(effect_screen);
+    // lv_scr_load(home);
+    ESP_LOGI("GUI", "Loaded Effect");
+
     /* Make LVGL periodically execute its tasks */
     while(1) {
         /* Provide updates to currently-displayed Widgets here. */

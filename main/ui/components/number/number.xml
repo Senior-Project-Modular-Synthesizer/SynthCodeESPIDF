@@ -1,0 +1,13 @@
+<component>
+    <api>
+        <prop name="text" type="string"/>
+        <prop name="subject" type="subject"/>
+    </api>
+    <styles>
+        <style name="box" transform_width="0" transform_height="0"/>
+    </styles>
+    <view align="center" height="50" scrollable="false">
+        <lv_label align="center" style_pad_bottom="20" text="$text" style_text_font="font_title"></lv_label>
+        <lv_label align="center" style_pad_top="25" bind_text="$subject" style_text_font="font_subtitle"></lv_label>
+    </view>
+</component>
