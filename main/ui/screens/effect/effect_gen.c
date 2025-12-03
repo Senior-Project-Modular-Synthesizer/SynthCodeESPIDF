@@ -16,7 +16,6 @@
 static int32_t col_dsc[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
 static int32_t row_dsc[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
 
-static char num_buf[8];
 /**********************
  *   GLOBAL FUNCTIONS
  **********************/
@@ -54,6 +53,7 @@ lv_obj_t * effect_create(UIElement* elements)
     lv_obj_set_align(lv_label_0, LV_ALIGN_CENTER);
 
     lv_obj_add_screen_load_event(lv_button_0, LV_EVENT_CLICKED, home, LV_SCR_LOAD_ANIM_NONE, 0, 0);
+    lv_obj_add_event_cb(lv_button_0, destroy_effect, LV_EVENT_CLICKED, NULL);
 
     lv_obj_t * grid = lv_obj_create(lv_obj_0);
     lv_obj_set_size(grid, 480, 280);
@@ -65,19 +65,36 @@ lv_obj_t * effect_create(UIElement* elements)
         int row = i / 3;
         int col = i % 3;
         UIElement element = elements[i];
+        if (element.data == NULL)
+            continue;
+
         lv_obj_t * comp = NULL;
         switch (element.type) {
-            case BUTTON:
-                comp = checkbox_create(grid, element.name);
+            case CHECKBOX:
+                lv_subject_init_int(&subjects[i], element.start);
+                comp = checkbox_create(grid, &subjects[i], element.name, 1);
+                observers[i] = lv_subject_add_observer(&subjects[i], observer_cb, element.data);
                 break;
             case SLIDER:
+                lv_subject_init_float(&subjects[i], element.start);
                 comp = effectslider_create(grid, element.name, &subjects[i], element.min, element.max, element.start);
+                observers[i] = lv_subject_add_observer(&subjects[i], observer_cb, element.data);
                 break;
             case ARC1:
             case ARC2:
+                lv_subject_init_float(&subjects[i], element.start);
                 comp = arc_create(grid, element.name, &subjects[i], element.min, element.max, element.start);
+                observers[i] = lv_subject_add_observer(&subjects[i], observer_cb, element.data);
+                break;
+            case NUMBER:
+                lv_subject_init_float(&subjects[i], element.start);
+                comp = lv_label_create(grid);
+                lv_label_bind_text(comp, &subjects[i], NULL);
+                lv_obj_add_style(comp, &main, 0);
                 break;
             case LIGHT:
+                lv_subject_init_int(&subjects[i], element.start);
+                comp = checkbox_create(grid, &subjects[i], element.name, 0);
                 break;
             default: // (empty)
                 break;

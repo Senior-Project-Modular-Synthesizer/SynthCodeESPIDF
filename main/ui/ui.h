@@ -60,6 +60,7 @@ extern lv_font_t * font_subtitle;
  * Subjects
  *----------------*/
 extern lv_subject_t subjects[6];
+extern lv_observer_t * observers[6];
 extern void* pointers[6];
 
 /**********************
@@ -72,6 +73,10 @@ extern void* pointers[6];
 void arc_changed(lv_event_t * e);
 void slider_changed(lv_event_t * e);
 void check_changed(lv_event_t * e);
+void observer_cb(lv_observer_t * observer, lv_subject_t * subject);
+
+void update_subjects();
+void destroy_effect();
 
 /**
  * Initialize the component library

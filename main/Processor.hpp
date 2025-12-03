@@ -221,6 +221,6 @@ public:
      */
     virtual int blockSize() const = 0;
 
-    virtual UIElement* getUIType() const = 0;
+    virtual const UIElement* getUIType() const = 0;
 
 };

@@ -42,10 +42,10 @@ lv_obj_t * home;
 /*----------------
  * Fonts
  *----------------*/
-lv_font_t * font_title;
+const lv_font_t * font_title;
 extern uint8_t Inter_SemiBold_ttf_data[];
 extern size_t Inter_SemiBold_ttf_data_size;
-lv_font_t * font_subtitle;
+const lv_font_t * font_subtitle;
 
 /*----------------
  * Images
@@ -55,7 +55,8 @@ lv_font_t * font_subtitle;
  * Subjects
  *----------------*/
 lv_subject_t subjects[6];
-void* pointers[6];
+lv_observer_t * observers[6];
+void * pointers[6];
 
 /**********************
  *      MACROS
@@ -85,8 +86,9 @@ void gui_init()
     /*----------------
      * Subjects
      *----------------*/
-    for (int i = 0; i < 6; i++)
-      lv_subject_init_float(&subjects[i], 0);
+    for (int i = 0; i < 6; i++){
+      pointers[i] = NULL;
+    }
 
     /*--------------------
     *  Permanent screens
@@ -130,5 +132,32 @@ void check_changed(lv_event_t * e) {
    else
       lv_obj_add_state(obj, LV_STATE_CHECKED);
 
-   pointers[i] = !pointers[i];
+    *(int*)pointers[i] = !(*(int*)pointers[i]);
+}
+
+void observer_cb(lv_observer_t * observer, lv_subject_t * subject) {
+   void * ptr = lv_observer_get_user_data(observer);
+   if (subject->type == LV_SUBJECT_TYPE_INT)
+      *(int *)(ptr) = lv_subject_get_int(subject);
+   else
+      *(float *)(ptr) = lv_subject_get_float(subject);
+}
+
+void update_subjects() {
+   for (int i = 0; i < 6; i++) {
+      if (pointers[i] != NULL && observers[i] == NULL) {
+         if (subjects[i].type == LV_SUBJECT_TYPE_INT)
+            lv_subject_set_int(&subjects[i], *((int *)(pointers[i])));
+         else
+            lv_subject_set_float(&subjects[i], *((float *)(pointers[i])));
+      }
+   }
+}
+
+void destroy_effect() {
+   for (int i = 0; i < 6; i++){
+      lv_subject_deinit(&subjects[i]);
+      pointers[i] = NULL;
+      // lv_observer_remove(observers[i]); // Already done by deinit
+    }
 }

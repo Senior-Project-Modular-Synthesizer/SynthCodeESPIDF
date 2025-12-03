@@ -3,7 +3,7 @@
 typedef enum {
     EMPTY,
     SLIDER, // Input int
-    BUTTON, // Input bool
+    CHECKBOX, // Input bool
     ARC1,   // Input int
     ARC2,   // Input int
     NUMBER, // Output int
@@ -16,7 +16,7 @@ typedef struct {
     short min;
     short max;
     short start;
-    const void* data;
+    void* data;
 } UIElement;
 
 static const UIElement EMPTY_ELEMENT = {EMPTY, "", 0, 0, 0, NULL};

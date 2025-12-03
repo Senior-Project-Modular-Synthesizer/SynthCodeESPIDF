@@ -58,27 +58,11 @@ int HighPass::blockSize() const {
     return 64; // Example block size
 }
 
-UIElement* HighPass::getUIType() const {
-    UIElement ui_map[6] = {
-        { SLIDER, "Alpha", 0, 100, 50, &alpha },
-        EMPTY_ELEMENT,
-        EMPTY_ELEMENT,
-        EMPTY_ELEMENT,
-        EMPTY_ELEMENT,
-        EMPTY_ELEMENT
-    };
+const UIElement* HighPass::getUIType() const {
     return ui_map;
 }   
 
-UIElement* LowPass::getUIType() const {
-    UIElement ui_map[6] = {
-        { SLIDER, "Alpha", 0, 100, 50, &alpha },
-        EMPTY_ELEMENT,
-        EMPTY_ELEMENT,
-        EMPTY_ELEMENT,
-        EMPTY_ELEMENT,
-        EMPTY_ELEMENT
-    };
+const UIElement* LowPass::getUIType() const {
     return ui_map;
 }   
 

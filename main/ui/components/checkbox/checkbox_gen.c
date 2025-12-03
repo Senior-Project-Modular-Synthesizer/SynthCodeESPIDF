@@ -31,7 +31,7 @@
  *   GLOBAL FUNCTIONS
  **********************/
 
-lv_obj_t * checkbox_create(lv_obj_t * parent, const char * text)
+lv_obj_t * checkbox_create(lv_obj_t * parent, lv_subject_t * subject, const char * text, char enabled)
 {
     LV_TRACE_OBJ_CREATE("begin");
     ESP_LOGI("GUI", "Checkbox");
@@ -53,9 +53,12 @@ lv_obj_t * checkbox_create(lv_obj_t * parent, const char * text)
     lv_checkbox_set_text(lv_checkbox_0, text);
     lv_obj_add_style(lv_checkbox_0, &box, LV_PART_INDICATOR | LV_STATE_PRESSED);
     lv_obj_set_style_text_font(lv_checkbox_0, font_subtitle, 0);
-    lv_obj_set_ext_click_area(lv_checkbox_0, 10);
-    lv_obj_add_event_cb(lv_checkbox_0, check_changed, LV_EVENT_VALUE_CHANGED, NULL);
-
+    lv_obj_bind_checked(lv_checkbox_0, subject);
+    if (enabled) {
+        lv_obj_set_ext_click_area(lv_checkbox_0, 10);
+        // lv_obj_add_event_cb(lv_checkbox_0, check_changed, LV_EVENT_VALUE_CHANGED, NULL);
+    } else
+        lv_obj_add_state(lv_checkbox_0, LV_STATE_DISABLED);   /* Make Checkbox disabled */
 
     LV_TRACE_OBJ_CREATE("finished");
 
