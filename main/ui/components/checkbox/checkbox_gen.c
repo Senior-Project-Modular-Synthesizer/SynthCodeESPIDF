@@ -43,7 +43,7 @@ lv_obj_t * checkbox_create(lv_obj_t * parent, const char * text, lv_subject_t * 
         lv_style_init(&box);
         lv_style_set_transform_width(&box, 0);
         lv_style_set_transform_height(&box, 0);
-        lv_style_set_align(&box, LV_ALIGN_CENTER)
+        lv_style_set_align(&box, LV_ALIGN_CENTER);
 
         style_inited = true;
     }

@@ -54,7 +54,7 @@ int HighPass::blockSize() const {
 
 UIElement* HighPass::getUIType() const {
     UIElement ui_map[6] = {
-        { UITypes.SLIDER, "Alpha", 0, 100, 50, &alpha },
+        { SLIDER, "Alpha", 0, 100, 50, &alpha },
         EMPTY_ELEMENT,
         EMPTY_ELEMENT,
         EMPTY_ELEMENT,
@@ -66,7 +66,7 @@ UIElement* HighPass::getUIType() const {
 
 UIElement* LowPass::getUIType() const {
     UIElement ui_map[6] = {
-        { UITypes.SLIDER, "Alpha", 0, 100, 50, &alpha },
+        { SLIDER, "Alpha", 0, 100, 50, &alpha },
         EMPTY_ELEMENT,
         EMPTY_ELEMENT,
         EMPTY_ELEMENT,

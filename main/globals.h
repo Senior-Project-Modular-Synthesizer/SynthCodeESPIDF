@@ -1,12 +1,14 @@
-enum UITypes {
+#pragma once
+
+typedef enum {
     EMPTY,
     SLIDER, // Input int
     BUTTON, // Input bool
-    POT1, // Input int
-    POT2, // Input int
-    NUMBER, // Output float
-    LIGHT // Output bool
-};
+    ARC1,   // Input int
+    ARC2,   // Input int
+    NUMBER, // Output int
+    LIGHT   // Output bool
+} UITypes;
 
 typedef struct {
     UITypes type;
@@ -14,7 +16,7 @@ typedef struct {
     short min;
     short max;
     short start;
-    void* data;
+    const void* data;
 } UIElement;
 
-static const UIElement EMPTY_ELEMENT = {UITypes.EMPTY, "", 0, 0, 0, NULL};
+static const UIElement EMPTY_ELEMENT = {EMPTY, "", 0, 0, 0, NULL};

@@ -13,6 +13,7 @@ extern "C" {
  *      INCLUDES
  *********************/
 #include "lvgl.h"
+#include "../../../globals.h"
 
 /*********************
  *      DEFINES
@@ -26,10 +27,7 @@ extern "C" {
  * GLOBAL PROTOTYPES
  **********************/
 
-
-
-
-lv_obj_t * effect_create(void);
+lv_obj_t * effect_create(UIElement* elements);
 
 /**********************
  *      MACROS

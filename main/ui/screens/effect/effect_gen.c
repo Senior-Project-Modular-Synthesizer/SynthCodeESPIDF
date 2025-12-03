@@ -8,7 +8,6 @@
  *********************/
 #include "effect_gen.h"
 #include "../../ui.h"
-#include "../../../globals.h"
 
 
 /***********************
@@ -22,7 +21,7 @@ static char num_buf[8];
  *   GLOBAL FUNCTIONS
  **********************/
 
-lv_obj_t * effect_create(UIElement elements[static 6])
+lv_obj_t * effect_create(UIElement* elements)
 {
     LV_TRACE_OBJ_CREATE("begin");
     ESP_LOGI("GUI", "Creating Effect");
@@ -66,24 +65,25 @@ lv_obj_t * effect_create(UIElement elements[static 6])
         int row = i / 3;
         int col = i % 3;
         UIElement element = elements[i];
-        lv_obj_t * comp;
+        lv_obj_t * comp = NULL;
         switch (element.type) {
-            case UITypes.BUTTON:
+            case BUTTON:
                 comp = checkbox_create(grid, "Check", &check);
                 break;
-            case UITypes.SLIDER:
+            case SLIDER:
                 comp = effectslider_create(grid, "Test", &arc1);
                 break;
-            case POT1:
-            case POT2:
-                comp = arc_create(grid, "GAIN", &arc1);
+            case ARC1:
+            case ARC2:
+                comp = arc_create(grid, "GAIN", &arc1, element.min, element.max, element.start);
                 break;
             case LIGHT:
                 break;
             default: // (empty)
                 break;
         }
-        lv_obj_set_grid_cell(comp, LV_GRID_ALIGN_CENTER, col, 1, LV_GRID_ALIGN_CENTER, row, 1);
+        if (comp != NULL)
+            lv_obj_set_grid_cell(comp, LV_GRID_ALIGN_CENTER, col, 1, LV_GRID_ALIGN_CENTER, row, 1);
     }
 
     LV_TRACE_OBJ_CREATE("finished");

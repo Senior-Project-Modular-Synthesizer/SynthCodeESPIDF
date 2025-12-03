@@ -152,10 +152,19 @@ void synth_gui(){
 
     gui_init();
 
-    lv_obj_t * effect_screen = effect_create();
+    UIElement ui_map[6] = {
+        { SLIDER, "Alpha", 0, 100, 50, NULL },
+        { ARC1, "Gain", 0, 100, 50, NULL },
+        EMPTY_ELEMENT,
+        EMPTY_ELEMENT,
+        EMPTY_ELEMENT,
+        EMPTY_ELEMENT
+    };
+
+    lv_obj_t * effect_screen = effect_create(ui_map);
     ESP_LOGI("GUI", "Loading Effect");
-    // lv_scr_load(effect_screen);
-    lv_scr_load(home);
+    lv_scr_load(effect_screen);
+    // lv_scr_load(home);
     ESP_LOGI("GUI", "Loaded Effect");
 
     /* Make LVGL periodically execute its tasks */
