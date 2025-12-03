@@ -72,6 +72,14 @@ enum ili9488_constants
     ILI9488_INIT_DONE_FLAG = 0xFF
 };
 
+#define DEBUG_LOG_EN 0
+
+#if DEBUG_LOG_EN
+    #define DEBUG_LOG(TAG, ...) ESP_LOGI(TAG, __VA_ARGS__)
+#else
+    #define DEBUG_LOG(TAG, ...) 
+#endif
+
 static esp_err_t panel_ili9488_del(esp_lcd_panel_t *panel)
 {
     ili9488_panel_t *ili9488 = __containerof(panel, ili9488_panel_t, base);
@@ -86,7 +94,7 @@ static esp_err_t panel_ili9488_del(esp_lcd_panel_t *panel)
         heap_caps_free(ili9488->color_buffer);
     }
 
-    ESP_LOGI(TAG, "del ili9488 panel @%p", ili9488);
+    DEBUG_LOG(TAG, "del ili9488 panel @%p", ili9488);
     free(ili9488);
     return ESP_OK;
 }
@@ -98,19 +106,19 @@ static esp_err_t panel_ili9488_reset(esp_lcd_panel_t *panel)
 
     if (ili9488->reset_gpio_num >= 0)
     {
-        ESP_LOGI(TAG, "Setting GPIO:%d to %d", ili9488->reset_gpio_num,
+        DEBUG_LOG(TAG, "Setting GPIO:%d to %d", ili9488->reset_gpio_num,
                  ili9488->reset_level);
         // perform hardware reset
         gpio_set_level(ili9488->reset_gpio_num, ili9488->reset_level);
         vTaskDelay(pdMS_TO_TICKS(10));
-        ESP_LOGI(TAG, "Setting GPIO:%d to %d", ili9488->reset_gpio_num,
+        DEBUG_LOG(TAG, "Setting GPIO:%d to %d", ili9488->reset_gpio_num,
                  !ili9488->reset_level);
         gpio_set_level(ili9488->reset_gpio_num, !ili9488->reset_level);
         vTaskDelay(pdMS_TO_TICKS(10));
     }
     else
     {
-        ESP_LOGI(TAG, "Sending SW_RESET to display");
+        DEBUG_LOG(TAG, "Sending SW_RESET to display");
         esp_lcd_panel_io_tx_param(io, LCD_CMD_SWRESET, NULL, 0);
         vTaskDelay(pdMS_TO_TICKS(20));
     }
@@ -154,7 +162,7 @@ static esp_err_t panel_ili9488_init(esp_lcd_panel_t *panel)
         { LCD_CMD_NOP, { 0 }, ILI9488_INIT_DONE_FLAG },
     };
 
-    ESP_LOGI(TAG, "Initializing ILI9488");
+    DEBUG_LOG(TAG, "Initializing ILI9488");
     int cmd = 0;
     while ( ili9488_init[cmd].data_bytes != ILI9488_INIT_DONE_FLAG )
     {
@@ -174,7 +182,7 @@ static esp_err_t panel_ili9488_init(esp_lcd_panel_t *panel)
     esp_lcd_panel_io_tx_param(io, LCD_CMD_DISPON, NULL, 0);
     vTaskDelay(pdMS_TO_TICKS(100));
 
-    ESP_LOGI(TAG, "Initialization complete");
+    DEBUG_LOG(TAG, "Initialization complete");
 
     return ESP_OK;
 }
@@ -227,7 +235,7 @@ static esp_err_t panel_ili9488_draw_bitmap(
 	else if (ili9488->color_mode == ILI9488_COLOR_MODE_24BIT)
     {
         esp_lcd_panel_io_tx_color(io, LCD_CMD_RAMWR, color_data, color_data_len * 3);
-		ESP_LOGI(TAG, "Sent 24-bit color data, length: %d", color_data_len * 3);
+		DEBUG_LOG(TAG, "Sent 24-bit color data, length: %d", color_data_len * 3);
     }
     else
     {
@@ -383,11 +391,11 @@ esp_err_t esp_lcd_new_panel_ili9488(
     switch (panel_dev_config->color_space)
     {
         case ESP_LCD_COLOR_SPACE_RGB:
-            ESP_LOGI(TAG, "Configuring for RGB color order");
+            DEBUG_LOG(TAG, "Configuring for RGB color order");
             ili9488->memory_access_control &= ~LCD_CMD_BGR_BIT;
             break;
         case ESP_LCD_COLOR_SPACE_BGR:
-            ESP_LOGI(TAG, "Configuring for BGR color order");
+            DEBUG_LOG(TAG, "Configuring for BGR color order");
             break;
         default:
             ESP_GOTO_ON_FALSE(false, ESP_ERR_INVALID_ARG, err, TAG,
@@ -411,7 +419,7 @@ esp_err_t esp_lcd_new_panel_ili9488(
     ili9488->base.disp_on_off = panel_ili9488_disp_on_off;
 #endif
     *ret_panel = &(ili9488->base);
-    ESP_LOGI(TAG, "new ili9488 panel @%p", ili9488);
+    DEBUG_LOG(TAG, "new ili9488 panel @%p", ili9488);
 
     return ESP_OK;
 

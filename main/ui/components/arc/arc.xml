@@ -1,0 +1,16 @@
+<component>
+    <api>
+        <prop name="title" type="string" default="GAIN"></prop>
+        <prop name="variable" type="subject" default="arc1"></prop>
+    </api>
+
+    <previews>
+        <preview width="175" height="175" style_pad_all="10"/>
+    </previews>
+
+    <view extends="lv_arc" bind_value="$variable" width="150" height="150" ext_click_area="5">
+        <event_cb callback="arc_changed" trigger="value_changed"/>
+        <lv_label style_text_font="font_subtitle" align="center" text="$title" style_pad_bottom="20"></lv_label>
+        <lv_label style_text_font="font_subtitle" align="center" bind_text="$variable" style_pad_top="20"></lv_label>
+    </view>
+</component>

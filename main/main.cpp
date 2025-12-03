@@ -14,10 +14,11 @@
 #include "AK4619VN.hpp"
 #include "xpt2046.hpp"
 
-#include "lvgl.h"
+#include "ui/ui.h"
 
 #include "screen.hpp"
 #include "Buffers.hpp"
+#include "touchscreen.hpp"
 
 #include "processors/basics.hpp"
 
@@ -30,6 +31,36 @@ QuadOutputBuffer *output_buffer = nullptr;
 AK4619VN* codec = nullptr;
 
 TaskHandle_t processor_task_handle = nullptr;
+
+void init_screen() {
+    initialize_display();
+    init_touchscreen();
+    lv_init();
+
+    lv_tick_set_cb(esp_log_early_timestamp);
+
+    lv_display_t * display = lv_display_create(480, 320);
+
+    const size_t buf_size = 480 * 320 / 10 * 3;
+
+    uint8_t* buf = (uint8_t *)heap_caps_malloc(buf_size, MALLOC_CAP_DMA);
+
+    if (buf == NULL) {
+        ESP_LOGE("SCREEN", "Failed to allocate LVGL buffer. Free heap: %u", heap_caps_get_free_size(MALLOC_CAP_DEFAULT));
+        return;
+    }
+
+
+    lv_display_set_buffers(display, buf, NULL, buf_size, LV_DISPLAY_RENDER_MODE_PARTIAL);
+
+    lv_display_set_flush_cb(display, ili9488_flush_cb);
+
+    lv_indev_t * indev = lv_indev_create();
+    lv_indev_set_type(indev, LV_INDEV_TYPE_POINTER);
+    lv_indev_set_read_cb(indev, touchscreen_cb);
+
+    gui_init();
+}
 
 void init_devices() {
     vTaskDelay(2000 / portTICK_PERIOD_MS);
@@ -52,6 +83,7 @@ void init_devices() {
     input_buffer = new SampleInputBuffer(codec->rx_chan);
     output_buffer = new SampleOutputBuffer(codec->tx_chan);
 
+    init_screen();
 }
 
 static void start_processor(void* pvParameters) {
@@ -118,14 +150,19 @@ void main_task_wrapper(void* pvParameters) {
 
 extern "C" void app_main(void)
 {
-    init_devices();
-    registerBasicProcessors();
-    // Start the main task on core 0
+    // init_devices();
+    // registerBasicProcessors();
+    // // Start the main task on core 0
     
-    while (true) {
-        new_processor("LowPass");
-        vTaskDelay(2000 / portTICK_PERIOD_MS);
-        new_processor("HighPass");
-        vTaskDelay(2000 / portTICK_PERIOD_MS);
+    // while (true) {
+    //     new_processor("LowPass");
+    //     vTaskDelay(2000 / portTICK_PERIOD_MS);
+    //     new_processor("HighPass");
+    //     vTaskDelay(2000 / portTICK_PERIOD_MS);
+    // }
+
+    synth_gui();
+    while (1) {
+
     }
 }

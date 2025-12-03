@@ -14,9 +14,18 @@ class LowPass : public Processor {
 
         void process(QuadInputBuffer& input, QuadOutputBuffer& output) override;
         int blockSize() const override;
-        std::variant<std::map<std::string, std::pair<UIElement, void*>>, CustomUI> getUIType() const override;
+        const UIElement* getUIType() const override;
     private:
         float alpha = 0.01f;
+
+        const UIElement ui_map[6] = {
+            { SLIDER, "Alpha", 0, 100, 0, &alpha },
+            EMPTY_ELEMENT,
+            EMPTY_ELEMENT,
+            EMPTY_ELEMENT,
+            EMPTY_ELEMENT,
+            EMPTY_ELEMENT
+        };
 };
 
 class HighPass : public Processor {
@@ -26,9 +35,28 @@ class HighPass : public Processor {
 
         void process(QuadInputBuffer& input, QuadOutputBuffer& output) override;
         int blockSize() const override;
-        std::variant<std::map<std::string, std::pair<UIElement, void*>>, CustomUI> getUIType() const override;
+        const UIElement* getUIType() const override;
     private:
         float alpha = 0.01f;
+
+        const UIElement ui_map[6] = {
+            { SLIDER, "Alpha", 0, 100, 0, &alpha },
+            EMPTY_ELEMENT,
+            EMPTY_ELEMENT,
+            EMPTY_ELEMENT,
+            EMPTY_ELEMENT,
+            EMPTY_ELEMENT
+        };
+};
+
+class PassThrough : public Processor {
+    public:
+        PassThrough();
+        ~PassThrough();
+
+        void process(QuadInputBuffer& input, QuadOutputBuffer& output) override;
+        int blockSize() const override;
+        std::variant<std::map<std::string, std::pair<UIElement, void*>>, CustomUI> getUIType() const override;
 };
 
 void registerBasicProcessors();

@@ -58,17 +58,35 @@ int HighPass::blockSize() const {
     return 64; // Example block size
 }
 
-std::variant<std::map<std::string, std::pair<UIElement, void*>>, CustomUI> HighPass::getUIType() const {
-    std::map<std::string, std::pair<UIElement, void*>> ui_map;
-    ui_map[std::string("Alpha")] = std::make_pair(UIElement::SLIDER, static_cast<void*>(const_cast<float*>(&alpha)));
+const UIElement* HighPass::getUIType() const {
     return ui_map;
 }   
 
-std::variant<std::map<std::string, std::pair<UIElement, void*>>, CustomUI> LowPass::getUIType() const {
-    std::map<std::string, std::pair<UIElement, void*>> ui_map;
-    ui_map[std::string("Alpha")] = std::make_pair(UIElement::SLIDER, static_cast<void*>(const_cast<float*>(&alpha)));
+const UIElement* LowPass::getUIType() const {
     return ui_map;
 }   
+
+PassThrough::PassThrough() {
+}
+
+PassThrough::~PassThrough() {
+}
+
+void PassThrough::process(QuadInputBuffer& input, QuadOutputBuffer& output) {
+    while (true) {
+        QuadIntSample sample = input.nextIntSample();
+        output.pushIntSample(sample);
+    }
+}
+
+int PassThrough::blockSize() const {
+    return 64; // Example block size
+}
+
+std::variant<std::map<std::string, std::pair<UIElement, void*>>, CustomUI> PassThrough::getUIType() const {
+    std::map<std::string, std::pair<UIElement, void*>> ui_map;
+    return ui_map;
+}
 
 void registerBasicProcessors() {
     ProcessorFactory::instance().registerProcessor("LowPass", []() {
@@ -76,6 +94,9 @@ void registerBasicProcessors() {
     });
     ProcessorFactory::instance().registerProcessor("HighPass", []() {
         return std::make_unique<HighPass>();
+    });
+    ProcessorFactory::instance().registerProcessor("PassThrough", []() {
+        return std::make_unique<PassThrough>();
     });
 }
 
