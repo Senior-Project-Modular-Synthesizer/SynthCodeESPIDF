@@ -122,6 +122,9 @@ void screen_main() {
     }
 }
 
+float floats[2];
+int ints[2];
+
 void synth_gui(){
     esp_err_t ret = spi_bus_initialize(SPI_HOST, &SPI_BUS_CFG, SPI_DMA_CH_AUTO);
     initialize_display();
@@ -152,12 +155,13 @@ void synth_gui(){
 
     gui_init();
 
+    ints[1] = 1;
     UIElement ui_map[6] = {
-        { SLIDER, "Alpha", 0, 100, 50, NULL },
-        { ARC1, "Gain", 0, 100, 50, NULL },
-        EMPTY_ELEMENT,
-        EMPTY_ELEMENT,
-        EMPTY_ELEMENT,
+        { SLIDER, "Alpha", 0, 1, 0, &floats[0] },
+        { ARC1, "Gain", 0, 100, 50, &floats[1] },
+        { NUMBER, "VAL", 0, 0, 50, &floats[0]},
+        { CHECKBOX, "CHECK", 0, 0, 1, &ints[0]},
+        { LIGHT, "LIGHT", 0, 0, 0, &ints[1]},
         EMPTY_ELEMENT
     };
 

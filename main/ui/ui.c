@@ -69,7 +69,6 @@ void * pointers[6];
 void gui_init()
 {
     ESP_LOGI("GUI", "Initializing GUI");
-    char buf[256];
 
     /*----------------
      * Global styles
@@ -88,6 +87,7 @@ void gui_init()
      *----------------*/
     for (int i = 0; i < 6; i++){
       pointers[i] = NULL;
+      observers[i] = NULL;
     }
 
     /*--------------------
@@ -127,12 +127,12 @@ void slider_changed(lv_event_t * e) {
 void check_changed(lv_event_t * e) {
    lv_obj_t * obj = lv_event_get_target_obj(e);
    int i = lv_obj_get_index(obj);
-   if (lv_obj_has_state(obj, LV_STATE_CHECKED))
-      lv_obj_add_state(obj, LV_STATE_DISABLED);
-   else
-      lv_obj_add_state(obj, LV_STATE_CHECKED);
+   // if (lv_obj_has_state(obj, LV_STATE_CHECKED))
+   //    lv_obj_add_state(obj, LV_STATE_DISABLED);
+   // else
+   //    lv_obj_add_state(obj, LV_STATE_CHECKED);
 
-    *(int*)pointers[i] = !(*(int*)pointers[i]);
+   //  *(int*)pointers[i] = !(*(int*)pointers[i]);
 }
 
 void observer_cb(lv_observer_t * observer, lv_subject_t * subject) {

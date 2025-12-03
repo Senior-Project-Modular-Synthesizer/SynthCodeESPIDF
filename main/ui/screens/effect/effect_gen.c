@@ -88,9 +88,7 @@ lv_obj_t * effect_create(UIElement* elements)
                 break;
             case NUMBER:
                 lv_subject_init_float(&subjects[i], element.start);
-                comp = lv_label_create(grid);
-                lv_label_bind_text(comp, &subjects[i], NULL);
-                lv_obj_add_style(comp, &main, 0);
+                comp = number_create(grid, element.name, &subjects[i]);
                 break;
             case LIGHT:
                 lv_subject_init_int(&subjects[i], element.start);

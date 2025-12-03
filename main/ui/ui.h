@@ -49,8 +49,8 @@ extern lv_obj_t * home;
 /*----------------
  * Fonts
  *----------------*/
-extern lv_font_t * font_title;
-extern lv_font_t * font_subtitle;
+extern const lv_font_t * font_title;
+extern const lv_font_t * font_subtitle;
 
 /*----------------
  * Images
@@ -98,6 +98,7 @@ void gui_init();
 #include "components/effectslider/effectslider_gen.h"
 #include "components/subtitle/subtitle_gen.h"
 #include "components/title/title_gen.h"
+#include "components/number/number_gen.h"
 #include "screens/effect/effect_gen.h"
 #include "screens/home/home_gen.h"
 
