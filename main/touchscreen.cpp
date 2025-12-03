@@ -7,6 +7,8 @@
 
 static XPT2046* touch;
 
+#define PRINT_TOUCH 0
+
 void init_touchscreen() {
     touch = new XPT2046(SPI_HOST, PIN_NUM_TOUCH_CS);
     esp_err_t ret = touch->init();
@@ -47,6 +49,8 @@ void touchscreen_cb(lv_indev_t *indev, lv_indev_data_t *data) {
         data->point.y = last_y;
         data->state = LV_INDEV_STATE_RELEASED;
     }
+    
+    #if PRINT_TOUCH
     ESP_LOGI("TOUCHSCREEN", "Touch: X=%u Y=%u Z=%u", last_x, last_y, touch_data.z);
-
+    #endif
 }

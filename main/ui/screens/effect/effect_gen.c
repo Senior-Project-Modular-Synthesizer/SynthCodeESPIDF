@@ -83,7 +83,7 @@ lv_obj_t * effect_create(UIElement* elements)
             case ARC1:
             case ARC2:
                 lv_subject_init_float(&subjects[i], *(float *)element.data);
-                comp = arc_create(grid, element.name, &subjects[i], element.min, element.max, *(float *)element.data);
+                comp = arc_create(grid, element.name, &subjects[i], element.min, element.max, *(float *)element.data, element.increment);
                 observers[i] = lv_subject_add_observer(&subjects[i], observer_cb, element.data);
                 break;
             case NUMBER:
