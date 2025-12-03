@@ -14,9 +14,9 @@ class LowPass : public Processor {
 
         void process(QuadInputBuffer& input, QuadOutputBuffer& output) override;
         int blockSize() const override;
-        std::variant<std::map<std::string, std::pair<UIElement, void*>>, CustomUI> getUIType() const override;
+        UIElement* getUIType() const override;
     private:
-        float alpha = 0.01f;
+        int alpha = 0.01f;
 };
 
 class HighPass : public Processor {
@@ -26,9 +26,9 @@ class HighPass : public Processor {
 
         void process(QuadInputBuffer& input, QuadOutputBuffer& output) override;
         int blockSize() const override;
-        std::variant<std::map<std::string, std::pair<UIElement, void*>>, CustomUI> getUIType() const override;
+        UIElement* getUIType() const override;
     private:
-        float alpha = 0.01f;
+        int alpha = 0.01f;
 };
 
 void registerBasicProcessors();
