@@ -15,8 +15,7 @@ typedef struct {
     char name[16];
     short min;
     short max;
-    short start;
     void* data;
 } UIElement;
 
-static const UIElement EMPTY_ELEMENT = {EMPTY, "", 0, 0, 0, NULL};
+static const UIElement EMPTY_ELEMENT = {EMPTY, "", 0, 0, NULL};

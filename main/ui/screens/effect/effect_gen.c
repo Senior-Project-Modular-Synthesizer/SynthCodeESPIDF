@@ -71,27 +71,27 @@ lv_obj_t * effect_create(UIElement* elements)
         lv_obj_t * comp = NULL;
         switch (element.type) {
             case CHECKBOX:
-                lv_subject_init_int(&subjects[i], element.start);
+                lv_subject_init_int(&subjects[i], *(int *)element.data);
                 comp = checkbox_create(grid, &subjects[i], element.name, 1);
                 observers[i] = lv_subject_add_observer(&subjects[i], observer_cb, element.data);
                 break;
             case SLIDER:
-                lv_subject_init_float(&subjects[i], element.start);
-                comp = effectslider_create(grid, element.name, &subjects[i], element.min, element.max, element.start);
+                lv_subject_init_float(&subjects[i], *(float *)element.data);
+                comp = effectslider_create(grid, element.name, &subjects[i], element.min, element.max, *(float *)element.data);
                 observers[i] = lv_subject_add_observer(&subjects[i], observer_cb, element.data);
                 break;
             case ARC1:
             case ARC2:
-                lv_subject_init_float(&subjects[i], element.start);
-                comp = arc_create(grid, element.name, &subjects[i], element.min, element.max, element.start);
+                lv_subject_init_float(&subjects[i], *(float *)element.data);
+                comp = arc_create(grid, element.name, &subjects[i], element.min, element.max, *(float *)element.data);
                 observers[i] = lv_subject_add_observer(&subjects[i], observer_cb, element.data);
                 break;
             case NUMBER:
-                lv_subject_init_float(&subjects[i], element.start);
+                lv_subject_init_float(&subjects[i], *(float *)element.data);
                 comp = number_create(grid, element.name, &subjects[i]);
                 break;
             case LIGHT:
-                lv_subject_init_int(&subjects[i], element.start);
+                lv_subject_init_int(&subjects[i], *(float *)element.data);
                 comp = checkbox_create(grid, &subjects[i], element.name, 0);
                 break;
             default: // (empty)

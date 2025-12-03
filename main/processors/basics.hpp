@@ -19,7 +19,7 @@ class LowPass : public Processor {
         float alpha = 0.01f;
 
         const UIElement ui_map[6] = {
-            { SLIDER, "Alpha", 0, 100, 50, &alpha },
+            { SLIDER, "Alpha", 0, 100, &alpha },
             EMPTY_ELEMENT,
             EMPTY_ELEMENT,
             EMPTY_ELEMENT,
@@ -40,7 +40,7 @@ class HighPass : public Processor {
         float alpha = 0.01f;
 
         const UIElement ui_map[6] = {
-            { SLIDER, "Alpha", 0, 100, 50, &alpha },
+            { SLIDER, "Alpha", 0, 100, &alpha },
             EMPTY_ELEMENT,
             EMPTY_ELEMENT,
             EMPTY_ELEMENT,
