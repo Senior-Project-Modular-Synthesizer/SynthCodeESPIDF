@@ -91,7 +91,7 @@ lv_obj_t * effect_create(UIElement* elements)
                 comp = number_create(grid, element.name, &subjects[i]);
                 break;
             case LIGHT:
-                lv_subject_init_int(&subjects[i], *(float *)element.data);
+                lv_subject_init_int(&subjects[i], *(int *)element.data);
                 comp = checkbox_create(grid, &subjects[i], element.name, 0);
                 break;
             default: // (empty)
