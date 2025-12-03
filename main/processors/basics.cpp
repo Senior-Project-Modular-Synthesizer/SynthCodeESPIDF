@@ -64,7 +64,7 @@ const UIElement* HighPass::getUIType() const {
 
 const UIElement* LowPass::getUIType() const {
     return ui_map;
-}   
+}
 
 PassThrough::PassThrough() {
 }
@@ -83,8 +83,7 @@ int PassThrough::blockSize() const {
     return 64; // Example block size
 }
 
-std::variant<std::map<std::string, std::pair<UIElement, void*>>, CustomUI> PassThrough::getUIType() const {
-    std::map<std::string, std::pair<UIElement, void*>> ui_map;
+const UIElement* PassThrough:getUIType() const {
     return ui_map;
 }
 
