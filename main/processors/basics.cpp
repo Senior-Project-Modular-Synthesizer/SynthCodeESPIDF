@@ -70,12 +70,37 @@ std::variant<std::map<std::string, std::pair<UIElement, void*>>, CustomUI> LowPa
     return ui_map;
 }   
 
+PassThrough::PassThrough() {
+}
+
+PassThrough::~PassThrough() {
+}
+
+void PassThrough::process(QuadInputBuffer& input, QuadOutputBuffer& output) {
+    while (true) {
+        QuadIntSample sample = input.nextIntSample();
+        output.pushIntSample(sample);
+    }
+}
+
+int PassThrough::blockSize() const {
+    return 64; // Example block size
+}
+
+std::variant<std::map<std::string, std::pair<UIElement, void*>>, CustomUI> PassThrough::getUIType() const {
+    std::map<std::string, std::pair<UIElement, void*>> ui_map;
+    return ui_map;
+}
+
 void registerBasicProcessors() {
     ProcessorFactory::instance().registerProcessor("LowPass", []() {
         return std::make_unique<LowPass>();
     });
     ProcessorFactory::instance().registerProcessor("HighPass", []() {
         return std::make_unique<HighPass>();
+    });
+    ProcessorFactory::instance().registerProcessor("PassThrough", []() {
+        return std::make_unique<PassThrough>();
     });
 }
 
