@@ -68,22 +68,24 @@ lv_obj_t * effect_create(UIElement* elements)
         lv_obj_t * comp = NULL;
         switch (element.type) {
             case BUTTON:
-                comp = checkbox_create(grid, "Check", &subjects[i]);
+                comp = checkbox_create(grid, element.name);
                 break;
             case SLIDER:
-                comp = effectslider_create(grid, "Test", &subjects[i], element.min, element.max, element.start);
+                comp = effectslider_create(grid, element.name, &subjects[i], element.min, element.max, element.start);
                 break;
             case ARC1:
             case ARC2:
-                comp = arc_create(grid, "GAIN", &subjects[i], element.min, element.max, element.start);
+                comp = arc_create(grid, element.name, &subjects[i], element.min, element.max, element.start);
                 break;
             case LIGHT:
                 break;
             default: // (empty)
                 break;
         }
-        if (comp != NULL)
+        if (comp != NULL) {
             lv_obj_set_grid_cell(comp, LV_GRID_ALIGN_CENTER, col, 1, LV_GRID_ALIGN_CENTER, row, 1);
+            pointers[i] = element.data;
+        }
     }
 
     LV_TRACE_OBJ_CREATE("finished");

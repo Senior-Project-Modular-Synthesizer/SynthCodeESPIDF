@@ -59,7 +59,8 @@ extern lv_font_t * font_subtitle;
 /*----------------
  * Subjects
  *----------------*/
-extern lv_subject_t subjects[6]
+extern lv_subject_t subjects[6];
+extern void* pointers[6];
 
 /**********************
  * GLOBAL PROTOTYPES

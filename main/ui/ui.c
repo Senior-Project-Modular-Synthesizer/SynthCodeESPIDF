@@ -122,6 +122,13 @@ void slider_changed(lv_event_t * e) {
 
 }
 
-void check_changes(lv_event_t * e) {
-   int i = lv_obj_get_index(lv_event_get_target_obj(e));
+void check_changed(lv_event_t * e) {
+   lv_obj_t * obj = lv_event_get_target_obj(e);
+   int i = lv_obj_get_index(obj);
+   if (lv_obj_has_state(obj, LV_STATE_CHECKED))
+      lv_obj_add_state(obj, LV_STATE_DISABLED);
+   else
+      lv_obj_add_state(obj, LV_STATE_CHECKED);
+
+   pointers[i] = !pointers[i];
 }
