@@ -49,4 +49,14 @@ class HighPass : public Processor {
         };
 };
 
+class PassThrough : public Processor {
+    public:
+        PassThrough();
+        ~PassThrough();
+
+        void process(QuadInputBuffer& input, QuadOutputBuffer& output) override;
+        int blockSize() const override;
+        std::variant<std::map<std::string, std::pair<UIElement, void*>>, CustomUI> getUIType() const override;
+};
+
 void registerBasicProcessors();

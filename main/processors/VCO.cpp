@@ -9,6 +9,9 @@ VCO::~VCO() {
     // Clean up any resources if necessary
 }
 
+/*
+ *  Delta = (w_b + 2^(V/oct + FM * FM_in))
+ */
 void VCO::process(QuadInputBuffer& input, QuadOutputBuffer& output) {
     int sample_count = 0;
     float running_average[4] = {0.0f, 0.0f, 0.0f, 0.0f};
