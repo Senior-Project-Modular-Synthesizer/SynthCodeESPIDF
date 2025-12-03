@@ -77,7 +77,7 @@ lv_obj_t * effect_create(UIElement* elements)
                 break;
             case SLIDER:
                 lv_subject_init_float(&subjects[i], *(float *)element.data);
-                comp = effectslider_create(grid, element.name, &subjects[i], element.min, element.max, *(float *)element.data);
+                comp = effectslider_create(grid, element.name, &subjects[i], element.min, element.max, *(float *)element.data, element.increment);
                 observers[i] = lv_subject_add_observer(&subjects[i], observer_cb, element.data);
                 break;
             case ARC1:
@@ -98,6 +98,11 @@ lv_obj_t * effect_create(UIElement* elements)
                 break;
         }
         if (comp != NULL) {
+            if (subjects[i].type == LV_SUBJECT_TYPE_FLOAT) {
+                lv_subject_set_min_value_float(&subjects[i], element.min);
+                lv_subject_set_max_value_float(&subjects[i], element.max);
+            }
+
             lv_obj_set_grid_cell(comp, LV_GRID_ALIGN_CENTER, col, 1, LV_GRID_ALIGN_CENTER, row, 1);
             pointers[i] = element.data;
         }

@@ -31,7 +31,7 @@
  *   GLOBAL FUNCTIONS
  **********************/
 
-lv_obj_t * effectslider_create(lv_obj_t * parent, const char * title, lv_subject_t * variable, short min, short max, short start)
+lv_obj_t * effectslider_create(lv_obj_t * parent, const char * title, lv_subject_t * variable, short min, short max, short start, short increment)
 {
     LV_TRACE_OBJ_CREATE("begin");
 
@@ -43,8 +43,8 @@ lv_obj_t * effectslider_create(lv_obj_t * parent, const char * title, lv_subject
         lv_style_init(&slider);
         lv_style_set_bg_opa(&slider, 0);
         lv_style_set_border_width(&slider, 0);
-        lv_style_set_width(&slider, LV_SIZE_CONTENT - 10);
-        lv_style_set_height(&slider, 60);
+        lv_style_set_width(&slider, LV_SIZE_CONTENT);
+        lv_style_set_height(&slider, 130);
         lv_style_set_flex_flow(&slider, LV_FLEX_FLOW_COLUMN);
         lv_style_set_text_font(&slider, font_subtitle);
 
@@ -73,6 +73,32 @@ lv_obj_t * effectslider_create(lv_obj_t * parent, const char * title, lv_subject
     lv_obj_set_align(lv_label_1, LV_ALIGN_CENTER);
     lv_label_bind_text(lv_label_1, variable, "%0.0f");
     lv_obj_set_style_pad_top(lv_label_1, 45, 0);
+
+    if (increment) {
+        lv_obj_t * lv_button_0 = lv_button_create(lv_obj_0);
+        lv_obj_set_height(lv_button_0, 30);
+        lv_obj_set_width(lv_button_0, 30);
+        lv_obj_set_align(lv_button_0, LV_ALIGN_BOTTOM_LEFT);
+
+        lv_obj_t * lv_label_2 = lv_label_create(lv_button_0);
+        lv_label_set_text(lv_label_2, "-");
+        lv_obj_set_align(lv_label_2, LV_ALIGN_CENTER);
+        lv_obj_set_style_text_font(lv_label_2, font_title, 0);
+
+        lv_obj_add_subject_increment_event(lv_button_0, variable, LV_EVENT_CLICKED, -increment);
+
+        lv_obj_t * lv_button_1 = lv_button_create(lv_obj_0);
+        lv_obj_set_height(lv_button_1, 30);
+        lv_obj_set_width(lv_button_1, 30);
+        lv_obj_set_align(lv_button_1, LV_ALIGN_BOTTOM_RIGHT);
+
+        lv_obj_t * lv_label_3 = lv_label_create(lv_button_1);
+        lv_label_set_text(lv_label_3, "+");
+        lv_obj_set_align(lv_label_3, LV_ALIGN_CENTER);
+        lv_obj_set_style_text_font(lv_label_3, font_title, 0);
+
+        lv_obj_add_subject_increment_event(lv_button_1, variable, LV_EVENT_CLICKED, increment);
+    }
 
     LV_TRACE_OBJ_CREATE("finished");
 

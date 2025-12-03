@@ -157,11 +157,11 @@ void synth_gui(){
 
     ints[1] = 1;
     UIElement ui_map[6] = {
-        { SLIDER, "Alpha", 0, 1, &floats[0] },
-        { ARC1, "Gain", 0, 100, &floats[1] },
-        { NUMBER, "VAL", 0, 0, &floats[0]},
-        { CHECKBOX, "CHECK", 0, 0, &ints[0]},
-        { LIGHT, "LIGHT", 0, 0, &ints[1]},
+        { SLIDER, "Alpha", 0, 1, 1, &floats[0] },
+        { ARC1, "Gain", 0, 100, 0, &floats[1] },
+        { NUMBER, "VAL", 0, 0, 0, &floats[0]},
+        { CHECKBOX, "CHECK", 0, 0, 0, &ints[0]},
+        { LIGHT, "LIGHT", 0, 0, 0, &ints[1]},
         EMPTY_ELEMENT
     };
 

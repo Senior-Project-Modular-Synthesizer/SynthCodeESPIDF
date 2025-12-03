@@ -5,23 +5,31 @@
     </api>
 
     <previews>
-        <preview width="400" height="200" style_pad_all="30"/>
+        <preview width="400" height="200" style_pad_all="20"/>
     </previews>
 
     <styles>
-        <style name="main" 
+        <style name="slider" 
             bg_opa="0" border_width="0"
-            width="content" height="60"
-            flex_flow="column"
+            width="content" height="130"
+            flex_flow="column" text_font="font_title"
             />
     </styles>
 
     <view scrollable="false">
-        <style name="main"/>
-        <lv_label align="center" text="$title" style_pad_bottom="0" x="0" y="-23"></lv_label>
-        <lv_slider bind_value="$variable" x="0" y="10" width="150">
+        <style name="slider"/>
+        <lv_label align="center" text="$title" style_pad_bottom="45"></lv_label>
+        <lv_slider bind_value="$variable" width="150" align="center">
             <event_cb callback="arc_changed" trigger="value_changed"/>
         </lv_slider>
-        <lv_label align="center" bind_text="$variable" style_pad_top="20" x="0" y="13"></lv_label>
+        <lv_button height="30" width="30" align="bottom_left">
+            <lv_label text="-" align="center"/>
+            <subject_increment_event trigger="clicked" subject="$variable" step="-10"/>
+        </lv_button>
+        <lv_button height="30" width="30" align="bottom_right">
+            <lv_label text="+" align="center"/>
+            <subject_increment_event trigger="clicked" subject="$variable" step="10"/>
+        </lv_button>
+        <lv_label align="center" bind_text="$variable" style_pad_top="45"></lv_label>
     </view>
 </component>

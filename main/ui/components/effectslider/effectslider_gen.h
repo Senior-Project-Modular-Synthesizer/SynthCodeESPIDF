@@ -27,7 +27,7 @@ extern "C" {
  **********************/
 
 
-lv_obj_t * effectslider_create(lv_obj_t * parent, const char * title, lv_subject_t * variable, short min, short max, short start);
+lv_obj_t * effectslider_create(lv_obj_t * parent, const char * title, lv_subject_t * variable, short min, short max, short start, short increment);
 
 /**********************
  *      MACROS
