@@ -16,7 +16,7 @@ class LowPass : public Processor {
         int blockSize() const override;
         const UIElement* getUIType() const override;
     private:
-        float alpha = 0.01f;
+        float alpha = 10.0f;
 
         const UIElement ui_map[6] = {
             { SLIDER, "Alpha", 0, 100, 0, &alpha },
@@ -37,7 +37,7 @@ class HighPass : public Processor {
         int blockSize() const override;
         const UIElement* getUIType() const override;
     private:
-        float alpha = 0.01f;
+        float alpha = 10.0f;
 
         const UIElement ui_map[6] = {
             { SLIDER, "Alpha", 0, 100, 0, &alpha },

@@ -21,7 +21,7 @@ void LowPass::process(QuadInputBuffer& input, QuadOutputBuffer& output) {
         count++;
         for (int i = 0; i < 4; i++) {
             float channel_float = (float)(sample.channels[i]) / (float)(0x7FFFFF);
-            running_average[i] = alpha/1000.0f * channel_float + (1.0f - alpha/1000.0f) * running_average[i];
+            running_average[i] = alpha / 1000.0f * channel_float + (1.0f - alpha / 1000.0f) * running_average[i];
             sample.channels[i] = (int32_t)(running_average[i] * 0x7FFFFF);
         }
         output.pushIntSample(sample);
@@ -47,7 +47,7 @@ void HighPass::process(QuadInputBuffer& input, QuadOutputBuffer& output) {
         QuadIntSample sample = input.nextIntSample();
         for (int i = 0; i < 4; i++) {
             float channel_float = (float)(sample.channels[i]) / (float)(0x7FFFFF);
-            running_average[i] = alpha * channel_float + (1.0f - alpha) * running_average[i];
+            running_average[i] = alpha / 1000.0f * channel_float + (1.0f - alpha / 1000.0f) * running_average[i];
             sample.channels[i] = (int32_t)((channel_float - running_average[i]) * 0x7FFFFF);
         }
         output.pushIntSample(sample);

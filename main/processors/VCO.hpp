@@ -16,12 +16,12 @@ class VCO : public Processor {
         int blockSize() const override;
         std::variant<std::map<std::string, std::pair<UIElement, void*>>, CustomUI> getUIType() const override;
     private:
-        float fm = 0.01f;
-        float tune = 0.01f;
+        float fm = 10.0f;
+        float tune = 10.0f;
     
         const UIElement ui_map[6] = {
-            EMPTY_ELEMENT,
-            EMPTY_ELEMENT,
+            { SLIDER, "FM", 0, 100, 1, &fm },
+            { SLIDER, "Tune", 0, 100, 1, &tune },
             EMPTY_ELEMENT,
             EMPTY_ELEMENT,
             EMPTY_ELEMENT,

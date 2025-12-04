@@ -29,7 +29,7 @@ void VCO::process(QuadInputBuffer& input, QuadOutputBuffer& output) {
         float fm_in = sample.channels[1];
         
         // Delta = 2 ^ ((fm * fm_in) + voct + tune);
-        float exp = (fm * fm_in) + voct + tune;
+        float exp = ((fm / 1000.0f) * fm_in) + voct + (tune / 1000.0f);
         float delta = lookup_two_pow(exp);
 
         // Phase = delta, get only phase's fractional part
