@@ -7,10 +7,10 @@
 #include <string>
 #include <memory>
 
-class VCO : public Processor {
+class resonanant_filter : public Processor {
     public:
-        VCO();
-        ~VCO();
+        resonanant_filter();
+        ~resonanant_filter();
 
         void process(QuadInputBuffer& input, QuadOutputBuffer& output) override;
         int blockSize() const override;
@@ -29,4 +29,4 @@ class VCO : public Processor {
         };
 };
 
-void register_VCO();
+void register_resonanant_filter();

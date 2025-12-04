@@ -70,12 +70,9 @@ const UIElement* VCO::getUIType() const {
     return ui_map;
 }   
 
-void registerBasicProcessors() {
+void register_VCO() {
     ProcessorFactory::instance().registerProcessor("VCO", []() {
         return std::make_unique<VCO>();
-    });
-    ProcessorFactory::instance().registerProcessor("HighPass", []() {
-        return std::make_unique<HighPass>();
     });
 }
 

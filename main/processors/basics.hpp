@@ -69,4 +69,4 @@ class PassThrough : public Processor {
         };
 };
 
-void registerBasicProcessors();
+void register_basic();

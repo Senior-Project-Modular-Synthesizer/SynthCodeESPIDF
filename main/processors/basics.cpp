@@ -87,7 +87,7 @@ const UIElement* PassThrough::getUIType() const {
     return ui_map;
 }
 
-void registerBasicProcessors() {
+void register_basic() {
     ProcessorFactory::instance().registerProcessor("Low Pass", []() {
         return std::make_unique<LowPass>();
     });

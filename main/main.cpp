@@ -158,7 +158,7 @@ void main_task_wrapper(void* pvParameters) {
 
 extern "C" void app_main(void)
 {
-    registerBasicProcessors();
+    register_basic();
 
     init_devices();
     // // Start the main task on core 0

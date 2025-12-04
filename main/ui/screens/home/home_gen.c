@@ -10,8 +10,8 @@
  *  STATIC VARIABLES
  **********************/
 static const char * btnm_map[] = {"High Pass", "Low Pass", "Passthru", "\n",
-                                  "LFO", "Env", "VCA", "\n",
-                                  "Sine", "Triangle", "Square", ""
+                                  "LFO", "Env Gen", "VCA", "\n",
+                                  "Resonant", "VCO", ""
                                  };
 
 /**********************

@@ -7,10 +7,10 @@
 #include <string>
 #include <memory>
 
-class VCO : public Processor {
+class env_gen : public Processor {
     public:
-        VCO();
-        ~VCO();
+        env_gen();
+        ~env_gen();
 
         void process(QuadInputBuffer& input, QuadOutputBuffer& output) override;
         int blockSize() const override;
@@ -29,4 +29,4 @@ class VCO : public Processor {
         };
 };
 
-void register_VCO();
+void register_env_gen();
