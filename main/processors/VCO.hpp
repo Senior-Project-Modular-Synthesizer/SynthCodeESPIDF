@@ -18,18 +18,15 @@ class VCO : public Processor {
     private:
         float fm = 0.01f;
         float tune = 0.01f;
+    
+        const UIElement ui_map[6] = {
+            EMPTY_ELEMENT,
+            EMPTY_ELEMENT,
+            EMPTY_ELEMENT,
+            EMPTY_ELEMENT,
+            EMPTY_ELEMENT,
+            EMPTY_ELEMENT
+        };
 };
-
-// class VCA : public Processor {
-//     public:
-//         VCA();
-//         ~VCA();
-
-//         void process(QuadInputBuffer& input, QuadOutputBuffer& output) override;
-//         int blockSize() const override;
-//         std::variant<std::map<std::string, std::pair<UIElement, void*>>, CustomUI> getUIType() const override;
-//     private:
-//         float alpha = 0.01f;
-// };
 
 void registerBasicProcessors();
