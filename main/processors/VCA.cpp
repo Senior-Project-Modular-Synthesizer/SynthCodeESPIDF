@@ -1,6 +1,5 @@
 
 #include "VCA.hpp"
-#include "../approx.h"
 #include "esp_log.h"
 
 
@@ -16,7 +15,7 @@ VCA::~VCA() {
  * Linear uses range from 0 to 2
  */
 void VCA::process(QuadInputBuffer& input, QuadOutputBuffer& output) {
-    QuadIntSample sample = input.nextSample();
+    QuadSample sample = input.nextSample();
     while (true) {
         // Calculate gain every 64 samples
         float gain;
@@ -25,7 +24,7 @@ void VCA::process(QuadInputBuffer& input, QuadOutputBuffer& output) {
         else if (sample.channels[3] / 10.0f < min_v)
             gain = 0;
         else
-            gain = 2.0f / ((max_v - min_v) / 10.0f) * (sample.channels[3] - min_v)
+            gain = 2.0f / ((max_v - min_v) / 10.0f) * (sample.channels[3] - min_v);
 
         for (int i = 0; i < 64; i++){
             sample.channels[0] = sample.channels[0] * gain;
@@ -59,7 +58,7 @@ bipolar_VCA::~bipolar_VCA() {
  * Bipolar uses range from -2 to 2
  */
 void bipolar_VCA::process(QuadInputBuffer& input, QuadOutputBuffer& output) {
-    QuadIntSample sample = input.nextSample();
+    QuadSample sample = input.nextSample();
     while (true) {
         // Calculate gain every 64 samples
         float gain = 2.0f * sample.channels[3];

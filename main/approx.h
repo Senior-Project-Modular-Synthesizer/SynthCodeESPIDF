@@ -1,3 +1,5 @@
+#pragma once
+
 float lookup_two_pow(float x) {
     // x should be in the range [-10, 10]
     int index = (int)((x - -10) / (10 - -10) * (128 - 1));

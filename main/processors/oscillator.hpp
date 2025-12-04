@@ -51,6 +51,6 @@ class VCO : public Processor {
         };
 };
 
-void phase_to_sample(QuadIntSample sample, float phase);
+void phase_to_sample(QuadSample& sample, float phase);
 
 void register_oscillator();

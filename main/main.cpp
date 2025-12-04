@@ -22,6 +22,8 @@
 #include "touchscreen.hpp"
 
 #include "processors/basics.hpp"
+#include "processors/oscillator.hpp"
+#include "processors/VCA.hpp"
 
 #define TAG "MAIN"
 

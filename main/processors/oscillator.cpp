@@ -2,11 +2,12 @@
 #include "../approx.h"
 #include "esp_log.h"
 #include "peripheral_cfg.h"
+#include "math.h"
 
 /**
  * Fills in sample using the phase
  */
-void phase_to_sample(QuadIntSample sample, float phase) {
+void phase_to_sample(QuadSample& sample, float phase) {
     // Above each effect is a formula to paste into Desmos to visualize it
 
     // \left\{0<x<1:\sin\left(2\pi x\right)\right\}
@@ -23,7 +24,7 @@ void phase_to_sample(QuadIntSample sample, float phase) {
     if (phase < 0.25) 
         sample.channels[3] =  (4 * phase);
     else if (0.25 <= phase && phase < 0.75) 
-        sample.channel[3]s = -(4 * phase) + 2;
+        sample.channels[3] = -(4 * phase) + 2;
     else 
         sample.channels[3] =   4 * (phase - 1);
     // (This is my attempt to make this more readable,
@@ -45,15 +46,15 @@ void LFO::process(QuadInputBuffer& input, QuadOutputBuffer& output) {
     float phase = 0.0f;
 
     while (true) {
-        QuadIntSample sample = input.nextSample();
+        QuadSample sample = input.nextSample();
         freq = fm / 5.0f;
         
         float delta = I2S_SAMPLE_RATE / freq;
 
         // Phase = delta, get only phase's fractional part
         phase += delta;
-        phase %= 1;
-    
+        phase -= (int)phase; // get back under 1
+
         phase_to_sample(sample, phase);
 
         output.pushSample(sample);
@@ -88,7 +89,7 @@ void VCO::process(QuadInputBuffer& input, QuadOutputBuffer& output) {
     float phase = 0.0f;
 
     while (true) {
-        QuadIntSample sample = input.nextSample();
+        QuadSample sample = input.nextSample();
 
         // Pass inputs to sample
         float voct = sample.channels[3];
@@ -100,7 +101,7 @@ void VCO::process(QuadInputBuffer& input, QuadOutputBuffer& output) {
 
         // Phase = delta, get only phase's fractional part
         phase += delta;
-        phase %= 1;
+        phase -= (int)phase; // get back under 1
 
         phase_to_sample(sample, phase);
     
