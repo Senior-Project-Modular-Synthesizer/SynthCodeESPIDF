@@ -14,7 +14,7 @@
 #include "Processor.hpp"
 #include "AK4619VN.hpp"
 
-#define AUDIO_BUF_SIZE (3 * 4 * SAMPLE_COUNT)
+#define BUF_SIZE (3 * 4 * SAMPLE_COUNT)
 
 class SampleInputBuffer : public QuadInputBuffer {
     private:
