@@ -87,7 +87,6 @@ void register_VCA() {
     ProcessorFactory::instance().registerProcessor("VCA", []() {
         return std::make_unique<VCA>();
     });
-
     ProcessorFactory::instance().registerProcessor("Bipo VCA", []() {
         return std::make_unique<VCA>();
     });

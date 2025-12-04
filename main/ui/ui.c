@@ -109,6 +109,7 @@ void load_home() {
    while(1) {
        /* Provide updates to currently-displayed Widgets here. */
        lv_timer_handler();
+       update_subjects();
        vTaskDelay(pdMS_TO_TICKS(10));
    }
 }

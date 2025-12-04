@@ -16,6 +16,28 @@ class LFO : public Processor {
         int blockSize() const override;
         const UIElement* getUIType() const override;
     private:
+        float fm = 50.0f;
+        float freq = 10.0f;
+    
+        const UIElement ui_map[6] = {
+            { SLIDER, "Freq * 5", 0, 100, 1, &fm },
+            { NUMBER, "Freq", 0, 0, 0, &freq},
+            EMPTY_ELEMENT,
+            EMPTY_ELEMENT,
+            EMPTY_ELEMENT,
+            EMPTY_ELEMENT
+        };
+};
+
+class VCO : public Processor {
+    public:
+        VCO();
+        ~VCO();
+
+        void process(QuadInputBuffer& input, QuadOutputBuffer& output) override;
+        int blockSize() const override;
+        const UIElement* getUIType() const override;
+    private:
         float fm = 10.0f;
         float tune = 10.0f;
     
@@ -29,4 +51,6 @@ class LFO : public Processor {
         };
 };
 
-void register_LFO();
+void phase_to_sample(QuadIntSample sample, float phase);
+
+void register_oscillator();
