@@ -1,5 +1,7 @@
 #include "VCO.hpp"
+#include "../approx.h"
 #include "esp_log.h"
+
 
 VCO::VCO() {
     // Initialize any necessary state here
@@ -10,24 +12,53 @@ VCO::~VCO() {
 }
 
 /*
- *  Delta = (w_b + 2^(V/oct + FM * FM_in))
+ *  Delta = 2^(Tune + V/oct + FM * FM_in))
+ *  
+ *  input.channels: 
+ *          0 - V/oct - Voltage per octave
+ *          1 - FM_in - Input frequency that we modulate by
  */
 void VCO::process(QuadInputBuffer& input, QuadOutputBuffer& output) {
-    int sample_count = 0;
-    float running_average[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-    int count = 0;
+    float phase = 0.0f;
+
     while (true) {
-        QuadIntSample sample = input.nextIntSample();
-        if (count % 10000 == 0) {
-            ESP_LOGI("VCO", "Processing sample %d %d %d %d", sample.channels[0], sample.channels[1], sample.channels[2], sample.channels[3]);
-        }
-        count++;
-        for (int i = 0; i < 4; i++) {
-            float channel_float = (float)(sample.channels[i]) / (float)(0x7FFFFF);
-            running_average[i] = alpha * channel_float + (1.0f - alpha) * running_average[i];
-            sample.channels[i] = (int32_t)(running_average[i] * 0x7FFFFF);
-        }
-        output.pushIntSample(sample);
+        QuadIntSample sample = input.nextSample();
+
+        // Pass inputs to sample
+        float voct = sample.channels[0];
+        float fm_in = sample.channels[1];
+        
+        // Delta = 2 ^ ((fm * fm_in) + voct + tune);
+        float exp = (fm * fm_in) + voct + tune;
+        float delta = lookup_two_pow(exp);
+
+        // Phase = delta, get only phase's fractional part
+        phase += delta;
+        phase %= 1;
+
+        // Above each effect is a formula to paste into Desmos to visualize it
+
+        // \left\{0<x<1:\sin\left(2\pi x\right)\right\}
+        sample.channels[0] = lookup_sin(phase); // sine
+
+        // \left\{0\le x<0.5\ :\ 1,\ 0.5\le x<1:\ -1\right\}
+        sample.channels[1] = phase > 0.5 ? 1.0 : -1.0; // square
+
+        // \left\{0\le x<0.5\ :\ 2x,\ 0.5\le x<1:2\left(x-1\right)\right\}
+        sample.channels[2] = phase < .5 ? (phase * 2) : ((phase - 1) * 2); // sawtooth  
+
+        // triangle requires more logic to put it in phase with sine
+        // \left\{0\le x<0.25\ :\ 4x,\ 0.25\le x<0.75\ :\ -4x+2,\ 0.75\le x<1:4\left(x-1\right)\right\}
+        if (phase < 0.25) 
+            { sample.channels =  (4 * phase); }
+        else if (0.25 <= phase && phase < 0.75) 
+            { sample.channels = -(4 * phase) + 2; }
+        else 
+            { sample.channels =   4 * (phase - 1); };
+        // (This is my attempt to make this more readable,
+        //  essentially this just makes the triangle wave follow sine(2pix))
+    
+        output.pushSample(sample);
     }
 }
 

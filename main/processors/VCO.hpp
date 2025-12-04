@@ -16,7 +16,8 @@ class VCO : public Processor {
         int blockSize() const override;
         std::variant<std::map<std::string, std::pair<UIElement, void*>>, CustomUI> getUIType() const override;
     private:
-        float alpha = 0.01f;
+        float fm = 0.01f;
+        float tune = 0.01f;
 };
 
 // class VCA : public Processor {
