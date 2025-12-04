@@ -25,8 +25,8 @@ void VCO::process(QuadInputBuffer& input, QuadOutputBuffer& output) {
         QuadIntSample sample = input.nextSample();
 
         // Pass inputs to sample
-        float voct = sample.channels[0];
-        float fm_in = sample.channels[1];
+        float voct = sample.channels[3];
+        float fm_in = sample.channels[4];
         
         // Delta = 2 ^ ((fm * fm_in) + voct + tune);
         float exp = ((fm / 1000.0f) * fm_in) + voct + (tune / 1000.0f);
