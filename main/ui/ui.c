@@ -177,5 +177,6 @@ void destroy_effect() {
       lv_subject_deinit(&subjects[i]);
       pointers[i] = NULL;
       // lv_observer_remove(observers[i]); // Already done by deinit
+      manage_processor(NULL);
     }
 }

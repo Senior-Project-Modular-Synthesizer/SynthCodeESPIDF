@@ -5,12 +5,11 @@
 
 #include "home_gen.h"
 #include "../../ui.h"
-#include "../../../main.h"
 
 /***********************
  *  STATIC VARIABLES
  **********************/
-static const char * btnm_map[] = {"High Pass", "Low Pass", "Band", "\n",
+static const char * btnm_map[] = {"High Pass", "Low Pass", "Passthru", "\n",
                                   "LFO", "Env", "VCA", "\n",
                                   "Sine", "Triangle", "Square", ""
                                  };

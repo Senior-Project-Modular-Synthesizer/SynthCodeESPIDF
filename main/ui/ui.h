@@ -20,6 +20,8 @@ extern "C" {
 #include "lvgl.h"
 #include "../../managed_components/lvgl__lvgl/src/misc/lv_types.h"
 #include "esp_log.h"
+#include "../main.h"
+
 /*********************
  *      DEFINES
  *********************/

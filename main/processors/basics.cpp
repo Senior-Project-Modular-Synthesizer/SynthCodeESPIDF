@@ -94,7 +94,7 @@ void registerBasicProcessors() {
     ProcessorFactory::instance().registerProcessor("High Pass", []() {
         return std::make_unique<HighPass>();
     });
-    ProcessorFactory::instance().registerProcessor("Pass Through", []() {
+    ProcessorFactory::instance().registerProcessor("Passthru", []() {
         return std::make_unique<PassThrough>();
     });
 }
