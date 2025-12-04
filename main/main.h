@@ -5,7 +5,7 @@ extern "C" {
 
 #endif
 
-const UIElement * new_processor(const char * name);
+const UIElement * manage_processor(const char * name);
 
 #ifdef __cplusplus
 }

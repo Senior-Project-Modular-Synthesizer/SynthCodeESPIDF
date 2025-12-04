@@ -96,7 +96,7 @@ static void start_processor(void* pvParameters) {
     processor->process(*input_buffer, *output_buffer);
 }
 
-extern "C" const UIElement * new_processor(const char * name) {
+extern "C" const UIElement * manage_processor(const char * name) {
     ESP_LOGI(TAG, "Creating processor '%s'", name);
     if (processor_task_handle != nullptr) {
         vTaskDelete(processor_task_handle);
@@ -127,28 +127,30 @@ extern "C" const UIElement * new_processor(const char * name) {
     vTaskDelay(100 / portTICK_PERIOD_MS); // Wait for tasks to stop
     ESP_LOGI(TAG, "Debug Point 5");
 
-    std::string cpp_name;
-    cpp_name = name;
+    if (name != nullptr) {
+        std::string cpp_name;
+        cpp_name = name;
+        processor = ProcessorFactory::instance().createProcessor(name).release();
+        if (processor == nullptr) {
+            printf("Processor '%s' not found\n", name);
+        } else {
+            printf("Processor '%s' created\n", name);
+        }
+        
+        input_buffer->start();
+        output_buffer->start();
+        xTaskCreatePinnedToCore(start_processor, "processor_task", 4096, nullptr, 1, &processor_task_handle, 1);
 
-    processor = ProcessorFactory::instance().createProcessor(name).release();
-    if (processor == nullptr) {
-        printf("Processor '%s' not found\n", name);
-    } else {
-        printf("Processor '%s' created\n", name);
-    }
-    
-    input_buffer->start();
-    output_buffer->start();
-    xTaskCreatePinnedToCore(start_processor, "processor_task", 4096, nullptr, 1, &processor_task_handle, 1);
-
-    auto ui = processor->getUIType();
-    return ui;
+        auto ui = processor->getUIType();
+        return ui;
+    } else
+        return nullptr;
 }
 
 void main_task_wrapper(void* pvParameters) {
     ESP_LOGI(TAG, "Starting main task");
     init_devices();
-    new_processor("Filter");
+    manage_processor("Filter");
     while (true) {
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }

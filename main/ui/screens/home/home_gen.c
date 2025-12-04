@@ -27,7 +27,7 @@ static void event_handler(lv_event_t * e)
         const char * name = lv_buttonmatrix_get_button_text(obj, id);
         ESP_LOGI("GUI", "Pushed id: %d, name: %s\n", id, name);
         LV_UNUSED(name);
-        lv_obj_t * effect_scr = effect_create(new_processor(name), name);
+        lv_obj_t * effect_scr = effect_create(manage_processor(name), name);
         lv_screen_load(effect_scr);
     }
 }
