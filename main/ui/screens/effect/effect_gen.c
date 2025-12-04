@@ -20,7 +20,7 @@ static int32_t row_dsc[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
  *   GLOBAL FUNCTIONS
  **********************/
 
-lv_obj_t * effect_create(UIElement* elements)
+lv_obj_t * effect_create(const UIElement* elements)
 {
     LV_TRACE_OBJ_CREATE("begin");
     ESP_LOGI("GUI", "Creating Effect");

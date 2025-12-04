@@ -2,7 +2,7 @@
 
 #include <memory>
 #include <string>
-#include <unordered_map>
+#include <map>
 #include <functional>
 
 #include "Processor.hpp"
@@ -16,6 +16,7 @@ public:
     std::unique_ptr<Processor> createProcessor(const std::string& name);
 
     void registerProcessor(const std::string& name, std::function<std::unique_ptr<Processor>()> creator);
+
 private:
     ProcessorFactory();
     ~ProcessorFactory();
@@ -23,5 +24,5 @@ private:
     ProcessorFactory(const ProcessorFactory&);
     ProcessorFactory& operator=(const ProcessorFactory&);
 
-    std::unordered_map<std::string, std::function<std::unique_ptr<Processor>()>> registry;
+    std::map<std::string, std::function<std::unique_ptr<Processor>()>> registry;
 };
