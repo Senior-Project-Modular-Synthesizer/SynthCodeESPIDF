@@ -66,9 +66,7 @@ int VCO::blockSize() const {
     return 64; // Example block size
 }  
 
-std::variant<std::map<std::string, std::pair<UIElement, void*>>, CustomUI> VCO::getUIType() const {
-    std::map<std::string, std::pair<UIElement, void*>> ui_map;
-    ui_map[std::string("Alpha")] = std::make_pair(UIElement::SLIDER, static_cast<void*>(const_cast<float*>(&alpha)));
+const UIElement* VCO::getUIType() const {
     return ui_map;
 }   
 
