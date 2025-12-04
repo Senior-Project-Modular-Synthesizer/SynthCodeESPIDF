@@ -6,6 +6,8 @@
  *      INCLUDES
  *********************/
 #include "ui.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 
 #if LV_USE_XML
 #endif
@@ -98,6 +100,19 @@ void gui_init()
     ESP_LOGI("GUI", "GUI Initialized");
 }
 
+void load_home() {
+   ESP_LOGI("GUI", "Loading Home");
+   lv_scr_load(home);
+   ESP_LOGI("GUI", "Loaded Home");
+
+   /* Make LVGL periodically execute its tasks */
+   while(1) {
+       /* Provide updates to currently-displayed Widgets here. */
+       lv_timer_handler();
+       vTaskDelay(pdMS_TO_TICKS(10));
+   }
+}
+
 /* callbacks */
 #if defined(LV_EDITOR_PREVIEW)
 void __attribute__((weak)) arc_changed(lv_event_t * e)
@@ -137,10 +152,13 @@ void check_changed(lv_event_t * e) {
 
 void observer_cb(lv_observer_t * observer, lv_subject_t * subject) {
    void * ptr = lv_observer_get_user_data(observer);
-   if (subject->type == LV_SUBJECT_TYPE_INT)
+   if (subject->type == LV_SUBJECT_TYPE_INT) {
       *(int *)(ptr) = lv_subject_get_int(subject);
-   else
+   }
+   else {
       *(float *)(ptr) = lv_subject_get_float(subject);
+      ESP_LOGI("GUI", "Set float to: %f", *(float *)(ptr));
+   }
 }
 
 void update_subjects() {

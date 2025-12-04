@@ -20,7 +20,7 @@ static int32_t row_dsc[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST}
  *   GLOBAL FUNCTIONS
  **********************/
 
-lv_obj_t * effect_create(const UIElement* elements)
+lv_obj_t * effect_create(const UIElement* elements, const char * name)
 {
     LV_TRACE_OBJ_CREATE("begin");
     ESP_LOGI("GUI", "Creating Effect");
@@ -40,7 +40,7 @@ lv_obj_t * effect_create(const UIElement* elements)
     lv_obj_set_style_pad_top(lv_obj_0, 5, 0);
     lv_obj_set_flag(lv_obj_0, LV_OBJ_FLAG_SCROLLABLE, false);
 
-    lv_obj_t * title_0 = title_create(lv_obj_0, "Gain");
+    lv_obj_t * title_0 = title_create(lv_obj_0, name);
     lv_obj_set_align(title_0, LV_ALIGN_TOP_LEFT);
 
     lv_obj_t * lv_button_0 = lv_button_create(lv_obj_0);
@@ -79,6 +79,7 @@ lv_obj_t * effect_create(const UIElement* elements)
                 lv_subject_init_float(&subjects[i], *(float *)element.data);
                 comp = effectslider_create(grid, element.name, &subjects[i], element.min, element.max, *(float *)element.data, element.increment);
                 observers[i] = lv_subject_add_observer(&subjects[i], observer_cb, element.data);
+                ESP_LOGI("GUI", "Subject initialized to: %f", lv_subject_get_float(&subjects[i]));
                 break;
             case ARC1:
             case ARC2:

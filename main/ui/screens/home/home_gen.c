@@ -5,7 +5,7 @@
 
 #include "home_gen.h"
 #include "../../ui.h"
-#include "../../../main.hpp"
+#include "../../../main.h"
 
 /***********************
  *  STATIC VARIABLES
@@ -24,10 +24,10 @@ static void event_handler(lv_event_t * e)
     lv_obj_t * obj = lv_event_get_target_obj(e);
     if(code == LV_EVENT_VALUE_CHANGED) {
         uint32_t id = lv_buttonmatrix_get_selected_button(obj);
-        const char * txt = lv_buttonmatrix_get_button_text(obj, id);
-        ESP_LOGI("GUI", "Pushed id: %d, txt: %s\n", id, txt);
-        LV_UNUSED(txt);
-        lv_obj_t * effect_scr = effect_create(new_processor(txt));
+        const char * name = lv_buttonmatrix_get_button_text(obj, id);
+        ESP_LOGI("GUI", "Pushed id: %d, name: %s\n", id, name);
+        LV_UNUSED(name);
+        lv_obj_t * effect_scr = effect_create(new_processor(name), name);
         lv_screen_load(effect_scr);
     }
 }

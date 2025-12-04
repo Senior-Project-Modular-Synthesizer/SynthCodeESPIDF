@@ -85,6 +85,7 @@ void init_devices() {
     output_buffer = new SampleOutputBuffer(codec->tx_chan);
 
     init_screen();
+    load_home();
 }
 
 static void start_processor(void* pvParameters) {
@@ -155,8 +156,9 @@ void main_task_wrapper(void* pvParameters) {
 
 extern "C" void app_main(void)
 {
-    init_devices();
     registerBasicProcessors();
+
+    init_devices();
     // // Start the main task on core 0
     
     // while (true) {
@@ -166,7 +168,7 @@ extern "C" void app_main(void)
     //     vTaskDelay(2000 / portTICK_PERIOD_MS);
     // }
 
-    synth_gui();
+    // synth_gui();
     while (1) {
 
     }

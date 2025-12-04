@@ -83,6 +83,7 @@ void destroy_effect();
  */
 
 void gui_init();
+void load_home();
 
 /**********************
  *      MACROS

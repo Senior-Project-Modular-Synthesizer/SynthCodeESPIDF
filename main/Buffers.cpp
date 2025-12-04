@@ -33,6 +33,7 @@ SampleInputBuffer::SampleInputBuffer(i2s_chan_handle_t rx_chan) {
     buf1 = (uint8_t*)heap_caps_malloc(BUF_SIZE, MALLOC_CAP_DMA);
     buf2 = (uint8_t*)heap_caps_malloc(BUF_SIZE, MALLOC_CAP_DMA);
 
+    writeBuf_handle = nullptr;
 }
 
 SampleInputBuffer::~SampleInputBuffer() {
@@ -253,6 +254,7 @@ SampleOutputBuffer::SampleOutputBuffer(i2s_chan_handle_t tx_chan) {
     buf1 = (uint8_t*)heap_caps_malloc(BUF_SIZE, MALLOC_CAP_DMA);
     buf2 = (uint8_t*)heap_caps_malloc(BUF_SIZE, MALLOC_CAP_DMA);    
 
+    writeBuf_handle = nullptr;
     // if (xHandle != NULL) {
     //     printf("Create SUCCESS\n");
     //     xTaskCreate(vSetBitTask, "Set Bits", 2048, NULL, 1, NULL);
@@ -437,7 +439,7 @@ void SampleOutputBuffer::start() {
 void SampleOutputBuffer::stop() {
     xEventGroupSetBits(xHandle, OUTPUT_KILLED);
     vTaskDelay(pdMS_TO_TICKS(100));
-    if (writeBuf_handle) {
+    if (writeBuf_handle != nullptr) {
         vTaskDelete(writeBuf_handle);
         esp_err_t ret;
         ret = i2s_channel_disable(tx_chan);

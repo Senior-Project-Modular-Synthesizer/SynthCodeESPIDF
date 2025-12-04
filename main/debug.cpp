@@ -165,7 +165,7 @@ void synth_gui(){
         EMPTY_ELEMENT
     };
 
-    lv_obj_t * effect_screen = effect_create(ui_map);
+    lv_obj_t * effect_screen = effect_create(ui_map, "Gain");
     ESP_LOGI("GUI", "Loading Effect");
     lv_scr_load(effect_screen);
     // lv_scr_load(home);
