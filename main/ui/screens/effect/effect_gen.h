@@ -27,7 +27,7 @@ extern "C" {
  * GLOBAL PROTOTYPES
  **********************/
 
-lv_obj_t * effect_create(UIElement* elements);
+lv_obj_t * effect_create(const UIElement* elements);
 
 /**********************
  *      MACROS

@@ -83,7 +83,7 @@ int PassThrough::blockSize() const {
     return 64; // Example block size
 }
 
-const UIElement* PassThrough:getUIType() const {
+const UIElement* PassThrough::getUIType() const {
     return ui_map;
 }
 
