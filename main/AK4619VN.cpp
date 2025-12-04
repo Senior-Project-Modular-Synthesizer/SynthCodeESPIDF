@@ -216,6 +216,7 @@ void AK4619VN::init_i2s() {
     esp_err_t ret;
     DEBUG_LOG("Creating I2S channels");
     i2s_chan_config_t chan_cfg = I2S_CHANNEL_DEFAULT_CONFIG(I2S_NUM_AUTO, I2S_ROLE_MASTER);
+    chan_cfg.dma_frame_num = 8 * 3;
     ESP_ERROR_CHECK(i2s_new_channel(&chan_cfg, &tx_chan, &rx_chan));
 
     DEBUG_LOG("Sample rate: %d", I2S_SAMPLE_RATE);

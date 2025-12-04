@@ -30,8 +30,10 @@ SampleInputBuffer::SampleInputBuffer(i2s_chan_handle_t rx_chan) {
     this->rx_chan = rx_chan;
     this->xHandle = xEventGroupCreate();
 
-    buf1 = (uint8_t*)heap_caps_malloc(BUF_SIZE, MALLOC_CAP_DMA);
-    buf2 = (uint8_t*)heap_caps_malloc(BUF_SIZE, MALLOC_CAP_DMA);
+    buf1 = (uint8_t*)heap_caps_malloc(AUDIO_BUF_SIZE, MALLOC_CAP_DMA);
+    buf2 = (uint8_t*)heap_caps_malloc(AUDIO_BUF_SIZE, MALLOC_CAP_DMA);
+
+    ESP_LOGI("AUDIO_BUF_SIZE", "Allocated input buffers of size %d bytes each", AUDIO_BUF_SIZE);
 
     writeBuf_handle = nullptr;
 }
@@ -153,7 +155,7 @@ void SampleInputBuffer::read( ) {
 #if WAIT_FOR_READ
         xEventGroupWaitBits(xHandle, INPUT_BUF1_WAIT, pdFALSE, pdTRUE, portMAX_DELAY);
 #endif
-        ret = i2s_channel_read(rx_chan, buf1, BUF_SIZE, &buf1_bytes_read, 1000);
+        ret = i2s_channel_read(rx_chan, buf1, AUDIO_BUF_SIZE, &buf1_bytes_read, 1000);
         ESP_ERROR_CHECK(ret);
         if (xEventGroupGetBits(xHandle) & INPUT_KILLED) {
             break;
@@ -170,7 +172,7 @@ void SampleInputBuffer::read( ) {
         xEventGroupWaitBits(xHandle, INPUT_BUF2_WAIT, pdFALSE, pdTRUE, portMAX_DELAY);
 #endif
 
-        ret = i2s_channel_read(rx_chan, buf2, BUF_SIZE, &buf2_bytes_read, 1000);
+        ret = i2s_channel_read(rx_chan, buf2, AUDIO_BUF_SIZE, &buf2_bytes_read, 1000);
         ESP_ERROR_CHECK(ret);
 
         if (xEventGroupGetBits(xHandle) & INPUT_KILLED) {
@@ -251,8 +253,8 @@ SampleOutputBuffer::SampleOutputBuffer(i2s_chan_handle_t tx_chan) {
     this->tx_chan = tx_chan;
     this->xHandle = xEventGroupCreate();
 
-    buf1 = (uint8_t*)heap_caps_malloc(BUF_SIZE, MALLOC_CAP_DMA);
-    buf2 = (uint8_t*)heap_caps_malloc(BUF_SIZE, MALLOC_CAP_DMA);    
+    buf1 = (uint8_t*)heap_caps_malloc(AUDIO_BUF_SIZE, MALLOC_CAP_DMA);
+    buf2 = (uint8_t*)heap_caps_malloc(AUDIO_BUF_SIZE, MALLOC_CAP_DMA);    
 
     writeBuf_handle = nullptr;
     // if (xHandle != NULL) {
@@ -287,7 +289,7 @@ void SampleOutputBuffer::write ( ) {
         // Send buffer to I2S
         size_t bytes_written;
         
-        ret = i2s_channel_write(tx_chan, buf1, BUF_SIZE, &buf1_bytes_written, 1000);
+        ret = i2s_channel_write(tx_chan, buf1, AUDIO_BUF_SIZE, &buf1_bytes_written, 1000);
         ESP_ERROR_CHECK(ret);
         if (xEventGroupGetBits(xHandle) & OUTPUT_KILLED) {
             break;
@@ -304,7 +306,7 @@ void SampleOutputBuffer::write ( ) {
         xEventGroupWaitBits(xHandle, OUTPUT_BUF2_WAIT, pdFALSE, pdTRUE, portMAX_DELAY);
 #endif
         
-        ret = i2s_channel_write(tx_chan, buf2, BUF_SIZE, &buf2_bytes_written, 1000);
+        ret = i2s_channel_write(tx_chan, buf2, AUDIO_BUF_SIZE, &buf2_bytes_written, 1000);
         ESP_ERROR_CHECK(ret);
         if (xEventGroupGetBits(xHandle) & OUTPUT_KILLED) {
             break;
