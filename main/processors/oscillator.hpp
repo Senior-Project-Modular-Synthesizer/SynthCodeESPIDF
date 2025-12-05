@@ -21,7 +21,7 @@ class LFO : public Processor {
     
         const UIElement ui_map[6] = {
             { SLIDER, "Freq * 5", 0, 100, 1, &fm },
-            { NUMBER, "Freq", 0, 0, 0, &freq},
+            { NUMBER, "Freq", 0, 20, 0, &freq},
             EMPTY_ELEMENT,
             EMPTY_ELEMENT,
             EMPTY_ELEMENT,

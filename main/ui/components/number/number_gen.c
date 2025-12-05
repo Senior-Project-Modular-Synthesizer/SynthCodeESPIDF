@@ -62,7 +62,7 @@ lv_obj_t * number_create(lv_obj_t * parent, const char * text, lv_subject_t * su
     lv_obj_t * lv_label_1 = lv_label_create(lv_obj_0);
     lv_obj_set_align(lv_label_1, LV_ALIGN_CENTER);
     lv_obj_set_style_pad_top(lv_label_1, 25, 0);
-    lv_label_bind_text(lv_label_1, subject, NULL);
+    lv_label_bind_text(lv_label_1, subject, "%.1f");
 
 
     LV_TRACE_OBJ_CREATE("finished");

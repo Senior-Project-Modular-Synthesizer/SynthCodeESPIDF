@@ -48,12 +48,13 @@ void LFO::process(QuadInputBuffer& input, QuadOutputBuffer& output) {
     while (true) {
         QuadSample sample = input.nextSample();
         freq = fm / 5.0f;
-        
-        float delta = I2S_SAMPLE_RATE / freq;
+
+        float delta = freq / I2S_SAMPLE_RATE ;
 
         // Phase = delta, get only phase's fractional part
         phase += delta;
         phase -= (int)phase; // get back under 1
+        ESP_LOGI("Effect", "Final phase: %f", phase);
 
         phase_to_sample(sample, phase);
 

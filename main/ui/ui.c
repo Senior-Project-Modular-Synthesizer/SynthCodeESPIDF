@@ -158,7 +158,6 @@ void observer_cb(lv_observer_t * observer, lv_subject_t * subject) {
    }
    else {
       *(float *)(ptr) = lv_subject_get_float(subject);
-      ESP_LOGI("GUI", "Set float to: %f", *(float *)(ptr));
    }
 }
 
@@ -167,8 +166,9 @@ void update_subjects() {
       if (pointers[i] != NULL && observers[i] == NULL) {
          if (subjects[i].type == LV_SUBJECT_TYPE_INT)
             lv_subject_set_int(&subjects[i], *((int *)(pointers[i])));
-         else
+         else {
             lv_subject_set_float(&subjects[i], *((float *)(pointers[i])));
+         }
       }
    }
 }
@@ -178,6 +178,7 @@ void destroy_effect() {
       lv_subject_deinit(&subjects[i]);
       pointers[i] = NULL;
       // lv_observer_remove(observers[i]); // Already done by deinit
-      manage_processor(NULL);
-    }
+   }
+   manage_processor(NULL);
+   ESP_LOGI("GUI", "DESTROYED");
 }

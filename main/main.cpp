@@ -99,7 +99,7 @@ static void start_processor(void* pvParameters) {
 }
 
 extern "C" const UIElement * manage_processor(const char * name) {
-    ESP_LOGI(TAG, "Creating processor '%s'", name);
+    ESP_LOGI(TAG, "Debug Point 0");
     if (processor_task_handle != nullptr) {
         vTaskDelete(processor_task_handle);
         processor_task_handle = nullptr;
@@ -130,6 +130,7 @@ extern "C" const UIElement * manage_processor(const char * name) {
     ESP_LOGI(TAG, "Debug Point 5");
 
     if (name != nullptr) {
+        ESP_LOGI(TAG, "Creating processor '%s'", name);
         std::string cpp_name;
         cpp_name = name;
         processor = ProcessorFactory::instance().createProcessor(name).release();

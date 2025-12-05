@@ -89,6 +89,7 @@ lv_obj_t * effect_create(const UIElement* elements, const char * name)
                 break;
             case NUMBER:
                 lv_subject_init_float(&subjects[i], *(float *)element.data);
+                ESP_LOGI("GUI", "Init number: %f", *(float *)element.data);
                 comp = number_create(grid, element.name, &subjects[i]);
                 break;
             case LIGHT:
