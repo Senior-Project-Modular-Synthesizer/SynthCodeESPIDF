@@ -1,4 +1,4 @@
-NUM_SAMPLES = 128
+NUM_SAMPLES = 1024
 TWO_POW_RANGE = (-10, 10)
 SIN_RANGE = (0, 1) # 0 to 1 is one phase meaning 0 to 2pi radians
 

@@ -350,7 +350,7 @@ void SampleOutputBuffer::pushSample(QuadSample sample) {
     };
 
     for (int i = 0; i < 4; i++)
-        intSample.channels[i] = ((int32_t) sample.channels[i]) * ((int32_t) 0xFFFFFF);
+        intSample.channels[i] = (int32_t)( sample.channels[i] * 0x7FFFFF);
 
     pushIntSample(intSample);
 }
